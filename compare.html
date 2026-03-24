@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compare Properties — St. Louis Buyer Guide</title>
+<meta name="description" content="Compare up to 5 St. Louis properties side by side — true monthly cost, competition level, taxes, school districts, and what to look for in each home.">
+
+<!-- GA4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EEE14BZT9P"></script>
+<script>
+  window.dataLayer=window.dataLayer||[];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js',new Date());
+  gtag('config','G-EEE14BZT9P');
+</script>
+
+<script src="shared.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --navy:#0A1628;--navy-mid:#1B3A6B;--card:#162040;--deep:#0d1e3a;
+  --gold:#D4A017;--gold-light:#E8B820;--green:#1a7a4a;--green-light:#5DCAA5;
+  --red:#C0392B;--red-light:#E88080;--warn:#E8A020;
+  --gray:#8A9BB0;--gray-light:#B0C0D0;--cream:#F5F0E8;--border:#1e3060;--text:#c8d8e8;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--cream);min-height:100vh;}
+
+.header{background:var(--navy);padding:13px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:500;}
+.hdr-l h1{font-family:'Bebas Neue',sans-serif;font-size:19px;color:white;letter-spacing:2px;line-height:1;}
+.hdr-l h1 span{color:var(--gold);}
+.hdr-l p{font-size:9px;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+.hdr-r a{font-family:'Bebas Neue',sans-serif;font-size:12px;color:var(--gold);letter-spacing:1px;text-decoration:none;}
+
+.tool-nav{background:var(--deep);padding:8px 16px;display:flex;gap:6px;overflow-x:auto;border-bottom:1px solid var(--border);}
+.tool-nav::-webkit-scrollbar{display:none;}
+.tn-pill{font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1px;padding:5px 12px;border-radius:20px;border:1px solid #3a5a9a;color:var(--gray-light);text-decoration:none;white-space:nowrap;transition:all .15s;}
+.tn-pill:hover{border-color:var(--gold);color:var(--gold);}
+.tn-pill.active{background:var(--gold);color:var(--navy);border-color:var(--gold);}
+
+/* TAB NAV */
+.tab-nav{background:var(--navy);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;}
+.tab-nav::-webkit-scrollbar{display:none;}
+.tab-btn{flex:1;min-width:100px;padding:11px 8px;border:none;background:transparent;font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;color:var(--gray);cursor:pointer;border-bottom:3px solid transparent;transition:all .15s;white-space:nowrap;text-align:center;}
+.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold);}
+.tab-btn:hover:not(.active){color:white;}
+.panel{display:none;}.panel.active{display:block;}
+
+.wrap{max-width:700px;margin:0 auto;padding:20px 16px 60px;}
+
+/* PROPERTY CARDS GRID */
+.props-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:16px;}
+.props-scroll::-webkit-scrollbar{height:4px;}
+.props-scroll::-webkit-scrollbar-thumb{background:#3a5a9a;border-radius:2px;}
+.props-row{display:flex;gap:10px;min-width:max-content;padding-bottom:4px;}
+.prop-card{width:200px;flex-shrink:0;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:12px;}
+.prop-card.active-prop{border-color:var(--gold);}
+.pc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.pc-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:12px;flex-shrink:0;}
+.pc-remove{background:transparent;border:none;color:var(--gray);cursor:pointer;font-size:16px;line-height:1;padding:0;}
+.pc-remove:hover{color:var(--red-light);}
+.pc-colors{
+  background:linear-gradient(135deg,#c8a400 0%,#1a7a4a 50%,#5DCAA5 100%);
+}
+
+.field{margin-bottom:8px;}
+.field label{display:block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--gray-light);margin-bottom:3px;}
+.field select,.field input{width:100%;padding:7px 8px;background:var(--deep);border:1.5px solid #3a5a9a;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:12px;color:white;}
+.field select:focus,.field input:focus{outline:none;border-color:var(--gold);}
+.field select option{background:var(--navy);}
+.field input::placeholder{color:#5a7a9a;}
+
+.add-prop-btn{background:transparent;border:1.5px dashed #3a5a9a;border-radius:6px;padding:12px;width:160px;flex-shrink:0;cursor:pointer;color:var(--gray-light);font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;transition:all .15s;height:100%;}
+.add-prop-btn:hover{border-color:var(--gold);color:var(--gold);}
+.add-prop-btn .plus{font-size:24px;line-height:1;}
+
+/* Loan settings */
+.settings-bar{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:12px 14px;margin-bottom:14px;}
+.sb-title{font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1.5px;color:var(--gray-light);margin-bottom:8px;}
+.sb-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.sb-field label{display:block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--gray-light);margin-bottom:3px;}
+.sb-field input{width:100%;padding:7px 10px;background:var(--deep);border:1.5px solid #3a5a9a;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:13px;color:white;}
+.sb-field input:focus{outline:none;border-color:var(--gold);}
+
+.btn-compare{width:100%;padding:13px;background:var(--gold);border:none;border-radius:4px;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;color:var(--navy);cursor:pointer;transition:all .15s;}
+.btn-compare:hover{background:var(--gold-light);}
+
+/* COMPARISON TABLE */
+.compare-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:16px;}
+.compare-table-wrap::-webkit-scrollbar{height:4px;}
+.compare-table-wrap::-webkit-scrollbar-thumb{background:#3a5a9a;border-radius:2px;}
+.compare-table{border-collapse:collapse;width:100%;min-width:500px;}
+.compare-table th{background:var(--deep);padding:10px 12px;font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;text-align:left;border-bottom:2px solid var(--border);position:sticky;top:0;white-space:nowrap;}
+.compare-table th.p-col{min-width:120px;text-align:right;}
+.compare-table td{padding:8px 12px;border-bottom:1px solid var(--border);font-size:12px;vertical-align:middle;}
+.compare-table td.p-col{text-align:right;}
+.compare-table tr:last-child td{border-bottom:none;}
+.compare-table tr.section-hdr td{background:rgba(0,0,0,.2);font-family:'Bebas Neue',sans-serif;font-size:10px;letter-spacing:1.5px;color:var(--gray);padding:6px 12px;}
+.compare-table tr.grand-row td{background:rgba(0,0,0,.15);border-top:2px solid var(--border);}
+.ct-label{color:var(--text);}
+.ct-val{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.3px;color:white;}
+.ct-val.gold{color:var(--gold);}
+.ct-val.green{color:var(--green-light);}
+.ct-val.warn{color:var(--warn);}
+.ct-val.red{color:var(--red-light);}
+.ct-val.lg{font-size:18px;}
+.winner-cell{background:rgba(93,202,165,.06)!important;}
+.winner-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green-light);margin-left:4px;vertical-align:middle;}
+
+/* WHAT TO LOOK FOR */
+.wtlf-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:12px;}
+.wtlf-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px;}
+.wtlf-zip{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:white;}
+.wtlf-city{font-size:11px;color:var(--gray-light);}
+.wtlf-badge{font-family:'Bebas Neue',sans-serif;font-size:10px;letter-spacing:1px;padding:3px 8px;border-radius:2px;}
+.wtlf-items{display:flex;flex-direction:column;gap:6px;}
+.wtlf-item{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;background:var(--deep);border-radius:3px;border-left:3px solid;}
+.wi-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+.wi-text{font-size:11px;color:var(--text);line-height:1.6;}
+.wi-text strong{color:white;}
+
+/* CONCLUSION */
+.conclusion-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:16px;margin-bottom:12px;}
+.cc-title{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1.5px;color:var(--gold);margin-bottom:12px;}
+.winner-banner{background:rgba(93,202,165,.08);border:1.5px solid var(--green-light);border-radius:6px;padding:14px 16px;margin-bottom:12px;}
+.wb-label{font-size:9px;color:var(--gray-light);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.wb-winner{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px;color:var(--green-light);margin-bottom:6px;}
+.wb-reason{font-size:12px;color:var(--text);line-height:1.7;}
+.comparison-summary{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+.cs-row{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:var(--deep);border-radius:3px;font-size:12px;}
+.cs-label{color:var(--text);}
+.cs-val{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.3px;}
+.savings-box{background:rgba(212,160,23,.08);border:1px solid rgba(212,160,23,.25);border-radius:4px;padding:12px 14px;margin-bottom:12px;text-align:center;}
+.sb-label{font-size:10px;color:var(--gray-light);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.sb-val{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gold);letter-spacing:.5px;}
+.sb-sub{font-size:10px;color:var(--gray-light);margin-top:2px;}
+
+.cta-box{background:var(--card);border:2px solid var(--gold);border-radius:6px;padding:14px;text-align:center;margin-bottom:12px;}
+.cta-box h3{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1.5px;color:white;margin-bottom:4px;}
+.cta-box p{font-size:11px;color:var(--gray-light);line-height:1.5;margin-bottom:10px;}
+.btn-call{display:block;background:var(--gold);border:none;padding:12px;width:100%;border-radius:4px;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--navy);cursor:pointer;text-decoration:none;text-align:center;transition:all .15s;}
+.btn-call:hover{background:var(--gold-light);}
+.btn-outline{display:block;padding:10px;width:100%;border:1.5px solid #3a5a9a;border-radius:4px;background:transparent;font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;color:var(--gray-light);cursor:pointer;text-decoration:none;text-align:center;transition:all .15s;margin-top:8px;}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+
+.footer{background:var(--card);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);flex-wrap:wrap;gap:8px;}
+.footer p{font-size:10px;color:var(--gray);}
+.footer a{color:var(--gold);text-decoration:none;}
+
+/* ── MICRO-EDUCATION TRIGGERS ── */
+.me-trigger{
+  background:#162040;border:1px solid var(--border);
+  border-left:3px solid var(--warn);border-radius:0 6px 6px 0;
+  padding:10px 12px;margin-bottom:10px;
+  animation:meSlideIn .25s ease;
+}
+.me-trigger.me-danger{border-left-color:var(--red-light);}
+.me-trigger.me-info{border-left-color:var(--green-light);}
+.me-trigger.me-tip{border-left-color:#8AB0D0;}
+@keyframes meSlideIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+.me-header{display:flex;align-items:flex-start;gap:8px;cursor:pointer;}
+.me-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+.me-short{font-size:12px;color:var(--text);line-height:1.5;flex:1;}
+.me-short strong{color:white;}
+.me-expand{font-family:'Bebas Neue',sans-serif;font-size:10px;letter-spacing:1px;color:var(--gold);flex-shrink:0;margin-top:2px;white-space:nowrap;}
+.me-detail{display:none;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:11px;color:var(--text);line-height:1.7;}
+.me-trigger.open .me-detail{display:block;}
+.me-detail strong{color:white;}
+
+/* triggers block in conclusion */
+.me-block{margin-bottom:16px;}
+
+/* ── ERA SELECTOR ── */
+.era-selector-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:14px;}
+.esc-header{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.esc-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:12px;flex-shrink:0;}
+.esc-title{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.5px;color:white;}
+.esc-sub{font-size:11px;color:var(--gray-light);margin-top:1px;}
+.era-tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.era-tile{
+  background:var(--deep);border:1.5px solid #3a5a9a;
+  border-radius:4px;padding:10px 12px;cursor:pointer;
+  transition:all .15s;text-align:center;
+}
+.era-tile:hover{border-color:#8ab0d0;}
+.era-tile.selected{border-color:var(--gold);background:rgba(212,160,23,.08);}
+.et-era{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:.5px;color:white;margin-bottom:2px;}
+.et-label{font-size:10px;color:var(--gray-light);line-height:1.4;}
+.et-risk{font-size:9px;margin-top:4px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;}
+.risk-high{color:var(--red-light);}
+.risk-med{color:var(--warn);}
+.risk-low{color:var(--green-light);}
+
+/* ── CHECKLIST CARDS ── */
+.cl-prop-block{margin-bottom:24px;}
+.cl-prop-header{
+  background:var(--deep);border:1px solid var(--border);
+  border-radius:6px 6px 0 0;padding:12px 14px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  border-bottom:none;
+}
+.clph-left{display:flex;align-items:center;gap:10px;}
+.clph-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:13px;flex-shrink:0;}
+.clph-title{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.5px;color:white;}
+.clph-sub{font-size:10px;color:var(--gray-light);margin-top:1px;}
+.cl-era-badge{font-family:'Bebas Neue',sans-serif;font-size:10px;letter-spacing:1px;padding:3px 8px;border-radius:2px;background:rgba(212,160,23,.12);border:1px solid rgba(212,160,23,.3);color:var(--gold);}
+
+/* checklist items */
+.cl-items{background:var(--card);border:1px solid var(--border);border-radius:0 0 6px 6px;overflow:hidden;}
+.cl-item{border-bottom:1px solid var(--border);}
+.cl-item:last-child{border-bottom:none;}
+.cl-item-header{
+  display:flex;align-items:center;gap:10px;padding:12px 14px;
+  cursor:pointer;transition:background .1s;
+}
+.cl-item-header:hover{background:rgba(255,255,255,.02);}
+.cl-priority{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.pri-critical{background:var(--red-light);}
+.pri-high{background:var(--warn);}
+.pri-medium{background:var(--gold);}
+.pri-low{background:var(--gray);}
+.cl-item-text{flex:1;}
+.cl-item-name{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.3px;color:white;margin-bottom:1px;}
+.cl-item-desc{font-size:11px;color:var(--gray-light);line-height:1.5;}
+.cl-item-expand{font-size:12px;color:var(--gray);transition:transform .2s;flex-shrink:0;}
+.cl-item.open .cl-item-expand{transform:rotate(180deg);}
+
+/* status tiles */
+.cl-status-wrap{
+  display:none;padding:10px 14px 14px 32px;
+  border-top:1px solid var(--border);background:rgba(0,0,0,.1);
+}
+.cl-item.open .cl-status-wrap{display:block;}
+.cl-status-prompt{font-size:11px;color:var(--gray-light);margin-bottom:8px;}
+.cl-status-tiles{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;}
+.cst{
+  padding:8px 6px;border-radius:3px;cursor:pointer;text-align:center;
+  border:1.5px solid transparent;transition:all .15s;
+}
+.cst-ok{background:rgba(26,122,74,.08);border-color:rgba(93,202,165,.2);}
+.cst-ok:hover,.cst-ok.selected{background:rgba(26,122,74,.2);border-color:var(--green-light);}
+.cst-warn{background:rgba(232,160,32,.06);border-color:rgba(232,160,32,.2);}
+.cst-warn:hover,.cst-warn.selected{background:rgba(232,160,32,.18);border-color:var(--warn);}
+.cst-flag{background:rgba(224,136,128,.06);border-color:rgba(224,136,128,.2);}
+.cst-flag:hover,.cst-flag.selected{background:rgba(224,136,128,.18);border-color:var(--red-light);}
+.cst-icon{font-size:16px;margin-bottom:2px;}
+.cst-label{font-family:'Bebas Neue',sans-serif;font-size:10px;letter-spacing:.5px;}
+.cst-ok .cst-label{color:var(--green-light);}
+.cst-warn .cst-label{color:var(--warn);}
+.cst-flag .cst-label{color:var(--red-light);}
+
+/* budget reveal */
+.cl-budget{
+  background:var(--deep);border-radius:3px;padding:10px 12px;
+  font-size:11px;line-height:1.7;display:none;
+}
+.cl-budget.visible{display:block;}
+.cb-range{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--warn);letter-spacing:.5px;margin-bottom:4px;}
+.cb-negotiate{color:var(--green-light);font-weight:600;}
+.cb-maintain{color:var(--gold);}
+.cb-text{color:var(--text);}
+
+/* summary bar */
+.cl-summary{
+  background:rgba(212,160,23,.06);border:1px solid rgba(212,160,23,.2);
+  border-radius:6px;padding:12px 14px;margin-top:12px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
+}
+.cls-label{font-size:10px;color:var(--gray-light);text-transform:uppercase;letter-spacing:.5px;}
+.cls-total{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--warn);letter-spacing:.5px;}
+.cls-flags{font-size:11px;color:var(--red-light);}
+
+/* save/export bar */
+.cl-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+.cl-action-btn{flex:1;min-width:120px;padding:10px;border-radius:3px;font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;cursor:pointer;text-align:center;transition:all .15s;border:none;}
+.cla-save{background:var(--gold);color:var(--navy);}
+.cla-save:hover{background:var(--gold-light);}
+.cla-email{background:transparent;border:1.5px solid #3a5a9a!important;color:var(--gray-light);}
+.cla-email:hover{border-color:var(--gold)!important;color:var(--gold);}
+.cla-reset{background:transparent;border:1.5px solid rgba(224,136,128,.3)!important;color:var(--red-light);}
+.cla-reset:hover{border-color:var(--red-light)!important;}
+
+@media(max-width:520px){
+  .sb-row{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="hdr-l">
+    <h1>COMPARE <span>PROPERTIES</span></h1>
+    <p>St. Louis Buyer Guide · George Kindler</p>
+  </div>
+  <div class="hdr-r"><a href="tel:3144351087">📞 314.435.1087</a></div>
+</header>
+
+<nav class="tool-nav">
+  <a class="tn-pill" href="prep.html">🏚 PREP</a>
+  <a class="tn-pill active" href="compare.html">⚖️ COMPARE</a>
+  <a class="tn-pill" href="home-cost.html">🔧 COST GUIDE</a>
+  <a class="tn-pill" href="afford.html">🗺 AFFORDABILITY</a>
+  <a class="tn-pill" href="fails.html">⚠️ WHAT TO LOOK FOR</a>
+  <a class="tn-pill" href="index.html">🏠 HOME</a>
+<div class="tab-nav">
+  <button class="tab-btn active" id="tnav-setup"      onclick="switchTab('setup')">⚙️ SETUP</button>
+  <button class="tab-btn"        id="tnav-checklist"  onclick="switchTab('checklist')">📋 USE BEFORE YOU GO</button>
+  <button class="tab-btn"        id="tnav-table"      onclick="switchTab('table')">📊 COMPARISON</button>
+  <button class="tab-btn"        id="tnav-look"       onclick="switchTab('look')">🔍 WHAT TO LOOK FOR</button>
+  <button class="tab-btn"        id="tnav-conclusion" onclick="switchTab('conclusion')">✅ CONCLUSION</button>
+</div>
+
+<!-- ══ PANEL: SETUP ══ -->
+<div id="panel-setup" class="panel active">
+<div class="wrap">
+
+  <p style="font-size:12px;color:var(--gray-light);margin-bottom:14px;line-height:1.6;">Add up to 5 properties. Select a zip code and the median price auto-fills — or enter your own. Choose a condition tier and the price updates to match what homes at that level actually sold for in this zip.</p>
+
+  <!-- PROPERTY CARDS -->
+  <div class="props-scroll">
+    <div class="props-row" id="props-row">
+      <!-- Injected by JS -->
+    </div>
+  </div>
+
+  <!-- LOAN SETTINGS -->
+  <div class="settings-bar">
+    <div class="sb-title">LOAN ASSUMPTIONS (applied to all properties)</div>
+    <div class="sb-row">
+      <div class="sb-field">
+        <label>Down Payment ($)</label>
+        <input type="number" id="down" value="15000" step="1000" min="0">
+      </div>
+      <div class="sb-field">
+        <label>Interest Rate (%)</label>
+        <input type="number" id="rate" value="6.75" step="0.125" min="3" max="12">
+      </div>
+      <div class="sb-field">
+        <label>Monthly Debts ($)</label>
+        <input type="number" id="debts" value="0" step="100" min="0">
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-compare" onclick="runCompare()">RUN COMPARISON →</button>
+
+</div>
+</div>
+
+<!-- ══ PANEL: CHECKLIST ══ -->
+<div id="panel-checklist" class="panel">
+<div class="wrap">
+  <div id="checklist-era-prompt" style="display:block;">
+    <div style="background:rgba(212,160,23,.08);border:1.5px solid var(--gold);border-radius:6px;padding:16px;margin-bottom:16px;text-align:center;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:white;margin-bottom:4px;">USE THIS BEFORE YOU GO</div>
+      <div style="font-size:12px;color:var(--gray-light);line-height:1.6;max-width:460px;margin:0 auto;">This checklist is generated from the zip code and the age of each home. It tells you exactly what to look for — what these homes almost certainly have, what it will cost you, and whether to negotiate or budget for it.</div>
+    </div>
+    <div id="era-selectors"></div>
+    <button class="btn-compare" id="btn-gen-checklist" onclick="generateChecklist()" style="display:none;">GENERATE MY CHECKLIST →</button>
+  </div>
+  <div id="checklist-output" style="display:none;"></div>
+</div>
+</div>
+
+<!-- ══ PANEL: TABLE ══ -->
+<div id="panel-table" class="panel">
+<div class="wrap">
+  <div id="table-empty" style="text-align:center;padding:32px;color:var(--gray);font-size:13px;">Run the comparison from the Setup tab first.</div>
+  <div class="compare-table-wrap" id="table-wrap" style="display:none;">
+    <table class="compare-table" id="compare-table"></table>
+  </div>
+</div>
+</div>
+
+<!-- ══ PANEL: WHAT TO LOOK FOR ══ -->
+<div id="panel-look" class="panel">
+<div class="wrap">
+  <div id="look-empty" style="text-align:center;padding:32px;color:var(--gray);font-size:13px;">Run the comparison from the Setup tab first.</div>
+  <div id="look-content"></div>
+</div>
+</div>
+
+<!-- ══ PANEL: CONCLUSION ══ -->
+<div id="panel-conclusion" class="panel">
+<div class="wrap">
+  <div id="conclusion-empty" style="text-align:center;padding:32px;color:var(--gray);font-size:13px;">Run the comparison from the Setup tab first.</div>
+  <div id="conclusion-content"></div>
+</div>
+</div>
+
+<div class="footer">
+  <p>2025 MARIS MLS · George Kindler · The Closing Pros LLC · Licensed Missouri Real Estate Agent</p>
+  <p><a href="index.html">All Tools</a></p>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+// PROPERTY COLORS — one per slot
+// ════════════════════════════════════════════════════════════════
+const PROP_COLORS = ['#D4A017','#5DCAA5','#8AB0D0','#E88080','#B0A0D8'];
+const PROP_LABELS = ['①','②','③','④','⑤'];
+
+// ════════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════════
+let properties = []; // [{zip,price,cond,addr}]
+let MAX_PROPS = 5;
+let lastResults = null;
+
+// ════════════════════════════════════════════════════════════════
+// BUILD ZIP OPTIONS
+// ════════════════════════════════════════════════════════════════
+const ZIP_OPTS = '<option value="">— Select zip —</option>' +
+  Object.entries(ZIP_DATA)
+    .sort(([,a],[,b])=>a.city<b.city?-1:1)
+    .map(([zip,d])=>`<option value="${zip}">${zip} — ${d.city}</option>`)
+    .join('');
+
+// ════════════════════════════════════════════════════════════════
+// INIT — add 2 default property slots
+// ════════════════════════════════════════════════════════════════
+function init(){
+  addProperty();
+  addProperty();
+
+  // Auto-fill from URL params
+  const z1=getParam('zip1'),pr1=getParam('price1');
+  const z2=getParam('zip2'),pr2=getParam('price2');
+  if(z1&&ZIP_DATA[z1]){
+    setSlotZip(0,z1);
+    if(pr1) document.getElementById('p-price-0').value=pr1;
+  }
+  if(z2&&ZIP_DATA[z2]){
+    setSlotZip(1,z2);
+    if(pr2) document.getElementById('p-price-1').value=pr2;
+  }
+  if(z1&&z2) setTimeout(runCompare,100);
+}
+
+// ════════════════════════════════════════════════════════════════
+// ADD / REMOVE PROPERTY SLOTS
+// ════════════════════════════════════════════════════════════════
+function addProperty(){
+  const idx=properties.length;
+  if(idx>=MAX_PROPS) return;
+  properties.push({zip:'',price:'',cond:'',addr:''});
+  renderPropertyCards();
+}
+
+function removeProperty(idx){
+  properties.splice(idx,1);
+  renderPropertyCards();
+}
+
+function renderPropertyCards(){
+  const row=document.getElementById('props-row');
+  row.innerHTML='';
+
+  properties.forEach((p,i)=>{
+    const card=document.createElement('div');
+    card.className='prop-card';
+    card.innerHTML=`
+      <div class="pc-top">
+        <div class="pc-num" style="background:${PROP_COLORS[i]};color:#0A1628;">${PROP_LABELS[i]}</div>
+        ${i>=2?`<button class="pc-remove" onclick="removeProperty(${i})" title="Remove">✕</button>`:'<div></div>'}
+      </div>
+      <div class="field">
+        <label>Zip Code</label>
+        <select id="p-zip-${i}" onchange="onZipChange(${i})">
+          ${ZIP_OPTS}
+        </select>
+      </div>
+      <div class="field">
+        <label>Sale Price ($)</label>
+        <input type="number" id="p-price-${i}" placeholder="Median auto-fills" min="50000" step="5000">
+      </div>
+      <div class="field">
+        <label>Condition</label>
+        <select id="p-cond-${i}" onchange="onCondChange(${i})">
+          <option value="">Any / custom</option>
+          <option value="aisis">As-Is</option>
+          <option value="mid">Mid-Tier</option>
+          <option value="move">Move-In Ready</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Address / Note</label>
+        <input type="text" id="p-addr-${i}" placeholder="Optional">
+      </div>`;
+    row.appendChild(card);
+
+    // Restore values
+    if(p.zip){document.getElementById('p-zip-'+i).value=p.zip;}
+    if(p.price){document.getElementById('p-price-'+i).value=p.price;}
+    if(p.cond){document.getElementById('p-cond-'+i).value=p.cond;}
+    if(p.addr){document.getElementById('p-addr-'+i).value=p.addr;}
+  });
+
+  // Add button if room
+  if(properties.length<MAX_PROPS){
+    const btn=document.createElement('button');
+    btn.className='add-prop-btn';
+    btn.innerHTML=`<div class="plus">+</div><div>ADD PROPERTY</div>`;
+    btn.onclick=addProperty;
+    row.appendChild(btn);
+  }
+}
+
+function setSlotZip(i,zip){
+  const el=document.getElementById('p-zip-'+i);
+  if(el){el.value=zip;onZipChange(i);}
+}
+
+function onZipChange(i){
+  const zip=document.getElementById('p-zip-'+i).value;
+  properties[i].zip=zip;
+  if(!zip) return;
+  const d=ZIP_DATA[zip];
+  const priceEl=document.getElementById('p-price-'+i);
+  if(!priceEl.value) priceEl.value=d.price;
+  properties[i].price=priceEl.value;
+}
+
+function onCondChange(i){
+  const zip=document.getElementById('p-zip-'+i).value;
+  const cond=document.getElementById('p-cond-'+i).value;
+  properties[i].cond=cond;
+  if(!zip||!cond) return;
+  const d=ZIP_DATA[zip];
+  const price=getTierPrice(d,cond);
+  document.getElementById('p-price-'+i).value=price;
+  properties[i].price=price;
+}
+
+// ════════════════════════════════════════════════════════════════
+// RUN COMPARISON
+// ════════════════════════════════════════════════════════════════
+function runCompare(){
+  // Collect current values
+  const valid=[];
+  properties.forEach((p,i)=>{
+    const zip=document.getElementById('p-zip-'+i)?.value||'';
+    const price=parseFloat(document.getElementById('p-price-'+i)?.value)||0;
+    const cond=document.getElementById('p-cond-'+i)?.value||'';
+    const addr=document.getElementById('p-addr-'+i)?.value||'';
+    if(zip&&price&&ZIP_DATA[zip]) valid.push({zip,price,cond,addr,idx:i});
+  });
+
+  if(valid.length<2){alert('Add at least 2 properties with zip codes and prices.');return;}
+
+  const down=parseFloat(document.getElementById('down').value)||15000;
+  const rate=parseFloat(document.getElementById('rate').value)||6.75;
+  const debts=parseFloat(document.getElementById('debts').value)||0;
+
+  // Calculate monthly costs for each
+  const results=valid.map(p=>({
+    ...p,
+    d:ZIP_DATA[p.zip],
+    m:calcTrueMonthly(p.price,down,rate,p.zip),
+    county:ZIP_COUNTY[p.zip]||'',
+    district:ZIP_DISTRICT[p.zip]||'',
+    taxRate:ZIP_TAX[p.zip]||0.0114,
+    color:PROP_COLORS[p.idx],
+    label:PROP_LABELS[p.idx],
+  }));
+
+  lastResults={results,down,rate,debts};
+
+  buildTable(results,down,rate);
+  buildWhatToLookFor(results);
+  buildConclusion(results,down);
+
+  // Switch to table tab
+  switchTab('table');
+
+  gaEvent('compare_run',{prop_count:results.length,zips:results.map(r=>r.zip).join(',')});
+}
+
+// ════════════════════════════════════════════════════════════════
+// BUILD COMPARISON TABLE
+// ════════════════════════════════════════════════════════════════
+function buildTable(results,down,rate){
+  document.getElementById('table-empty').style.display='none';
+  document.getElementById('table-wrap').style.display='block';
+
+  const n=results.length;
+
+  // Helper: find winner index (lower or higher based on flag)
+  const winIdx=(vals,lowerBetter)=>{
+    let best=lowerBetter?Infinity:-Infinity, idx=-1;
+    vals.forEach((v,i)=>{
+      if(v===null||v===undefined) return;
+      if(lowerBetter?v<best:v>best){best=v;idx=i;}
+    });
+    // Only mark winner if values differ
+    const unique=new Set(vals.filter(v=>v!==null));
+    return unique.size>1?idx:-1;
+  };
+
+  const hdr='<tr>'+
+    '<th>METRIC</th>'+
+    results.map(r=>`<th class="p-col" style="color:${r.color};">${r.label} ${r.d.city}</th>`).join('')+
+    '</tr>';
+
+  const row=(label,vals,cls,lowerBetter=true)=>{
+    const wi=winIdx(vals,lowerBetter);
+    return '<tr>'+
+      `<td class="ct-label">${label}</td>`+
+      vals.map((v,i)=>`<td class="p-col ${i===wi?'winner-cell':''}">`+
+        `<span class="ct-val ${cls(v,i)}">${v!==null?v:'—'}${i===wi?'<span class="winner-dot"></span>':''}</span>`+
+      `</td>`).join('')+
+      '</tr>';
+  };
+
+  const section=label=>`<tr class="section-hdr"><td colspan="${n+1}">${label}</td></tr>`;
+
+  const rows=[
+    section('PRICE & MONTHLY COST'),
+    row('Sale Price',results.map(r=>fmt$(r.price)),(v)=>'gold',true),
+    row('P&I /mo',results.map(r=>fmt$(r.m.pi)),(v)=>'',true),
+    row('Tax /mo',results.map(r=>fmt$(r.m.tax)),(v,i)=>results[i].m.tax<280?'green':'warn',true),
+    row('Insurance /mo',results.map(r=>fmt$(r.m.ins)),(v)=>'',true),
+    row('PMI /mo',results.map(r=>fmt$(r.m.pmi)),(v)=>v==='$0'?'green':'warn',true),
+    `<tr class="grand-row">`+
+      `<td style="font-weight:600;color:white;">ALL-IN /mo</td>`+
+      results.map((r,i)=>{
+        const wi=winIdx(results.map(r=>r.m.total),true);
+        return`<td class="p-col ${i===wi?'winner-cell':''}">`+
+          `<span class="ct-val lg" style="color:${r.m.total===Math.min(...results.map(x=>x.m.total))?'var(--green-light)':'var(--warn)'};">`+
+          fmt$(r.m.total)+
+          (i===wi?'<span class="winner-dot"></span>':'')+
+          `</span></td>`;
+      }).join('')+
+    `</tr>`,
+
+    section('MARKET COMPETITION'),
+    row('First Weekend Rate',results.map(r=>r.d.fw+'%'),(v,i)=>{
+      const fw=results[i].d.fw;
+      return fw>=50?'red':fw>=35?'warn':'green'; // lower = better for buyer
+    },true),
+    row('Avg Days on Market',results.map(r=>r.d.dom+'d'),(v,i)=>{
+      const dom=results[i].d.dom;
+      return dom>20?'green':dom>10?'warn':'red'; // more days = more buyer leverage
+    },false),
+    row('% Sold Above List',results.map(r=>r.d.above+'%'),(v,i)=>results[i].d.above<50?'green':'warn',true),
+    row('Sale/List Ratio',results.map(r=>r.d.splp+'%'),(v)=>'',true),
+
+    section('TAX & SCHOOL'),
+    row('Tax Rate',results.map(r=>((r.taxRate)*100).toFixed(2)+'%'),(v,i)=>results[i].taxRate<=0.0092?'green':'',true),
+    row('Monthly Tax',results.map(r=>fmt$(r.m.tax)),(v,i)=>results[i].m.tax<260?'green':'warn',true),
+    row('County',results.map(r=>r.county),(v)=>'',false),
+    row('School District',results.map(r=>r.district||'—'),(v)=>'',false),
+
+    section('30-YEAR PERSPECTIVE'),
+    row('Annual Cost',results.map(r=>fmt$(r.m.total*12)),(v)=>'',true),
+    row('30-Year Total',results.map(r=>fmt$(r.m.total*12*30)),(v)=>'',true),
+  ];
+
+  document.getElementById('compare-table').innerHTML=hdr+rows.join('');
+}
+
+// ════════════════════════════════════════════════════════════════
+// WHAT TO LOOK FOR — per zip, based on price tier + market data
+// ════════════════════════════════════════════════════════════════
+function buildWhatToLookFor(results){
+  document.getElementById('look-empty').style.display='none';
+
+  const html=results.map(r=>{
+    const d=r.d;
+    const price=r.price;
+    const zip=r.zip;
+    const flags=getWalkFlags(zip,price,d);
+    const vf=getValueFlag(d,zip);
+    let badgeCls='badge-warm',badgeTxt='ACTIVE';
+    if(d.fw>=50){badgeCls='badge-hot';badgeTxt='HOT — MOVE FAST';}
+    else if(d.fw<30){badgeCls='badge-slow';badgeTxt='BUYER HAS LEVERAGE';}
+
+    return`<div class="wtlf-card">
+      <div class="wtlf-header">
+        <div>
+          <div class="wtlf-zip" style="color:${r.color};">${r.label} ${zip} — ${d.city}</div>
+          <div class="wtlf-city">${r.addr||''} · ${r.county}</div>
+        </div>
+        <span class="wtlf-badge ${badgeCls}" style="background:rgba(212,160,23,.12);border:1px solid rgba(212,160,23,.3);color:var(--gold);">${badgeTxt}</span>
+      </div>
+      <div class="wtlf-items">
+        ${flags.map(f=>`<div class="wtlf-item" style="border-color:${f.color};">
+          <div class="wi-icon">${f.icon}</div>
+          <div class="wi-text"><strong>${f.title}</strong> — ${f.text}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('look-content').innerHTML=html;
+}
+
+// Generate walk flags based on zip characteristics
+function getWalkFlags(zip,price,d){
+  const flags=[];
+  const taxRate=ZIP_TAX[zip]||0.0114;
+  const county=ZIP_COUNTY[zip]||'';
+
+  // Competition flag
+  if(d.fw>=50){
+    flags.push({
+      icon:'⚡',color:'var(--warn)',
+      title:'High Competition Zone',
+      text:`${d.fw}% of homes here sell the first weekend. If you like it, do not sleep on it. Have pre-approval in hand. Waiving inspection contingency is common in this zip — know the risk before you do it.`
+    });
+  } else if(d.fw<30){
+    flags.push({
+      icon:'💰',color:'var(--green-light)',
+      title:'Negotiating Room',
+      text:`At ${d.fw}% first weekend rate and ${d.dom} average days, sellers here are more open to negotiation. A strong inspection report gives you leverage. Do not skip it.`
+    });
+  }
+
+  // Price tier flag
+  if(price<150000){
+    flags.push({
+      icon:'🔴',color:'var(--red-light)',
+      title:'Sub-$150K — Inspect Everything',
+      text:'Homes at this price point often have deferred maintenance that sellers cannot afford to fix. Budget for HVAC, roof, plumbing, and electrical issues. The inspection is not optional here — it is the most important $400 you will spend.'
+    });
+  } else if(price<250000){
+    flags.push({
+      icon:'⚠️',color:'var(--warn)',
+      title:'Entry-Level Price Tier',
+      text:'Expect some deferred maintenance. Focus your walkthrough on the major systems — HVAC age, water heater age, basement moisture, and the electrical panel. Cosmetic items are secondary.'
+    });
+  }
+
+  // County-specific flags
+  if(county==='St. Louis City'){
+    flags.push({
+      icon:'🧱',color:'var(--gold)',
+      title:'St. Louis City — Brick & Sewer',
+      text:'Pre-1960 brick construction is common. Check tuckpointing mortar — neglected joints allow water intrusion. Sewer lateral scopes are strongly recommended here. Clay tile laterals are still present in many city neighborhoods and repair can run $8,000–$15,000.'
+    });
+  }
+  if(county==='Jefferson County'){
+    flags.push({
+      icon:'💵',color:'var(--green-light)',
+      title:'Jefferson County Tax Advantage',
+      text:`Tax rate here is ${(taxRate*100).toFixed(2)}% — lower than St. Louis County. On this price point that saves you ${fmt$(Math.round((price*(0.0114-taxRate))/12))}/month vs. a comparable St. Louis County address. That is real money.`
+    });
+  }
+  if(county==='St. Charles County'){
+    flags.push({
+      icon:'💵',color:'var(--green-light)',
+      title:'St. Charles County Tax Advantage',
+      text:`Lowest tax rate in the metro at ${(taxRate*100).toFixed(2)}%. On this price point that saves ${fmt$(Math.round((price*(0.0114-taxRate))/12))}/month vs. St. Louis County. Worth factoring into your comparison.`
+    });
+  }
+
+  // High-competition specific advice
+  if(d.above>=70){
+    flags.push({
+      icon:'📋',color:'var(--warn)',
+      title:'Expect Multiple Offers',
+      text:`${d.above}% of homes in this zip sold at or above list price. An escalation clause may be appropriate. Ask George whether offering above asking makes sense at the current median — in some zips it is necessary, in others it is unnecessary.`
+    });
+  }
+
+  // Federal Pacific / older homes
+  if(zip==='63125'||zip==='63123'||zip==='63031'||zip==='63033'||zip==='63116'||zip==='63109'||zip==='63104'||zip==='63118'){
+    flags.push({
+      icon:'⚡',color:'var(--red-light)',
+      title:'Federal Pacific Panel Risk',
+      text:'Homes in this zip were commonly built in the 1950s–1970s, when Federal Pacific Stab-Lok panels were standard. These have a documented failure rate and many insurers require replacement before issuing a policy. Check the panel age and brand on your walkthrough.'
+    });
+  }
+
+  // School district note
+  const district=ZIP_DISTRICT[zip];
+  if(district){
+    flags.push({
+      icon:'🏫',color:'var(--gray)',
+      title:'School District: '+district,
+      text:'School boundaries can vary by street — do not assume. Before making an offer, verify the exact school assignment for the specific address at the district website. Boundaries have changed in several St. Louis County districts in the past five years.'
+    });
+  }
+
+  // Generic walkthrough reminder
+  flags.push({
+    icon:'🔧',color:'var(--border)',
+    title:'On Your Walkthrough',
+    text:'Look up: roof age and condition, HVAC brand/age, water heater age, basement moisture or efflorescence, electrical panel brand, visible cracks in foundation walls. Bring a flashlight. Take photos of everything. These feed directly into the Cost Guide tool.'
+  });
+
+  return flags.slice(0,6); // cap at 6 per property
+}
+
+// ════════════════════════════════════════════════════════════════
+// BUILD CONCLUSION
+// ════════════════════════════════════════════════════════════════
+function buildConclusion(results,down){
+  document.getElementById('conclusion-empty').style.display='none';
+
+  // Find lowest monthly cost winner
+  const sorted=[...results].sort((a,b)=>a.m.total-b.m.total);
+  const winner=sorted[0];
+  const runnerUp=sorted[1];
+  const monthDiff=runnerUp.m.total-winner.m.total;
+  const annualDiff=monthDiff*12;
+  const thirtyYearDiff=annualDiff*30;
+
+  // Build summary rows
+  const summaryRows=results.map(r=>{
+    const isWinner=r.zip===winner.zip&&r.price===winner.price;
+    return`<div class="cs-row" style="${isWinner?'border-left:3px solid var(--green-light);':''}">
+      <div>
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:13px;color:${r.color};">${r.label}</span>
+        <span class="cs-label" style="margin-left:8px;">${r.d.city} · ${r.county}</span>
+      </div>
+      <span class="cs-val" style="color:${isWinner?'var(--green-light)':'white'};">${fmt$(r.m.total)}/mo</span>
+    </div>`;
+  }).join('');
+
+  const html=`
+    <div class="winner-banner">
+      <div class="wb-label">LOWEST TRUE MONTHLY COST</div>
+      <div class="wb-winner" style="color:${winner.color};">${winner.label} ${winner.zip} — ${winner.d.city}</div>
+      <div class="wb-reason">
+        ${fmt$(winner.m.total)}/month all-in at ${fmt$(winner.price)} · ${winner.county} · ${(winner.taxRate*100).toFixed(2)}% tax rate.
+        ${monthDiff>0?`This is <strong>${fmt$(monthDiff)}/month cheaper</strong> than the next option — that is ${fmt$(annualDiff)}/year and ${fmt$(thirtyYearDiff)} over the life of the loan.`:''}
+      </div>
+    </div>
+
+    <!-- MICRO-EDUCATION TRIGGERS FOR THIS COMPARISON -->
+    <div class="me-block">${buildCompareTriggers(results,down)}</div>
+
+    <div class="conclusion-card">
+      <div class="cc-title">ALL PROPERTIES — MONTHLY COST RANKED</div>
+      <div class="comparison-summary">${summaryRows}</div>
+    </div>
+
+    ${monthDiff>0?`<div class="savings-box">
+      <div class="sb-label">30-Year Savings vs. Most Expensive Option</div>
+      <div class="sb-val">${fmt$(thirtyYearDiff)}</div>
+      <div class="sb-sub">${fmt$(annualDiff)}/year · ${fmt$(monthDiff)}/month</div>
+    </div>`:''}
+
+    <div class="conclusion-card">
+      <div class="cc-title">WHAT THE NUMBERS DON'T TELL YOU</div>
+      <p style="font-size:12px;color:var(--text);line-height:1.7;">
+        The comparison table gives you the financial picture. What it cannot give you is the neighborhood feel, the commute at 7am, the school quality beyond the district name, or whether the house has problems hiding behind the listing photos. The Cost Guide tool flags what to look for on your walkthrough. George can tell you what the numbers mean for the specific address — and whether the price reflects what the market actually supports.
+      </p>
+    </div>
+
+    <div class="cta-box">
+      <h3>READY TO MAKE A MOVE?</h3>
+      <p>13 years of St. Louis real estate. He has seen every zip code on this list from both sides of the table. A 10-minute call tells you which of these is actually the right fit.</p>
+      <a href="tel:3144351087" class="btn-call">📞 CALL GEORGE — 314.435.1087</a>
+    </div>
+    <a href="home-cost.html" class="btn-outline">🔧 GO TO COST GUIDE — INSPECT THESE HOMES →</a>
+    <p style="font-size:10px;color:var(--gray);text-align:center;margin-top:12px;line-height:1.6;">Data: 2025 MARIS MLS · ${down?fmt$(down)+' down':''} · George Kindler · The Closing Pros LLC</p>
+  `;
+
+  document.getElementById('conclusion-content').innerHTML=html;
+}
+
+// ════════════════════════════════════════════════════════════════
+// ERA DEFINITIONS
+// ════════════════════════════════════════════════════════════════
+const ERAS = [
+  {id:'pre1950',  label:'Before 1950', sub:'1900s–1949', risk:'HIGH RISK ERA',    riskCls:'risk-high'},
+  {id:'e1950',    label:'1950 – 1979', sub:'Post-war to Carter era', risk:'HIGH RISK ERA', riskCls:'risk-high'},
+  {id:'e1980',    label:'1980 – 1999', sub:'Reagan to Y2K', risk:'MEDIUM RISK',   riskCls:'risk-med'},
+  {id:'e2000',    label:'2000 – Present', sub:'Modern construction', risk:'LOWER RISK', riskCls:'risk-low'},
+];
+
+// ════════════════════════════════════════════════════════════════
+// CHECKLIST ITEM DEFINITIONS
+// Era: array of era ids that trigger this item
+// County: array of county strings (or 'all')
+// Priority: critical / high / medium / low
+// Budget: {low, high, note, negotiate, maintain}
+// ════════════════════════════════════════════════════════════════
+const CHECKLIST_ITEMS = [
+
+  // ── PRE-1950 ITEMS ───────────────────────────────────────────
+  {
+    id:'knob-tube', era:['pre1950'],county:'all',priority:'critical',
+    name:'Knob & Tube Wiring',
+    desc:'Standard in homes built before 1950. Ungrounded, no insulation on conductors, fire risk if covered with insulation or overloaded.',
+    prompt:'Look for ceramic knobs on joists in the basement and attic, cloth-wrapped wires.',
+    budget:{low:8000,high:18000,negotiate:'Full rewire cost is negotiable as a price reduction or seller credit — get a licensed electrician estimate first.',maintain:'Many insurers will not issue a policy on active knob-and-tube. Get this resolved before closing.'}
+  },
+  {
+    id:'lead-pipes', era:['pre1950'],county:'all',priority:'critical',
+    name:'Lead Supply Pipes',
+    desc:'Lead pipes were standard before 1950. Even partial lead service lines are a health concern. St. Louis City has an active replacement program but it only covers the street to the meter.',
+    prompt:'Check under the kitchen sink and at the main shutoff — lead pipes are dull gray and soft enough to scratch with a key.',
+    budget:{low:2000,high:8000,negotiate:'Seller should credit or replace. Do not accept "it has been like this for 50 years" as an answer.',maintain:'Filter does not fully solve this. Budget for full replacement within 2 years.'}
+  },
+  {
+    id:'galvanized', era:['pre1950','e1950'],county:'all',priority:'high',
+    name:'Galvanized Steel Pipes',
+    desc:'Corrodes from the inside out. Reduces water pressure over time and eventually fails. Common in pre-1960 construction.',
+    prompt:'Look at exposed pipes in basement — galvanized is dull gray with visible rust at joints. Copper is orange-brown. PVC is white.',
+    budget:{low:3000,high:12000,negotiate:'Factor into offer as a deferred maintenance item. Get a plumber to assess how much original galvanized remains.',maintain:'Budget for full replacement within 5 years if significant galvanized is present.'}
+  },
+  {
+    id:'lead-paint', era:['pre1950','e1950'],county:'all',priority:'high',
+    name:'Lead Paint',
+    desc:'Any home built before 1978 may have lead paint. Pre-1950 homes almost certainly do. Intact lead paint is manageable — deteriorating lead paint is a hazard.',
+    prompt:'Check window sills, doors, and trim for chipping or chalking paint. These are the highest-risk surfaces.',
+    budget:{low:1000,high:6000,negotiate:'Sellers must disclose known lead paint. If there are children in the home, lead testing ($300–500) before making an offer is worth it.',maintain:'Encapsulation (painting over intact lead) is an acceptable approach. Full abatement is only required if the paint is deteriorating.'}
+  },
+  {
+    id:'plaster-walls', era:['pre1950'],county:'all',priority:'medium',
+    name:'Plaster Walls',
+    desc:'Plaster is durable but cracks over time with foundation movement and settling. Repairs are more labor-intensive than drywall patches.',
+    prompt:'Look for hairline cracks, especially around door frames and windows. Horizontal cracks are more serious than vertical.',
+    budget:{low:500,high:4000,negotiate:'Cosmetic only unless cracks are wide or structural. Get context on foundation before worrying about plaster.',maintain:'Budget $500–$1,500 for cosmetic plaster repairs over the first few years.'}
+  },
+  {
+    id:'radiator-heat', era:['pre1950'],county:'all',priority:'medium',
+    name:'Radiator / Boiler Heat System',
+    desc:'Common in pre-1950 construction. Can be efficient if maintained. Issues include leaks, uneven heat distribution, and expensive boiler replacement.',
+    prompt:'Look for cast iron radiators in each room. Ask seller when boiler was last serviced. Check for rust staining around radiator valves.',
+    budget:{low:4000,high:12000,negotiate:'Boiler replacement is a negotiating point if it is near end of life (20+ years). Budget $4K–$8K for boiler, $8K–$12K for conversion to forced air.',maintain:'Annual service call ($150–$300) extends boiler life significantly.'}
+  },
+
+  // ── CITY-SPECIFIC ITEMS ──────────────────────────────────────
+  {
+    id:'sewer-scope', era:['pre1950','e1950','e1980'],county:'St. Louis City',priority:'critical',
+    name:'Sewer Lateral — Scope Required',
+    desc:'Pre-1990 city homes frequently have original clay tile sewer laterals. Tree root infiltration and pipe collapse are common. This is the single most expensive hidden defect in St. Louis City.',
+    prompt:'You cannot see this from inside the house. A sewer scope ($300–400) is non-negotiable on any pre-1990 city home.',
+    budget:{low:3000,high:15000,negotiate:'A failed sewer scope is one of the strongest negotiating positions you can have. Seller either fixes it or reduces the price. Do not close without this.',maintain:'Even a passing scope should be re-checked every 5–7 years in older city homes.'}
+  },
+  {
+    id:'tuckpointing', era:['pre1950','e1950','e1980'],county:'St. Louis City',priority:'high',
+    name:'Tuckpointing — Brick Mortar',
+    desc:'St. Louis brick homes require periodic mortar repointing. Neglected joints allow water infiltration, which causes interior water damage and eventually structural deterioration.',
+    prompt:'Stand back and look at the mortar joints on the exterior. Failed mortar appears recessed, crumbling, or missing entirely. Check the chimney closely.',
+    budget:{low:2000,high:20000,negotiate:'Spot tuckpointing ($2K–$5K) vs. full façade ($10K–$20K). The difference matters. Get a mason to give you a scope before negotiating.',maintain:'Well-maintained tuckpointing lasts 25–30 years. Neglected joints cause exponential damage.'}
+  },
+
+  // ── 1950–1979 ITEMS ──────────────────────────────────────────
+  {
+    id:'fed-pacific', era:['e1950'],county:'all',priority:'critical',
+    name:'Federal Pacific / Zinsco Panel',
+    desc:'Manufactured 1950s–1980s. Documented failure rate — breakers do not trip under overload, creating fire risk. Many insurance companies require replacement before issuing a policy.',
+    prompt:'Look at the electrical panel. Federal Pacific panels say "Stab-Lok" on the breakers. Zinsco panels have colorful breakers. Both are red flags.',
+    budget:{low:2500,high:8000,negotiate:'Panel replacement is a legitimate ask. Get a licensed electrician quote. Some buyers use this to negotiate a credit rather than requiring pre-closing work.',maintain:'Do not delay this. This is a safety issue, not a cosmetic one.'}
+  },
+  {
+    id:'asbestos', era:['e1950'],county:'all',priority:'high',
+    name:'Asbestos — Floor Tile, Insulation, Ductwork',
+    desc:'Asbestos was used extensively in 1950s–1970s construction. Common locations: 9x9 floor tiles, pipe insulation (white or gray wrap), duct insulation, popcorn ceilings, and roof shingles.',
+    prompt:'9x9 inch floor tiles are almost certainly asbestos. White or gray wrap on pipes in the basement is likely asbestos insulation. Do not disturb either without testing.',
+    budget:{low:500,high:10000,negotiate:'Testing is $200–$400. If present and intact, encapsulation (leaving in place) is acceptable. If disturbed or planned for removal, abatement runs $2K–$10K.',maintain:'Intact asbestos is not an immediate health hazard. The risk comes from disturbing it.'}
+  },
+  {
+    id:'hvac-age-50s', era:['e1950','e1980'],county:'all',priority:'high',
+    name:'HVAC System — Age & Condition',
+    desc:'HVAC systems have a 15–20 year useful life. A 1970s or 1980s system is either already replaced or overdue. Even a system from the early 2000s may be at end of life.',
+    prompt:'Look for the manufacturing date on the furnace and AC compressor data plate (usually inside the unit). Units over 15 years should be budgeted for replacement.',
+    budget:{low:6500,high:14000,negotiate:'An aging HVAC is a legitimate negotiating point. Get an HVAC contractor to assess the system before making your final offer.',maintain:'Annual service ($150–$250) extends life. Once a system hits 18+ years, budget for replacement within 2–3 years.'}
+  },
+  {
+    id:'windows-50s', era:['e1950'],county:'all',priority:'medium',
+    name:'Single-Pane or Aluminum Windows',
+    desc:'1950s–1970s windows are typically aluminum frame single-pane. Poor insulation, condensation issues, and security concerns. Not an emergency but a quality-of-life and utility cost factor.',
+    prompt:'Check window frames — aluminum is gray and thin. Look for condensation between panes (failed seal on double-pane) or single-pane glass with no space between layers.',
+    budget:{low:4000,high:15000,negotiate:'Window replacement is rarely a seller obligation but a good argument for a lower offer if all windows need replacement.',maintain:'Budget $300–$600 per window for vinyl replacement. Prioritize south and west facing windows for energy savings.'}
+  },
+
+  // ── 1980–1999 ITEMS ──────────────────────────────────────────
+  {
+    id:'poly-pipe', era:['e1980'],county:'all',priority:'critical',
+    name:'Polybutylene Pipes',
+    desc:'Used 1978–1995. Class action settled — poly pipe degrades from chlorine in municipal water and fails without warning. A flood risk, not a slow leak.',
+    prompt:'Poly pipe is gray, blue, or black plastic tubing. Check under sinks, at the water heater, and at the main shutoff. Also check the exterior spigot connections.',
+    budget:{low:4000,high:15000,negotiate:'Poly pipe is a material defect with a known failure history. Full replacement is a reasonable demand or offset. Do not accept partial replacement.',maintain:'There is no safe way to maintain poly pipe indefinitely. Plan for full replacement.'}
+  },
+  {
+    id:'roof-80s', era:['e1980','e1950'],county:'all',priority:'high',
+    name:'Roof — Age & Condition',
+    desc:'Asphalt shingles last 20–25 years. A home from the 1980s or 1990s with an original roof is overdue. A replacement roof that is 15+ years old should be budgeted for replacement.',
+    prompt:'Look for curling, cupping, or missing shingles. Granules in the gutters indicate shingle deterioration. Ask seller for roof age and any permit history.',
+    budget:{low:8000,high:18000,negotiate:'Roof condition is one of the most common negotiating points. An inspection report with a remaining useful life estimate is your documentation.',maintain:'A well-maintained roof with annual inspections ($150) and prompt repair of missing shingles can extend life 3–5 years beyond average.'}
+  },
+  {
+    id:'deck-80s', era:['e1980','e1950'],county:'all',priority:'medium',
+    name:'Deck / Exterior Wood Structures',
+    desc:'Wood decks built before 2004 often used CCA-treated lumber (arsenic-based). Post-2004 decks use safer ACQ or composite materials. Older decks also have structural concerns from weathering.',
+    prompt:'Check deck ledger board attachment to house — this is where failures start. Look for rot at post bases, loose railings, and deteriorating fasteners.',
+    budget:{low:2000,high:12000,negotiate:'Deck repair is a maintenance item. Major structural issues are negotiating points. A structural deck assessment costs $200–$400.',maintain:'Annual sealing and staining extends deck life. Ledger board inspections should be done every 5 years.'}
+  },
+
+  // ── 2000–PRESENT ITEMS ───────────────────────────────────────
+  {
+    id:'water-htr-2000', era:['e2000'],county:'all',priority:'medium',
+    name:'Water Heater — Age Check',
+    desc:'Standard water heaters last 8–12 years. If the home was built in 2005–2015 and has the original water heater, it may be at or past end of life.',
+    prompt:'Check the data plate on the water heater for manufacture date. The first four digits of the serial number are often the year and week of manufacture.',
+    budget:{low:800,high:3500,negotiate:'A water heater at or past useful life is a minor negotiating point. Often easier to ask for a $1,000 credit than require replacement.',maintain:'Annual flushing ($0 if DIY) extends life. Anode rod replacement every 5 years adds 3–5 years of useful life.'}
+  },
+  {
+    id:'hvac-2000', era:['e2000'],county:'all',priority:'medium',
+    name:'HVAC — Service History',
+    desc:'Modern HVAC systems are more efficient but still require service. A home with no documented service history likely has a clogged filter, dirty coils, and reduced efficiency.',
+    prompt:'Ask seller for HVAC service records. Check the filter — a dirty filter is a sign of deferred maintenance. Look for rust on the indoor air handler.',
+    budget:{low:150,high:14000,negotiate:'A well-maintained HVAC in a 2000s home should not be a major concern. An unmaintained system may have shortened its own life — get an HVAC assessment.',maintain:'Annual service ($150–$250) is the single best investment for HVAC longevity.'}
+  },
+  {
+    id:'roof-2000', era:['e2000'],county:'all',priority:'low',
+    name:'Roof — Age Awareness',
+    desc:'If the home was built 2000–2010 and has the original roof, it is approaching the end of its useful life. 2010–present homes should have 5–15 years of life remaining.',
+    prompt:'Ask seller for roof age and any permits. Look for granules in the gutters and at downspout splash blocks.',
+    budget:{low:8000,high:18000,negotiate:'A roof with 5+ years remaining is not a negotiating point. A roof at end of life is.',maintain:'Annual inspections catch minor issues before they become leaks.'}
+  },
+  {
+    id:'sump-pump', era:['e1950','e1980','e2000'],county:'all',priority:'medium',
+    name:'Sump Pump & Basement Moisture',
+    desc:'St. Louis clay soils create significant hydrostatic pressure. Basement moisture is the most common major defect across all eras. A sump pump is not a red flag — a sump pump that has never run, or has no battery backup, is.',
+    prompt:'Check the sump pit — is there a pump? Is there a backup battery? Look for efflorescence (white mineral deposits) on basement walls, which indicates past water intrusion.',
+    budget:{low:300,high:30000,negotiate:'Minor seepage is a maintenance item. Active water intrusion or a failed drain tile system is a major negotiating point ($10K–$30K to remediate).',maintain:'Sump pump replacement ($300–$800) every 7–10 years. Battery backup ($200–$400) is strongly recommended in St. Louis.'}
+  },
+
+  // ── JEFFERSON COUNTY SPECIFIC ────────────────────────────────
+  {
+    id:'septic', era:['pre1950','e1950','e1980','e2000'],county:'Jefferson County',priority:'high',
+    name:'Septic System — Verification Required',
+    desc:'Many Jefferson County properties outside Arnold and Festus city limits use septic systems rather than municipal sewer. A failed or aging septic is a major expense.',
+    prompt:'Ask the listing agent directly: is this property on city sewer or septic? If septic, ask for the last inspection date and pump-out record.',
+    budget:{low:5000,high:25000,negotiate:'A septic inspection ($300–$500) should be a condition of any offer on a property with a septic system. Failed systems are full negotiating leverage.',maintain:'Septic systems should be pumped every 3–5 years ($300–$500 per pump-out). Budget for full replacement after 25–30 years.'}
+  },
+];
+
+// ════════════════════════════════════════════════════════════════
+// CHECKLIST STATE — persisted to localStorage
+// ════════════════════════════════════════════════════════════════
+const LS_KEY = 'stl_checklist_v1';
+
+function loadChecklistState(){
+  try{return JSON.parse(localStorage.getItem(LS_KEY))||{};}
+  catch(e){return {};}
+}
+
+function saveChecklistState(state){
+  try{localStorage.setItem(LS_KEY,JSON.stringify(state));}
+  catch(e){}
+}
+
+let checklistState = loadChecklistState();
+// checklistState structure:
+// { propKey: { eraId: 'e1950', items: { itemId: 'ok'|'warn'|'flag'|null } } }
+
+// ════════════════════════════════════════════════════════════════
+// ERA SELECTOR — shown when checklist tab is opened
+// ════════════════════════════════════════════════════════════════
+function buildEraSelectors(){
+  const wrap=document.getElementById('era-selectors');
+  wrap.innerHTML='';
+
+  // Collect valid properties
+  const valid=[];
+  properties.forEach((p,i)=>{
+    const zip=document.getElementById('p-zip-'+i)?.value||'';
+    const addr=document.getElementById('p-addr-'+i)?.value||'';
+    if(zip&&ZIP_DATA[zip]) valid.push({zip,addr,idx:i,city:ZIP_DATA[zip].city});
+  });
+
+  if(valid.length===0){
+    wrap.innerHTML='<div style="text-align:center;padding:24px;color:var(--gray);font-size:13px;">Add at least one property with a zip code in the Setup tab first.</div>';
+    return;
+  }
+
+  valid.forEach(p=>{
+    const propKey=`p${p.idx}_${p.zip}`;
+    const saved=checklistState[propKey]||{};
+    const color=PROP_COLORS[p.idx];
+
+    const card=document.createElement('div');
+    card.className='era-selector-card';
+    card.innerHTML=`
+      <div class="esc-header">
+        <div class="esc-num" style="background:${color};color:#0A1628;">${PROP_LABELS[p.idx]}</div>
+        <div>
+          <div class="esc-title">${p.zip} — ${p.city}</div>
+          <div class="esc-sub">${p.addr||'When was this home built?'}</div>
+        </div>
+      </div>
+      <div class="era-tiles">
+        ${ERAS.map(era=>`
+          <div class="era-tile ${saved.eraId===era.id?'selected':''}"
+               id="era-tile-${p.idx}-${era.id}"
+               onclick="selectEra(${p.idx},'${p.zip}','${era.id}')">
+            <div class="et-era">${era.label}</div>
+            <div class="et-label">${era.sub}</div>
+            <div class="et-risk ${era.riskCls}">${era.risk}</div>
+          </div>`).join('')}
+      </div>`;
+    wrap.appendChild(card);
+  });
+
+  checkGenButton();
+}
+
+function selectEra(propIdx, zip, eraId){
+  const propKey=`p${propIdx}_${zip}`;
+  if(!checklistState[propKey]) checklistState[propKey]={};
+  checklistState[propKey].eraId=eraId;
+  saveChecklistState(checklistState);
+
+  // Update tile selection
+  ERAS.forEach(era=>{
+    const tile=document.getElementById(`era-tile-${propIdx}-${era.id}`);
+    if(tile) tile.classList.toggle('selected', era.id===eraId);
+  });
+
+  checkGenButton();
+  gaEvent('era_selected',{prop_idx:propIdx,zip,era:eraId});
+}
+
+function checkGenButton(){
+  // Show generate button only if at least one property has an era selected
+  const valid=[];
+  properties.forEach((p,i)=>{
+    const zip=document.getElementById('p-zip-'+i)?.value||'';
+    if(zip&&ZIP_DATA[zip]) valid.push({zip,idx:i});
+  });
+  const anySelected=valid.some(p=>{
+    const propKey=`p${p.idx}_${p.zip}`;
+    return checklistState[propKey]?.eraId;
+  });
+  document.getElementById('btn-gen-checklist').style.display=anySelected?'block':'none';
+}
+
+// ════════════════════════════════════════════════════════════════
+// GENERATE CHECKLIST
+// ════════════════════════════════════════════════════════════════
+function generateChecklist(){
+  // Collect valid properties with eras
+  const propList=[];
+  properties.forEach((p,i)=>{
+    const zip=document.getElementById('p-zip-'+i)?.value||'';
+    const addr=document.getElementById('p-addr-'+i)?.value||'';
+    if(!zip||!ZIP_DATA[zip]) return;
+    const propKey=`p${i}_${zip}`;
+    const eraId=checklistState[propKey]?.eraId;
+    if(!eraId) return;
+    propList.push({zip,addr,idx:i,city:ZIP_DATA[zip].city,county:ZIP_COUNTY[zip]||'',eraId,propKey});
+  });
+
+  if(propList.length===0){alert('Select a build era for at least one property first.');return;}
+
+  // Hide era prompt, show output
+  document.getElementById('checklist-era-prompt').style.display='none';
+  document.getElementById('checklist-output').style.display='block';
+
+  renderChecklistOutput(propList);
+  gaEvent('checklist_generated',{prop_count:propList.length});
+}
+
+function renderChecklistOutput(propList){
+  const wrap=document.getElementById('checklist-output');
+
+  const html=`
+    <div style="background:rgba(212,160,23,.08);border:1.5px solid var(--gold);border-radius:6px;padding:14px 16px;margin-bottom:16px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:white;margin-bottom:4px;">USE THIS BEFORE YOU GO</div>
+      <div style="font-size:11px;color:var(--gray-light);line-height:1.6;">Tap each item, mark what you find, and get the budget range instantly. Items marked 🚩 are your negotiating points. Items marked ⚠️ are maintenance you need to budget for. Saved automatically to this device.</div>
+    </div>
+
+    ${propList.map(p=>renderPropChecklist(p)).join('')}
+
+    <div class="cl-actions">
+      <button class="cl-action-btn cla-save" onclick="saveChecklistState(checklistState);showSaved()">💾 SAVED TO DEVICE</button>
+      <button class="cl-action-btn cla-email" onclick="emailChecklist()">📧 EMAIL TO MYSELF</button>
+      <button class="cl-action-btn cla-reset" onclick="resetChecklist()">↺ START OVER</button>
+    </div>
+    <p style="font-size:10px;color:var(--gray);text-align:center;margin-top:8px;line-height:1.5;">Checklist is saved on this device. It will be here when you get back from the showing.</p>
+  `;
+
+  wrap.innerHTML=html;
+}
+
+function renderPropChecklist(p){
+  const era=ERAS.find(e=>e.id===p.eraId);
+  const items=getChecklistItems(p.eraId,p.county);
+  const saved=checklistState[p.propKey]||{};
+  const statuses=saved.items||{};
+
+  // Calculate totals from flagged/warned items
+  let totalLow=0,totalHigh=0,flagCount=0;
+  items.forEach(item=>{
+    const status=statuses[item.id];
+    if(status==='flag'||status==='warn'){
+      totalLow+=item.budget.low;
+      totalHigh+=item.budget.high;
+      if(status==='flag') flagCount++;
+    }
+  });
+
+  return`
+    <div class="cl-prop-block" id="clblock-${p.propKey}">
+      <div class="cl-prop-header">
+        <div class="clph-left">
+          <div class="clph-num" style="background:${PROP_COLORS[p.idx]};color:#0A1628;">${PROP_LABELS[p.idx]}</div>
+          <div>
+            <div class="clph-title">${p.zip} — ${p.city}</div>
+            <div class="clph-sub">${p.addr||p.county} · ${p.county}</div>
+          </div>
+        </div>
+        <span class="cl-era-badge">${era.label}</span>
+      </div>
+      <div class="cl-items">
+        ${items.map(item=>renderChecklistItem(item,p.propKey,statuses[item.id])).join('')}
+      </div>
+      ${(totalLow>0)?`
+      <div class="cl-summary">
+        <div>
+          <div class="cls-label">FLAGGED / ATTENTION ITEMS</div>
+          <div class="cls-total">$${totalLow.toLocaleString()} – $${totalHigh.toLocaleString()}</div>
+        </div>
+        ${flagCount>0?`<div class="cls-flags">🚩 ${flagCount} item${flagCount>1?'s':''} to negotiate</div>`:''}
+      </div>`:''}
+    </div>`;
+}
+
+function renderChecklistItem(item,propKey,currentStatus){
+  const priColors={critical:'pri-critical',high:'pri-high',medium:'pri-medium',low:'pri-low'};
+  const budgetVisible=(currentStatus==='flag'||currentStatus==='warn');
+
+  // Store item in lookup so onclick never needs to pass data through HTML attributes
+  if(!window._clItems) window._clItems={};
+  window._clItems[propKey+'_'+item.id]=item;
+
+  return`
+    <div class="cl-item ${currentStatus?'open':''}" id="cli-${propKey}-${item.id}">
+      <div class="cl-item-header" onclick="toggleClItem('${propKey}','${item.id}')">
+        <div class="cl-priority ${priColors[item.priority]||'pri-low'}"></div>
+        <div class="cl-item-text">
+          <div class="cl-item-name">${item.name}</div>
+          <div class="cl-item-desc">${item.desc}</div>
+        </div>
+        <div class="cl-item-expand">▼</div>
+      </div>
+      <div class="cl-status-wrap">
+        <div class="cl-status-prompt">📍 <strong>${item.prompt}</strong></div>
+        <div class="cl-status-tiles">
+          <div class="cst cst-ok ${currentStatus==='ok'?'selected':''}"
+               onclick="setItemStatus('${propKey}','${item.id}','ok')">
+            <div class="cst-icon">✅</div>
+            <div class="cst-label">LOOKS GOOD</div>
+          </div>
+          <div class="cst cst-warn ${currentStatus==='warn'?'selected':''}"
+               onclick="setItemStatus('${propKey}','${item.id}','warn')">
+            <div class="cst-icon">⚠️</div>
+            <div class="cst-label">NEEDS ATTENTION</div>
+          </div>
+          <div class="cst cst-flag ${currentStatus==='flag'?'selected':''}"
+               onclick="setItemStatus('${propKey}','${item.id}','flag')">
+            <div class="cst-icon">🚩</div>
+            <div class="cst-label">RED FLAG</div>
+          </div>
+        </div>
+        <div class="cl-budget ${budgetVisible?'visible':''}" id="clb-${propKey}-${item.id}">
+          <div class="cb-range">$${item.budget.low.toLocaleString()} – $${item.budget.high.toLocaleString()}</div>
+          ${currentStatus==='flag'?`<div class="cb-negotiate">🤝 NEGOTIATE: ${item.budget.negotiate}</div>`:''}
+          ${currentStatus==='warn'?`<div class="cb-maintain">📅 BUDGET FOR: ${item.budget.maintain}</div>`:''}
+        </div>
+      </div>
+    </div>`;
+}
+
+function getChecklistItems(eraId,county){
+  return CHECKLIST_ITEMS.filter(item=>{
+    const eraMatch=item.era.includes(eraId);
+    const countyMatch=item.county==='all'||item.county===county;
+    return eraMatch&&countyMatch;
+  }).sort((a,b)=>{
+    const order={critical:0,high:1,medium:2,low:3};
+    return order[a.priority]-order[b.priority];
+  });
+}
+
+function toggleClItem(propKey,itemId){
+  const el=document.getElementById(`cli-${propKey}-${itemId}`);
+  if(el) el.classList.toggle('open');
+}
+
+function setItemStatus(propKey,itemId,status){
+  // Look up item from cache built during render
+  const item=(window._clItems||{})[propKey+'_'+itemId];
+  if(!item) return;
+
+  // Update state
+  if(!checklistState[propKey]) checklistState[propKey]={};
+  if(!checklistState[propKey].items) checklistState[propKey].items={};
+  checklistState[propKey].items[itemId]=status;
+  saveChecklistState(checklistState);
+
+  // Update status tile selection
+  const wrap=document.getElementById(`cli-${propKey}-${itemId}`);
+  if(!wrap) return;
+  wrap.querySelectorAll('.cst').forEach(el=>el.classList.remove('selected'));
+  const selected=wrap.querySelector(`.cst-${status==='ok'?'ok':status==='warn'?'warn':'flag'}`);
+  if(selected) selected.classList.add('selected');
+
+  // Show/hide budget box
+  const budget=document.getElementById(`clb-${propKey}-${itemId}`);
+  if(budget){
+    budget.classList.toggle('visible',status==='flag'||status==='warn');
+    budget.innerHTML=`
+      <div class="cb-range">$${item.budget.low.toLocaleString()} – $${item.budget.high.toLocaleString()}</div>
+      ${status==='flag'?`<div class="cb-negotiate">🤝 NEGOTIATE: ${item.budget.negotiate}</div>`:''}
+      ${status==='warn'?`<div class="cb-maintain">📅 BUDGET FOR: ${item.budget.maintain}</div>`:''}`;
+  }
+
+  // Inject micro-education trigger for critical red-flag items
+  if(status==='flag'){
+    const triggerHtml=buildChecklistItemTrigger(itemId,status);
+    if(triggerHtml){
+      // Insert trigger after budget box if not already present
+      const triggerKey=`me-cl-${propKey}-${itemId}`;
+      if(!document.getElementById(triggerKey)){
+        const wrap=document.getElementById(`cli-${propKey}-${itemId}`);
+        if(wrap){
+          const triggerDiv=document.createElement('div');
+          triggerDiv.id=triggerKey;
+          triggerDiv.style.padding='0 14px 10px';
+          triggerDiv.innerHTML=triggerHtml;
+          wrap.appendChild(triggerDiv);
+        }
+      }
+    }
+  }
+
+  // Recalculate prop summary
+  refreshPropSummary(propKey);
+
+  gaEvent('checklist_item_set',{propKey,itemId,status});
+}
+
+function refreshPropSummary(propKey){
+  // Find all items for this prop block and recalculate totals
+  const block=document.getElementById(`clblock-${propKey}`);
+  if(!block) return;
+
+  const statuses=checklistState[propKey]?.items||{};
+  let totalLow=0,totalHigh=0,flagCount=0;
+
+  // Find which era/county this prop has
+  const parts=propKey.split('_');
+  const idx=parseInt(parts[0].replace('p',''));
+  const zip=parts[1];
+  const eraId=checklistState[propKey]?.eraId;
+  const county=ZIP_COUNTY[zip]||'';
+
+  if(!eraId) return;
+  const items=getChecklistItems(eraId,county);
+
+  items.forEach(item=>{
+    const status=statuses[item.id];
+    if(status==='flag'||status==='warn'){
+      totalLow+=item.budget.low;
+      totalHigh+=item.budget.high;
+      if(status==='flag') flagCount++;
+    }
+  });
+
+  // Update or create summary
+  let summary=block.querySelector('.cl-summary');
+  if(totalLow>0){
+    const html=`
+      <div>
+        <div class="cls-label">FLAGGED / ATTENTION ITEMS</div>
+        <div class="cls-total">$${totalLow.toLocaleString()} – $${totalHigh.toLocaleString()}</div>
+      </div>
+      ${flagCount>0?`<div class="cls-flags">🚩 ${flagCount} item${flagCount>1?'s':''} to negotiate</div>`:''}`;
+    if(summary){summary.innerHTML=html;}
+    else{
+      const div=document.createElement('div');
+      div.className='cl-summary';
+      div.innerHTML=html;
+      block.appendChild(div);
+    }
+  } else if(summary){
+    summary.remove();
+  }
+}
+
+function showSaved(){
+  const btn=document.querySelector('.cla-save');
+  if(btn){const orig=btn.textContent;btn.textContent='✓ SAVED';setTimeout(()=>btn.textContent=orig,1500);}
+}
+
+function resetChecklist(){
+  if(!confirm('Clear all checklist answers and start over?')) return;
+  checklistState={};
+  saveChecklistState(checklistState);
+  document.getElementById('checklist-era-prompt').style.display='block';
+  document.getElementById('checklist-output').style.display='none';
+  buildEraSelectors();
+}
+
+// ════════════════════════════════════════════════════════════════
+// EMAIL CHECKLIST
+// ════════════════════════════════════════════════════════════════
+function emailChecklist(){
+  let text='ST. LOUIS HOME BUYER CHECKLIST\n'+'═'.repeat(40)+'\n';
+  text+='Generated by George Kindler · The Closing Pros · 314.435.1087\n\n';
+
+  properties.forEach((p,i)=>{
+    const zip=document.getElementById('p-zip-'+i)?.value||'';
+    const addr=document.getElementById('p-addr-'+i)?.value||'';
+    if(!zip||!ZIP_DATA[zip]) return;
+    const propKey=`p${i}_${zip}`;
+    const eraId=checklistState[propKey]?.eraId;
+    if(!eraId) return;
+
+    const era=ERAS.find(e=>e.id===eraId);
+    const county=ZIP_COUNTY[zip]||'';
+    const items=getChecklistItems(eraId,county);
+    const statuses=checklistState[propKey]?.items||{};
+
+    text+=`${PROP_LABELS[i]} ${zip} — ${ZIP_DATA[zip].city} · ${era.label}\n`;
+    if(addr) text+=`Address: ${addr}\n`;
+    text+='─'.repeat(36)+'\n';
+
+    items.forEach(item=>{
+      const status=statuses[item.id];
+      const icon=status==='ok'?'✅':status==='warn'?'⚠️':status==='flag'?'🚩':'○';
+      text+=`${icon} ${item.name}\n`;
+      if(status==='flag'){
+        text+=`   NEGOTIATE: $${item.budget.low.toLocaleString()}–$${item.budget.high.toLocaleString()}\n`;
+        text+=`   ${item.budget.negotiate}\n`;
+      } else if(status==='warn'){
+        text+=`   BUDGET FOR: $${item.budget.low.toLocaleString()}–$${item.budget.high.toLocaleString()}\n`;
+      }
+    });
+
+    // Totals
+    let tLow=0,tHigh=0,flags=0;
+    items.forEach(item=>{
+      const s=statuses[item.id];
+      if(s==='flag'||s==='warn'){tLow+=item.budget.low;tHigh+=item.budget.high;}
+      if(s==='flag') flags++;
+    });
+    if(tLow>0){
+      text+=`\nESTIMATED RANGE: $${tLow.toLocaleString()} – $${tHigh.toLocaleString()}\n`;
+      if(flags>0) text+=`NEGOTIATING ITEMS: ${flags}\n`;
+    }
+    text+='\n';
+  });
+
+  text+='─'.repeat(36)+'\n';
+  text+='George Kindler · The Closing Pros LLC · 314.435.1087\n';
+  text+='Licensed Missouri Real Estate Agent · 13 Years';
+
+  const subject='Home Buyer Checklist — St. Louis Properties';
+  window.location.href=`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`;
+  gaEvent('checklist_emailed');
+}
+
+// ════════════════════════════════════════════════════════════════
+// TAB SWITCHING
+// ════════════════════════════════════════════════════════════════
+function switchTab(tab){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+  document.getElementById('tnav-'+tab).classList.add('active');
+  // Build era selectors fresh each time checklist tab opens
+  if(tab==='checklist'){
+    const hasOutput=document.getElementById('checklist-output').style.display==='block';
+    if(!hasOutput) buildEraSelectors();
+  }
+  window.scrollTo(0,0);
+  gaEvent('compare_tab_view',{tab});
+}
+
+// ════════════════════════════════════════════════════════════════
+// BADGE HELPERS
+// ════════════════════════════════════════════════════════════════
+// reuse from prep.html styles — inline here
+const styles=document.createElement('style');
+styles.textContent=`
+  .badge-hot{background:rgba(26,122,74,.2);color:#5DCAA5;border:1px solid rgba(93,202,165,.3);}
+  .badge-warm{background:rgba(212,160,23,.15);color:var(--gold);border:1px solid rgba(212,160,23,.3);}
+  .badge-slow{background:rgba(192,57,43,.15);color:#E88080;border:1px solid rgba(224,136,128,.3);}
+`;
+document.head.appendChild(styles);
+
+// ════════════════════════════════════════════════════════════════
+// MICRO-EDUCATION ENGINE
+// ════════════════════════════════════════════════════════════════
+function meTrigger(type, icon, short, detail){
+  const id='me-'+Math.random().toString(36).slice(2,7);
+  return`<div class="me-trigger me-${type}" id="${id}">
+    <div class="me-header" onclick="meToggle('${id}')">
+      <span class="me-icon">${icon}</span>
+      <span class="me-short">${short}</span>
+      <span class="me-expand">LEARN MORE ▼</span>
+    </div>
+    <div class="me-detail">${detail}</div>
+  </div>`;
+}
+
+function meToggle(id){
+  const el=document.getElementById(id);
+  if(!el) return;
+  const wasOpen=el.classList.contains('open');
+  el.classList.toggle('open',!wasOpen);
+  const expandEl=el.querySelector('.me-expand');
+  if(expandEl) expandEl.textContent=wasOpen?'LEARN MORE ▼':'CLOSE ▲';
+  if(!wasOpen) gtag('event','me_expanded',{trigger_id:id});
+}
+
+// Build triggers from comparison results — fires when runCompare() completes
+function buildCompareTriggers(results, down){
+  const triggers=[];
+
+  // ── ANY HOT MARKET ───────────────────────────────────────────
+  const hotProps=results.filter(r=>r.d.fw>=50);
+  if(hotProps.length>0){
+    const names=hotProps.map(r=>`${r.label} ${r.d.city}`).join(' and ');
+    triggers.push(meTrigger('danger','⚡',
+      `<strong>${names}</strong> — hot market. Buyers sometimes waive inspection to compete. Understand the risk before you do.`,
+      `Waiving your inspection to win a bidding war means you own every problem the house has — no recourse after closing. A better approach is a short inspection period (5–7 days) rather than no inspection. In most hot St. Louis markets, a well-written offer with a short window is competitive without giving up your only legal protection. <strong>Ask George before you waive anything.</strong>`
+    ));
+  }
+
+  // ── LARGE TAX GAP ───────────────────────────────────────────
+  if(results.length>=2){
+    const taxAmounts=results.map(r=>r.m.tax);
+    const maxTax=Math.max(...taxAmounts);
+    const minTax=Math.min(...taxAmounts);
+    const monthlyGap=maxTax-minTax;
+    if(monthlyGap>100){
+      const highProp=results.find(r=>r.m.tax===maxTax);
+      const lowProp=results.find(r=>r.m.tax===minTax);
+      triggers.push(meTrigger('caution','🏛️',
+        `<strong>Tax gap: ${fmt$(monthlyGap)}/month</strong> between ${lowProp.label} ${lowProp.d.city} and ${highProp.label} ${highProp.d.city}. Same price, different county — real money.`,
+        `Property tax rates in the St. Louis metro range from 0.92% (St. Charles County) to 1.32% (Kirkwood). At the same home price, you can pay <strong>${fmt$(monthlyGap)} more per month</strong> just by being in a different zip code. Over 30 years that is <strong>${fmt$(monthlyGap*12*30)}</strong>. This is not a minor line item — it is one of the biggest levers in your buying decision that most buyers never factor in until after closing.`
+      ));
+    }
+  }
+
+  // ── SUB-150K FINANCING RISK ──────────────────────────────────
+  const cheapProps=results.filter(r=>r.price<150000);
+  if(cheapProps.length>0){
+    triggers.push(meTrigger('danger','🏦',
+      `<strong>Financing risk below $150K:</strong> Lenders may require repairs before approving the loan — even after your offer is accepted.`,
+      `FHA and conventional loans require homes to meet minimum condition standards. Missing systems, exposed wiring, failed roofs, or significant structural issues can trigger repair requirements from your lender's appraiser. The seller may not be able or willing to complete those repairs. This can kill deals that looked clean on paper. <strong>At this price point, ask your lender what conditions would cause them to flag the appraisal before you make an offer.</strong> Do not wait for the appraisal to find out.`
+    ));
+  }
+
+  // ── LARGE 30-YEAR COST DIFFERENCE ────────────────────────────
+  if(results.length>=2){
+    const totals=results.map(r=>r.m.total);
+    const maxTotal=Math.max(...totals);
+    const minTotal=Math.min(...totals);
+    const thirtyYearGap=(maxTotal-minTotal)*12*30;
+    if(thirtyYearGap>40000){
+      triggers.push(meTrigger('tip','📅',
+        `<strong>${fmt$(thirtyYearGap)} difference over 30 years</strong> between the most and least expensive option here. That is a car, a college fund, or a full renovation.`,
+        `The monthly cost difference between your cheapest and most expensive option compounds significantly over a 30-year mortgage. <strong>${fmt$((maxTotal-minTotal))}/month</strong> may feel manageable — but ${fmt$(thirtyYearGap)} over the life of the loan is real wealth. That money either stays in your pocket or goes to a higher mortgage and tax bill. The comparison table shows you exactly where it goes.`
+      ));
+    }
+  }
+
+  // ── BUYER LEVERAGE OPPORTUNITY ───────────────────────────────
+  const leverageProps=results.filter(r=>r.d.fw<30&&r.d.dom>20);
+  if(leverageProps.length>0){
+    const names=leverageProps.map(r=>`${r.label} ${r.d.city}`).join(', ');
+    triggers.push(meTrigger('info','🤝',
+      `<strong>${names}</strong> — buyer leverage market. The data supports asking for concessions here.`,
+      `A first weekend rate under 30% with 20+ average days on market means sellers are not fielding multiple offers. This is where repair requests, closing cost contributions, and price reductions are realistic — not wishful thinking. Come in with documentation. A flagged inspection report gives you a defensible number to negotiate from. <strong>In a leverage market, the prepared buyer wins.</strong>`
+    ));
+  }
+
+  return triggers.join('');
+}
+
+// Build checklist item triggers — fires when buyer marks an item
+function buildChecklistItemTrigger(itemId, status){
+  // Only fire on red flag status for critical items
+  const criticalTriggers={
+    'fed-pacific': meTrigger('danger','🚫',
+      `<strong>Insurance alert:</strong> Many insurers will not issue a homeowner policy on a Federal Pacific panel. Verify coverage before you close.`,
+      `Call your insurance agent before making an offer on a home with a Federal Pacific Stab-Lok panel. Some insurers refuse to write new policies on these panels. Others will issue a policy but require replacement within 30–90 days of closing. If your lender requires proof of insurance before closing — and they do — a panel that cannot be insured can kill the deal at the last minute. Get this answered early.`
+    ),
+    'sewer': meTrigger('danger','🔭',
+      `<strong>Sewer scope is non-negotiable on this home.</strong> Do not make an offer without one — especially in St. Louis City.`,
+      `A sewer scope ($300–400) is a camera inspection of the lateral pipe from the house to the city main. In pre-1960 city homes, clay tile is common. Root infiltration and pipe collapse are frequently found. A failed scope is your strongest negotiating leverage — or a reason to walk. <strong>Request the scope as a condition of your offer. If the seller refuses, treat that as a red flag about what they know.</strong>`
+    ),
+    'knob-tube': meTrigger('danger','🏦',
+      `<strong>Knob and tube wiring affects both insurance and financing.</strong> Get clarity on both before you offer.`,
+      `Many insurance companies will not write a new homeowner policy on active knob and tube wiring. Some lenders also flag it during underwriting. If you cannot get insurance, you cannot close. Ask your insurance agent and lender before making an offer on a home with active knob and tube. If rewiring is required, factor the full cost ($8,000–$18,000) into your offer price.`
+    ),
+    'poly-pipe': meTrigger('danger','💧',
+      `<strong>Polybutylene pipe fails without warning.</strong> Budget for full replacement — partial replacement leaves risk in the walls.`,
+      `Poly pipe does not degrade slowly — it can fail suddenly at any fitting. There is no repair that addresses the underlying material problem. Full replacement is the only real solution. Do not accept partial replacement as a concession — it leaves unknown poly throughout the walls. <strong>Get a full replacement cost from a licensed plumber and use that number in your offer negotiation.</strong>`
+    ),
+  };
+  return criticalTriggers[itemId]||'';
+}
+
+// ════════════════════════════════════════════════════════════════
+// START
+// ════════════════════════════════════════════════════════════════
+init();
+</script>
+</body>
+</html>

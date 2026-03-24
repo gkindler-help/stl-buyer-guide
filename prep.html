@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open House Prep — St. Louis Buyer Guide</title>
+<meta name="description" content="Before you walk into that open house — know what you're walking into. Free St. Louis market data by zip code.">
+
+<!-- GA4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EEE14BZT9P"></script>
+<script>
+  window.dataLayer=window.dataLayer||[];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js',new Date());
+  gtag('config','G-EEE14BZT9P');
+</script>
+
+<script src="shared.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --navy:#0A1628;--navy-mid:#1B3A6B;--card:#162040;--deep:#0d1e3a;
+  --gold:#D4A017;--gold-light:#E8B820;--green:#1a7a4a;--green-light:#5DCAA5;
+  --red:#C0392B;--red-light:#E88080;--warn:#E8A020;
+  --gray:#8A9BB0;--gray-light:#B0C0D0;--cream:#F5F0E8;--border:#1e3060;--text:#c8d8e8;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--cream);min-height:100vh;}
+
+/* HEADER */
+.header{background:var(--navy);padding:13px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:500;}
+.hdr-l h1{font-family:'Bebas Neue',sans-serif;font-size:19px;color:white;letter-spacing:2px;line-height:1;}
+.hdr-l h1 span{color:var(--gold);}
+.hdr-l p{font-size:9px;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+.hdr-r a{font-family:'Bebas Neue',sans-serif;font-size:12px;color:var(--gold);letter-spacing:1px;text-decoration:none;}
+
+/* NAV PILLS */
+.tool-nav{background:var(--deep);padding:8px 16px;display:flex;gap:6px;overflow-x:auto;border-bottom:1px solid var(--border);}
+.tool-nav::-webkit-scrollbar{display:none;}
+.tn-pill{font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1px;padding:5px 12px;border-radius:20px;border:1px solid #3a5a9a;color:var(--gray-light);text-decoration:none;white-space:nowrap;transition:all .15s;}
+.tn-pill:hover{border-color:var(--gold);color:var(--gold);}
+.tn-pill.active{background:var(--gold);color:var(--navy);border-color:var(--gold);}
+
+/* MAIN */
+.wrap{max-width:600px;margin:0 auto;padding:20px 16px 60px;}
+
+/* HERO */
+.hero{text-align:center;padding:24px 0 20px;}
+.hero h2{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;color:white;line-height:1.1;margin-bottom:8px;}
+.hero h2 span{color:var(--gold);}
+.hero p{font-size:13px;color:var(--gray-light);line-height:1.7;max-width:400px;margin:0 auto;}
+
+/* SEARCH */
+.search-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:16px;margin-bottom:16px;}
+.sc-label{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1.5px;color:var(--gold);margin-bottom:8px;}
+.search-wrap{position:relative;}
+.search-input{width:100%;padding:11px 40px 11px 14px;background:var(--deep);border:1.5px solid #3a5a9a;border-radius:4px;font-family:'DM Sans',sans-serif;font-size:14px;color:white;}
+.search-input:focus{outline:none;border-color:var(--gold);}
+.search-input::placeholder{color:#5a7a9a;}
+.search-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#5a7a9a;pointer-events:none;}
+.search-results{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--deep);border:1px solid #3a5a9a;border-radius:4px;max-height:200px;overflow-y:auto;z-index:200;display:none;}
+.search-results.open{display:block;}
+.sr-item{padding:9px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border);}
+.sr-item:last-child{border-bottom:none;}
+.sr-item:hover{background:var(--card);}
+.sr-zip{font-family:'Bebas Neue',sans-serif;font-size:12px;color:var(--gold);margin-right:6px;letter-spacing:.5px;}
+.locate-btn{width:100%;margin-top:8px;padding:9px;background:transparent;border:1.5px solid #3a5a9a;border-radius:4px;font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;color:var(--gray-light);cursor:pointer;transition:all .15s;}
+.locate-btn:hover{border-color:var(--gold);color:var(--gold);}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:32px 16px;color:var(--gray);}
+.es-icon{font-size:40px;margin-bottom:10px;opacity:.3;}
+.es-text{font-size:13px;line-height:1.7;}
+
+/* ZIP DETAIL */
+.zip-header{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:14px 16px;margin-bottom:12px;}
+.zh-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+.zh-zip{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1.5px;color:white;line-height:1;}
+.zh-city{font-size:13px;color:var(--gray-light);margin-top:1px;}
+.zh-county{font-size:11px;color:var(--gray);margin-top:2px;}
+.badge{padding:4px 10px;border-radius:2px;font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1px;}
+.badge-hot{background:rgba(26,122,74,.2);color:var(--green-light);border:1px solid rgba(93,202,165,.3);}
+.badge-warm{background:rgba(212,160,23,.15);color:var(--gold);border:1px solid rgba(212,160,23,.3);}
+.badge-slow{background:rgba(192,57,43,.15);color:var(--red-light);border:1px solid rgba(224,136,128,.3);}
+
+/* STAT PILLS */
+.stat-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;}
+.stat-row::-webkit-scrollbar{display:none;}
+.stat-pill{flex-shrink:0;background:var(--deep);border:1px solid var(--border);border-radius:6px;padding:8px 12px;text-align:center;min-width:76px;}
+.sp-val{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.5px;}
+.sp-lbl{font-size:9px;color:var(--gray-light);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+.c-hot{color:var(--green-light);}
+.c-warm{color:var(--gold);}
+.c-slow{color:var(--red-light);}
+.c-gold{color:var(--gold);}
+.c-white{color:#ffffff;}
+
+/* VALUE FLAG */
+.value-flag{border-radius:0 6px 6px 0;padding:12px 14px;margin-bottom:12px;border-left:3px solid;font-size:12px;line-height:1.7;}
+.vf-hot{background:rgba(26,122,74,.08);border-color:var(--green-light);color:var(--text);}
+.vf-warm{background:rgba(212,160,23,.06);border-color:var(--gold);color:var(--text);}
+.vf-leverage{background:rgba(93,202,165,.06);border-color:var(--green-light);color:var(--text);}
+.vf-label{font-family:'Bebas Neue',sans-serif;font-size:10px;letter-spacing:1.5px;color:var(--gray-light);margin-bottom:3px;}
+.vf-status{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.5px;margin-bottom:4px;}
+.vf-hot .vf-status{color:var(--green-light);}
+.vf-warm .vf-status{color:var(--gold);}
+.vf-leverage .vf-status{color:var(--green-light);}
+
+/* CARDS */
+.info-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:12px;}
+.card-title{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1.5px;color:var(--gold);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.data-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.data-row:last-child{border-bottom:none;}
+.dr-lbl{color:var(--text);}
+.dr-val{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.3px;color:white;}
+.dr-val.gold{color:var(--gold);}
+.dr-val.green{color:var(--green-light);}
+.dr-val.warn{color:var(--warn);}
+
+/* MONTHLY COST */
+.cost-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.cost-cell{background:var(--deep);border-radius:4px;padding:8px 10px;}
+.cc-val{font-family:'Bebas Neue',sans-serif;font-size:16px;color:white;letter-spacing:.3px;}
+.cc-lbl{font-size:9px;color:var(--gray-light);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+.cost-total{background:var(--deep);border:1.5px solid #8a6010;border-radius:4px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;}
+.ct-val{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold);letter-spacing:.5px;}
+.ct-lbl{font-size:10px;color:var(--gray-light);}
+
+/* ACTION BUTTONS */
+.action-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.btn-gold{flex:1;min-width:120px;padding:11px;background:var(--gold);border:none;border-radius:4px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1.5px;color:var(--navy);cursor:pointer;text-decoration:none;text-align:center;transition:all .15s;display:block;}
+.btn-gold:hover{background:var(--gold-light);}
+.btn-outline{flex:1;min-width:120px;padding:10px;background:transparent;border:1.5px solid #3a5a9a;border-radius:4px;font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;color:var(--gray-light);cursor:pointer;text-decoration:none;text-align:center;transition:all .15s;display:block;}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+
+/* FOOTER */
+.footer{background:var(--card);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);flex-wrap:wrap;gap:8px;}
+.footer p{font-size:10px;color:var(--gray);}
+.footer a{color:var(--gold);text-decoration:none;}
+
+@media(max-width:480px){
+  .cost-grid{grid-template-columns:1fr 1fr;}
+  .action-row{flex-direction:column;}
+  .btn-gold,.btn-outline{min-width:unset;}
+}
+
+/* ── MICRO-EDUCATION TRIGGERS ── */
+.me-trigger{
+  background:#162040;border:1px solid var(--border);
+  border-left:3px solid var(--warn);border-radius:0 6px 6px 0;
+  padding:10px 12px;margin-bottom:10px;
+  animation:meSlideIn .25s ease;
+}
+.me-trigger.me-danger{border-left-color:var(--red-light);}
+.me-trigger.me-info{border-left-color:var(--green-light);}
+.me-trigger.me-tip{border-left-color:#8AB0D0;}
+@keyframes meSlideIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+.me-header{display:flex;align-items:flex-start;gap:8px;cursor:pointer;}
+.me-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+.me-short{font-size:12px;color:var(--text);line-height:1.5;flex:1;}
+.me-short strong{color:white;}
+.me-expand{font-family:'Bebas Neue',sans-serif;font-size:10px;letter-spacing:1px;color:var(--gold);flex-shrink:0;margin-top:2px;white-space:nowrap;}
+.me-detail{display:none;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:11px;color:var(--text);line-height:1.7;}
+.me-trigger.open .me-detail{display:block;}
+.me-detail strong{color:white;}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="hdr-l">
+    <h1>OPEN HOUSE <span>PREP</span></h1>
+    <p>St. Louis Buyer Guide · George Kindler</p>
+  </div>
+  <div class="hdr-r"><a href="tel:3144351087">📞 314.435.1087</a></div>
+</header>
+
+<!-- TOOL NAV -->
+<nav class="tool-nav">
+  <a class="tn-pill active" href="prep.html">🏚 PREP</a>
+  <a class="tn-pill" href="compare.html">⚖️ COMPARE</a>
+  <a class="tn-pill" href="home-cost.html">🔧 COST GUIDE</a>
+  <a class="tn-pill" href="afford.html">🗺 AFFORDABILITY</a>
+  <a class="tn-pill" href="fails.html">⚠️ WHAT TO LOOK FOR</a>
+  <a class="tn-pill" href="index.html">🏠 HOME</a>
+</nav>
+
+<div class="wrap">
+
+  <div class="hero">
+    <h2>BEFORE YOU <span>WALK IN</span></h2>
+    <p>Search the zip code you're heading to. Get the real market picture — competition level, true monthly cost, what to watch for — before the open house starts.</p>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="search-card">
+    <div class="sc-label">📍 WHERE ARE YOU GOING?</div>
+    <div class="search-wrap">
+      <input class="search-input" id="search-input" type="text"
+        placeholder="Zip code, city, or neighborhood..."
+        autocomplete="off" oninput="onSearch(this.value)" onkeydown="onKey(event)">
+      <span class="search-icon">🔍</span>
+      <div class="search-results" id="search-results"></div>
+    </div>
+    <button class="locate-btn" onclick="locateMe()">📡 USE MY CURRENT LOCATION</button>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results">
+    <div class="empty-state">
+      <div class="es-icon">🏚</div>
+      <div class="es-text">Search a zip code above and get the full picture before you walk in the door.</div>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<div class="footer">
+  <p>2025 MARIS MLS · George Kindler · The Closing Pros LLC · Licensed Missouri Real Estate Agent</p>
+  <p><a href="index.html">All Tools</a></p>
+</div>
+
+<script>
+// ── SEARCH ────────────────────────────────────────────────────────
+let searchRes=[], focusIdx=-1;
+
+function onSearch(val){
+  const q=val.trim();
+  if(q.length<1){closeSearch();return;}
+  searchRes=searchZips(q);
+  focusIdx=-1;
+  const el=document.getElementById('search-results');
+  if(searchRes.length===0){el.classList.remove('open');return;}
+  el.innerHTML=searchRes.map((r,i)=>`
+    <div class="sr-item" onmousedown="selectZip('${r.zip}')">
+      <span class="sr-zip">${r.zip}</span><span>${r.city}</span>
+    </div>`).join('');
+  el.classList.add('open');
+}
+
+function onKey(e){
+  const items=document.querySelectorAll('.sr-item');
+  if(e.key==='ArrowDown'){e.preventDefault();focusIdx=Math.min(focusIdx+1,items.length-1);items.forEach((el,i)=>el.style.background=i===focusIdx?'var(--card)':'');}
+  else if(e.key==='ArrowUp'){e.preventDefault();focusIdx=Math.max(focusIdx-1,0);items.forEach((el,i)=>el.style.background=i===focusIdx?'var(--card)':'');}
+  else if(e.key==='Enter'){if(focusIdx>=0&&searchRes[focusIdx])selectZip(searchRes[focusIdx].zip);else if(searchRes.length>0)selectZip(searchRes[0].zip);}
+  else if(e.key==='Escape')closeSearch();
+}
+
+function closeSearch(){document.getElementById('search-results').classList.remove('open');}
+document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap'))closeSearch();});
+
+function locateMe(){
+  if(!navigator.geolocation){alert('Geolocation not available.');return;}
+  navigator.geolocation.getCurrentPosition(pos=>{
+    // Find nearest zip centroid
+    const{latitude:lat,longitude:lng}=pos.coords;
+    let nearest=null,minD=Infinity;
+    // Use a small set of centroid approximations
+    const CENTS={"63125":[38.528,-90.318],"63123":[38.550,-90.337],"63026":[38.512,-90.444],"63043":[38.710,-90.432],"63303":[38.768,-90.518],"63376":[38.788,-90.644],"63122":[38.583,-90.409],"63119":[38.596,-90.358],"63088":[38.549,-90.491],"63052":[38.414,-90.440],"63010":[38.428,-90.422]};
+    Object.entries(CENTS).forEach(([z,[zlat,zlng]])=>{
+      const d=Math.sqrt((lat-zlat)**2+(lng-zlng)**2);
+      if(d<minD){minD=d;nearest=z;}
+    });
+    if(nearest)selectZip(nearest);
+    gaEvent('locate_me_prep');
+  },()=>alert('Could not get location. Search manually above.'));
+}
+
+// ── RENDER ZIP DETAIL ─────────────────────────────────────────────
+// ── MICRO-EDUCATION ENGINE ────────────────────────────────────
+function meTrigger(type, icon, short, detail){
+  const id='me-'+Math.random().toString(36).slice(2,7);
+  return`<div class="me-trigger me-${type}" id="${id}">
+    <div class="me-header" onclick="meToggle('${id}')">
+      <span class="me-icon">${icon}</span>
+      <span class="me-short">${short}</span>
+      <span class="me-expand">LEARN MORE ▼</span>
+    </div>
+    <div class="me-detail">${detail}</div>
+  </div>`;
+}
+
+function meToggle(id){
+  const el=document.getElementById(id);
+  if(!el) return;
+  const wasOpen=el.classList.contains('open');
+  el.classList.toggle('open',!wasOpen);
+  const expandEl=el.querySelector('.me-expand');
+  if(expandEl) expandEl.textContent=wasOpen?'LEARN MORE ▼':'CLOSE ▲';
+  if(!wasOpen) gtag('event','me_expanded',{trigger_id:id});
+}
+
+// Generate all triggers for a given zip + data
+function buildPrepTriggers(zip, d, taxRate, county){
+  const triggers=[];
+
+  // ── COMPETITION TRIGGERS ──────────────────────────────────
+  if(d.fw>=50 && d.splp>=101){
+    triggers.push(meTrigger('danger','⚡',
+      `<strong>Hot market warning:</strong> ${d.fw}% of homes here sell the first weekend. Buyers sometimes waive inspection to compete. That is a serious risk.`,
+      `Waiving your inspection to win a bidding war means you own every problem the house has — no recourse. In a market this competitive, a better strategy is a short inspection period (5–7 days) rather than no inspection at all. An experienced agent can write a strong offer that does not require giving up your only protection. <strong>Ask George before you waive anything.</strong>`
+    ));
+  }
+
+  if(d.fw>=50 && d.above>=70){
+    triggers.push(meTrigger('danger','📈',
+      `<strong>${d.above}% of homes sell at or above list price.</strong> This zip almost always goes over asking. Know your ceiling before you walk in.`,
+      `An escalation clause lets you automatically beat competing offers up to a maximum you set. Example: "I'll pay $2,000 above the highest offer up to $305,000." It protects you from overpaying blind while staying competitive. Ask your agent to write one before Saturday. If you do not have an agent yet — <strong>call George before the showing, not after.</strong>`
+    ));
+  }
+
+  // ── FINANCING / PRICE TRIGGERS ───────────────────────────
+  if(d.price < 150000){
+    triggers.push(meTrigger('danger','🏦',
+      `<strong>Homes under $150K often have financing complications.</strong> Lenders may require repairs before approving a loan — even if the seller agrees to the price.`,
+      `FHA and conventional loans require a home to meet minimum condition standards — functioning systems, no exposed wiring, weathertight roof, no active pest infestation. If a home is missing a ceiling, has a failed HVAC, or visible structural damage, your lender may require those issues corrected <em>before closing</em>. This is called a "repair requirement" and can kill a deal. <strong>At this price point, ask your lender what conditions would cause them to decline the appraisal before you make an offer.</strong>`
+    ));
+  }
+
+  if(d.dom <= 5){
+    triggers.push(meTrigger('caution','⏱️',
+      `<strong>Average days on market: ${d.dom} days.</strong> Homes here move in less than a week. If you like it Saturday, Monday may be too late.`,
+      `In a sub-5-day market, the decision timeline is compressed. Have your pre-approval letter ready before the showing. Know your maximum before you walk in — not after. If you leave to "think about it," the home is likely gone. This does not mean skip due diligence — it means do your homework <em>before</em> the showing, not after.`
+    ));
+  }
+
+  // ── TAX TRIGGERS ─────────────────────────────────────────
+  if(taxRate >= 0.0132){
+    triggers.push(meTrigger('caution','🏛️',
+      `<strong>Tax rate: ${(taxRate*100).toFixed(2)}% — highest in the metro.</strong> At the median price, that is ${fmt$(Math.round((d.price*taxRate)/12))}/month in taxes alone.`,
+      `${county} has the highest effective property tax rate in the St. Louis dataset. A home priced the same as one in St. Charles County costs <strong>$${Math.round((d.price*(taxRate-0.0092))/12).toLocaleString()}/month more in taxes</strong>. Over 30 years that difference is <strong>$${Math.round((d.price*(taxRate-0.0092))*30).toLocaleString()}</strong>. This is a real number worth factoring into your budget — not a footnote.`
+    ));
+  }
+
+  if(taxRate <= 0.0092){
+    triggers.push(meTrigger('info','💰',
+      `<strong>Tax advantage zone:</strong> ${county} rate is ${(taxRate*100).toFixed(2)}% — lowest in the metro. Real monthly savings vs. comparable St. Louis County addresses.`,
+      `At the median price here, property taxes run ${fmt$(Math.round((d.price*taxRate)/12))}/month. The same home priced identically in St. Louis County would cost ${fmt$(Math.round((d.price*0.0114)/12))}/month in taxes — a difference of <strong>${fmt$(Math.round((d.price*(0.0114-taxRate))/12))}/month</strong>. That is $${Math.round((d.price*(0.0114-taxRate))).toLocaleString()} per year in tax savings. Your budget goes further here than the list price suggests.`
+    ));
+  }
+
+  // ── LOCATION SPECIFIC TRIGGERS ───────────────────────────
+  if(county === 'St. Louis City'){
+    triggers.push(meTrigger('caution','🔧',
+      `<strong>St. Louis City homes commonly have original sewer laterals.</strong> Pre-1960 clay tile — tree roots find every joint. A sewer scope is not optional here.`,
+      `A sewer scope is a camera inspection of the pipe running from your house to the city main — typically $300–400. In St. Louis City, clay tile laterals from the 1920s–1950s are still in place on many blocks. Root infiltration, joint separation, and partial collapse are common. A failed scope is one of the strongest negotiating positions you can have — or a reason to walk. <strong>Make your offer contingent on a scope. If the seller refuses, that tells you something.</strong>`
+    ));
+  }
+
+  if(county === 'Jefferson County'){
+    triggers.push(meTrigger('tip','🏡',
+      `<strong>Some Jefferson County properties use septic systems</strong> rather than municipal sewer. Ask before you schedule a showing.`,
+      `Properties outside Arnold and Festus city limits may be on private septic rather than city sewer. Septic systems require maintenance and eventual replacement (typically 25–30 years, $5,000–$25,000). Ask the listing agent directly: is this on city sewer or septic? If septic — get an inspection as a condition of your offer and ask for the last service record.`
+    ));
+  }
+
+  // ── BUYER LEVERAGE TRIGGER ───────────────────────────────
+  if(d.fw < 30 && d.dom > 20){
+    triggers.push(meTrigger('info','🤝',
+      `<strong>Buyer leverage zone:</strong> ${d.fw}% first weekend rate. Homes here average ${d.dom} days on market. The data supports negotiating.`,
+      `A first weekend rate under 30% means sellers are not seeing the immediate competition that drives bidding wars. With ${d.dom} average days on market, a seller whose home has been sitting knows they are not getting a flood of offers. This is the market where repair requests, closing cost contributions, and price reductions are realistic asks — not wishful thinking. <strong>Come in with documentation. A flagged inspection report is your negotiating tool.</strong>`
+    ));
+  }
+
+  return triggers.join('');
+}
+
+function selectZip(zip){
+  document.getElementById('search-input').value=zip+' — '+(ZIP_DATA[zip]?.city||'');
+  closeSearch();
+
+  const d=ZIP_DATA[zip];
+  if(!d){document.getElementById('results').innerHTML='<div class="empty-state"><div class="es-icon">❓</div><div class="es-text">No data for this zip code.</div></div>';return;}
+
+  const county=ZIP_COUNTY[zip]||'';
+  const district=ZIP_DISTRICT[zip]||'';
+  const taxRate=ZIP_TAX[zip]||0.0114;
+  const monthly=calcTrueMonthly(d.price,d.price*0.05,6.75,zip);
+  const vf=getValueFlag(d,zip);
+  const fwCls=d.fw>=50?'c-hot':d.fw>=35?'c-warm':'c-slow';
+  const domCls=d.dom<=10?'c-hot':d.dom<=25?'c-warm':'c-slow';
+  const aboveCls=d.above>=65?'c-hot':d.above>=50?'c-warm':'c-slow';
+
+  let badgeCls='badge-warm',badgeTxt='ACTIVE';
+  if(d.fw>=50){badgeCls='badge-hot';badgeTxt='HOT MARKET';}
+  else if(d.fw<30){badgeCls='badge-slow';badgeTxt='SLOWER MARKET';}
+
+  let vfCls='vf-warm';
+  if(vf.flag.includes('HOT')) vfCls='vf-hot';
+  else if(vf.flag.includes('LEVERAGE')||vf.flag.includes('TAX')) vfCls='vf-leverage';
+
+  const compareUrl=buildUrl('compare.html',{zip1:zip,price1:d.price,city1:d.city});
+  const homeCostUrl=buildUrl('home-cost.html',{zip});
+
+  // Build triggers for this zip
+  const triggers=buildPrepTriggers(zip,d,taxRate,county);
+
+  document.getElementById('results').innerHTML=`
+
+    <!-- ZIP HEADER -->
+    <div class="zip-header">
+      <div class="zh-top">
+        <div>
+          <div class="zh-zip">${zip}</div>
+          <div class="zh-city">${d.city}</div>
+          <div class="zh-county">${county} · ${d.n} sales analyzed</div>
+        </div>
+        <span class="badge ${badgeCls}">${badgeTxt}</span>
+      </div>
+      <div class="stat-row">
+        <div class="stat-pill"><div class="sp-val ${fwCls}">${d.fw}%</div><div class="sp-lbl">First Weekend</div></div>
+        <div class="stat-pill"><div class="sp-val ${domCls}">${d.dom}d</div><div class="sp-lbl">Avg Days</div></div>
+        <div class="stat-pill"><div class="sp-val c-gold">${fmtK(d.price)}</div><div class="sp-lbl">Median Price</div></div>
+        <div class="stat-pill"><div class="sp-val ${aboveCls}">${d.above}%</div><div class="sp-lbl">Above List</div></div>
+        <div class="stat-pill"><div class="sp-val c-white">${d.splp}%</div><div class="sp-lbl">Sale/List</div></div>
+      </div>
+    </div>
+
+    <!-- VALUE FLAG -->
+    <div class="value-flag ${vfCls}">
+      <div class="vf-label">TRUE VALUE ASSESSMENT</div>
+      <div class="vf-status">${vf.flag}</div>
+      ${vf.text}
+    </div>
+
+    <!-- MICRO-EDUCATION TRIGGERS — injected here based on zip data -->
+    ${triggers}
+
+    <!-- TRUE MONTHLY COST -->
+    <div class="info-card">
+      <div class="card-title">💰 TRUE MONTHLY COST AT MEDIAN PRICE</div>
+      <p style="font-size:11px;color:var(--gray-light);margin-bottom:10px;">Based on ${fmtK(d.price)} median · 5% down · 6.75% rate · includes taxes, insurance, PMI, maintenance</p>
+      <div class="cost-grid">
+        <div class="cost-cell"><div class="cc-val">${fmt$(monthly.pi)}</div><div class="cc-lbl">Principal & Interest</div></div>
+        <div class="cost-cell"><div class="cc-val">${fmt$(monthly.tax)}</div><div class="cc-lbl">Tax /mo</div></div>
+        <div class="cost-cell"><div class="cc-val">${fmt$(monthly.ins)}</div><div class="cc-lbl">Insurance /mo</div></div>
+        <div class="cost-cell"><div class="cc-val">${fmt$(monthly.pmi)}</div><div class="cc-lbl">PMI /mo</div></div>
+      </div>
+      <div class="cost-total">
+        <div><div class="ct-lbl">ALL-IN MONTHLY</div><div style="font-size:10px;color:var(--gray-light);">PITI + PMI + Maintenance</div></div>
+        <div class="ct-val">${fmt$(monthly.total)}</div>
+      </div>
+    </div>
+
+    <!-- PRICE TIERS -->
+    <div class="info-card">
+      <div class="card-title">🏠 PRICE BY CONDITION</div>
+      <div class="data-row"><span class="dr-lbl">As-Is — needs work</span><span class="dr-val warn">${fmt$(getTierPrice(d,'aisis'))}</span></div>
+      <div class="data-row"><span class="dr-lbl">Mid-Tier — some updating</span><span class="dr-val gold">${fmt$(getTierPrice(d,'mid'))}</span></div>
+      <div class="data-row"><span class="dr-lbl">Move-In Ready</span><span class="dr-val green">${fmt$(getTierPrice(d,'move'))}</span></div>
+      <p style="font-size:10px;color:var(--gray-light);margin-top:8px;line-height:1.5;">Calculated from ${d.n} closed sales. As-Is = 82% of median. Move-In Ready = 108%.</p>
+    </div>
+
+    <!-- SCHOOL + TAX -->
+    <div class="info-card">
+      <div class="card-title">🏫 SCHOOL & TAX</div>
+      ${district?`<div class="data-row"><span class="dr-lbl">School District</span><span class="dr-val" style="font-size:12px;text-align:right;max-width:200px;">${district}</span></div>`:''}
+      <div class="data-row"><span class="dr-lbl">Tax Rate</span><span class="dr-val gold">${(taxRate*100).toFixed(2)}%</span></div>
+      <div class="data-row"><span class="dr-lbl">Monthly Tax at Median Price</span><span class="dr-val">${fmt$(monthly.tax)}/mo</span></div>
+      <div class="data-row"><span class="dr-lbl">County</span><span class="dr-val">${county}</span></div>
+      ${taxRate<=0.0092?`<p style="font-size:10px;color:var(--green-light);margin-top:8px;line-height:1.5;">✅ Lowest tax rate in the metro — significant monthly savings vs. St. Louis County at the same price.</p>`:''}
+    </div>
+
+    <!-- MARKET INSIGHT -->
+    <div class="info-card">
+      <div class="card-title">📊 WHAT THIS MEANS FOR YOU</div>
+      <p style="font-size:12px;color:var(--text);line-height:1.7;">
+        ${d.fw>=50
+          ?`<strong style="color:var(--green-light);">${d.fw}%</strong> of homes in ${d.city} sell the first weekend. This is one of the most competitive corridors in the metro. Have pre-approval in hand before you walk in. If you like it, move the same day.`
+          :d.fw>=35
+          ?`<strong style="color:var(--gold);">${d.fw}%</strong> first weekend rate means competition is real but not overwhelming. Correctly priced homes move fast. Overpriced ones give you an opening — the average home here sits ${d.dom} days.`
+          :`<strong style="color:var(--red-light);">${d.fw}%</strong> first weekend rate. Buyers have more negotiating room here than most of the metro. Average days on market is ${d.dom}. The data supports asking for concessions.`
+        }
+      </p>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="action-row">
+      <a href="${compareUrl}" class="btn-gold">⚖️ COMPARE THIS HOME</a>
+      <a href="${homeCostUrl}" class="btn-outline">🔧 INSPECT COSTS</a>
+    </div>
+    <a href="tel:3144351087" class="btn-gold" style="margin-bottom:8px;">📞 CALL GEORGE — 314.435.1087</a>
+    <p style="font-size:10px;color:var(--gray);text-align:center;line-height:1.6;">Data: 2025 MARIS MLS · ${d.n} transactions · George Kindler · The Closing Pros LLC</p>
+  `;
+
+  gaEvent('prep_zip_viewed',{zip,city:d.city,fw:d.fw,triggers_shown:triggers.length>0});
+}
+
+// Auto-load if zip passed via URL
+const urlZip=getParam('zip');
+if(urlZip&&ZIP_DATA[urlZip]) selectZip(urlZip);
+</script>
+</body>
+</html>

@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What to Look For — Common Home Failures · St. Louis Buyer Guide</title>
+<meta name="description" content="Visual guide to the most expensive home failures in St. Louis. Know what you're looking at before you walk in.">
+
+<!-- GA4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EEE14BZT9P"></script>
+<script>
+  window.dataLayer=window.dataLayer||[];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js',new Date());
+  gtag('config','G-EEE14BZT9P');
+</script>
+
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --navy:#0A1628;--navy-mid:#1B3A6B;--card:#162040;--deep:#0d1e3a;
+  --gold:#D4A017;--gold-light:#E8B820;--green:#1a7a4a;--green-light:#5DCAA5;
+  --red:#C0392B;--red-light:#E88080;--warn:#E8A020;
+  --gray:#8A9BB0;--gray-light:#B0C0D0;--cream:#F5F0E8;--border:#1e3060;--text:#c8d8e8;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--cream);min-height:100vh;}
+
+/* ── HEADER ── */
+.header{background:var(--navy);padding:13px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:500;}
+.hdr-l h1{font-family:'Bebas Neue',sans-serif;font-size:18px;color:white;letter-spacing:2px;line-height:1;}
+.hdr-l h1 span{color:var(--gold);}
+.hdr-l p{font-size:9px;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+.hdr-r a{font-family:'Bebas Neue',sans-serif;font-size:12px;color:var(--gold);letter-spacing:1px;text-decoration:none;}
+
+/* ── TOOL NAV ── */
+.tool-nav{background:var(--deep);padding:8px 16px;display:flex;gap:6px;overflow-x:auto;border-bottom:1px solid var(--border);}
+.tool-nav::-webkit-scrollbar{display:none;}
+.tn-pill{font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1px;padding:5px 12px;border-radius:20px;border:1px solid #3a5a9a;color:var(--gray-light);text-decoration:none;white-space:nowrap;transition:all .15s;}
+.tn-pill:hover{border-color:var(--gold);color:var(--gold);}
+.tn-pill.active{background:var(--gold);color:var(--navy);border-color:var(--gold);}
+
+/* ── HERO ── */
+.hero{background:var(--deep);padding:24px 20px;text-align:center;border-bottom:1px solid var(--border);}
+.hero-eyebrow{font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:3px;color:var(--warn);margin-bottom:8px;}
+.hero-headline{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1.5px;color:white;line-height:1.1;margin-bottom:8px;}
+.hero-headline span{color:var(--gold);}
+.hero-sub{font-size:13px;color:var(--gray-light);line-height:1.7;max-width:480px;margin:0 auto;}
+
+/* ── WRAP ── */
+.wrap{max-width:680px;margin:0 auto;padding:24px 16px 60px;}
+
+/* ── FILTER BAR ── */
+.filter-bar{display:flex;gap:6px;overflow-x:auto;margin-bottom:20px;padding-bottom:2px;}
+.filter-bar::-webkit-scrollbar{display:none;}
+.filter-btn{
+  font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1px;
+  padding:6px 14px;border-radius:20px;border:1px solid #3a5a9a;
+  background:transparent;color:var(--gray-light);cursor:pointer;
+  white-space:nowrap;transition:all .15s;flex-shrink:0;
+}
+.filter-btn:hover{border-color:#8ab0d0;color:white;}
+.filter-btn.active{background:var(--card);border-color:var(--gold);color:var(--gold);}
+
+/* ── FAIL CARD ── */
+.fail-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:8px;margin-bottom:16px;overflow:hidden;
+}
+.fail-card.priority-critical{border-left:4px solid var(--red-light);}
+.fail-card.priority-high{border-left:4px solid var(--warn);}
+.fail-card.priority-medium{border-left:4px solid var(--gold);}
+
+.fail-header{
+  padding:14px 16px;cursor:pointer;
+  display:flex;align-items:center;gap:12px;
+  transition:background .1s;
+}
+.fail-header:hover{background:rgba(255,255,255,.02);}
+.fail-priority-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.dot-critical{background:var(--red-light);}
+.dot-high{background:var(--warn);}
+.dot-medium{background:var(--gold);}
+.fail-title-wrap{flex:1;}
+.fail-name{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.5px;color:white;margin-bottom:2px;}
+.fail-tagline{font-size:11px;color:var(--gray-light);line-height:1.4;}
+.fail-cost{
+  font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--warn);
+  letter-spacing:.3px;text-align:right;flex-shrink:0;
+}
+.fail-cost-label{font-size:9px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-top:1px;}
+.fail-expand{font-size:12px;color:var(--gray);transition:transform .2s;flex-shrink:0;margin-left:8px;}
+.fail-card.open .fail-expand{transform:rotate(180deg);}
+
+/* ── FAIL BODY ── */
+.fail-body{display:none;border-top:1px solid var(--border);}
+.fail-card.open .fail-body{display:block;}
+
+/* SVG illustration */
+.fail-illustration{
+  background:var(--deep);padding:20px;
+  border-bottom:1px solid var(--border);
+  display:flex;justify-content:center;
+}
+.fail-illustration svg{max-width:100%;height:auto;}
+
+/* Content panels */
+.fail-content{padding:14px 16px;}
+.fc-section{margin-bottom:14px;}
+.fc-section:last-child{margin-bottom:0;}
+.fc-label{
+  font-family:'Bebas Neue',sans-serif;font-size:10px;letter-spacing:1.5px;
+  color:var(--gold);margin-bottom:6px;
+}
+.fc-text{font-size:12px;color:var(--text);line-height:1.7;}
+.fc-text strong{color:white;}
+
+/* What to look for list */
+.look-list{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.look-list li{
+  display:flex;align-items:flex-start;gap:8px;
+  font-size:12px;color:var(--text);line-height:1.5;
+  background:var(--deep);border-radius:4px;padding:8px 10px;
+}
+.look-list li .li-icon{flex-shrink:0;font-size:13px;margin-top:1px;}
+
+/* Cost + negotiate row */
+.cost-row{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;
+}
+.cost-box{background:var(--deep);border-radius:4px;padding:10px 12px;}
+.cost-box-val{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.3px;margin-bottom:2px;}
+.cost-box-lbl{font-size:9px;color:var(--gray-light);text-transform:uppercase;letter-spacing:.5px;}
+.negotiate-box{
+  background:rgba(93,202,165,.06);border:1px solid rgba(93,202,165,.2);
+  border-radius:4px;padding:10px 12px;margin-top:8px;
+  font-size:11px;color:var(--text);line-height:1.6;
+}
+.negotiate-box strong{color:var(--green-light);}
+
+/* STL specific flag */
+.stl-flag{
+  background:rgba(212,160,23,.06);border:1px solid rgba(212,160,23,.2);
+  border-left:3px solid var(--gold);border-radius:0 4px 4px 0;
+  padding:10px 12px;margin-top:8px;
+  font-size:11px;color:var(--text);line-height:1.6;
+}
+.stl-flag strong{color:var(--gold);}
+
+/* ── CTA ── */
+.page-cta{
+  background:var(--card);border:2px solid var(--gold);
+  border-radius:8px;padding:16px 20px;margin-top:24px;text-align:center;
+}
+.page-cta h3{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1.5px;color:white;margin-bottom:6px;}
+.page-cta p{font-size:12px;color:var(--gray-light);line-height:1.6;margin-bottom:12px;}
+.btn-gold{display:block;background:var(--gold);border:none;padding:13px;width:100%;border-radius:4px;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--navy);cursor:pointer;text-decoration:none;text-align:center;transition:all .15s;margin-bottom:8px;}
+.btn-gold:hover{background:var(--gold-light);}
+.btn-outline{display:block;padding:10px;width:100%;border:1.5px solid #3a5a9a;border-radius:4px;background:transparent;font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;color:var(--gray-light);cursor:pointer;text-decoration:none;text-align:center;transition:all .15s;}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+
+/* ── FOOTER ── */
+.footer{background:var(--card);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);flex-wrap:wrap;gap:8px;}
+.footer p{font-size:10px;color:var(--gray);}
+.footer a{color:var(--gold);text-decoration:none;}
+
+@media(max-width:480px){
+  .cost-row{grid-template-columns:1fr;}
+  .hdr-r{display:none;}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="hdr-l">
+    <h1>COMMON <span>HOME FAILURES</span></h1>
+    <p>Know what you're looking at · St. Louis Buyer Guide</p>
+  </div>
+  <div class="hdr-r"><a href="tel:3144351087">📞 314.435.1087</a></div>
+</header>
+
+<nav class="tool-nav">
+  <a class="tn-pill" href="index.html">🏠 HOME</a>
+  <a class="tn-pill" href="prep.html">🏚 PREP</a>
+  <a class="tn-pill" href="compare.html">⚖️ COMPARE</a>
+  <a class="tn-pill" href="home-cost.html">🔧 COST GUIDE</a>
+  <a class="tn-pill active" href="fails.html">⚠️ WHAT TO LOOK FOR</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">⚠️ READ THIS BEFORE YOUR NEXT SHOWING</div>
+  <div class="hero-headline">WHAT <span>$50,000 IN SURPRISES</span><br>LOOKS LIKE BEFORE YOU CLOSE</div>
+  <div class="hero-sub">These are the most expensive and most commonly missed defects in St. Louis homes. Most buyers walk past them. Know what you are looking at before you walk in.</div>
+</div>
+
+<div class="wrap">
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterFails('all',this)">ALL ITEMS</button>
+    <button class="filter-btn" onclick="filterFails('electrical',this)">⚡ ELECTRICAL</button>
+    <button class="filter-btn" onclick="filterFails('plumbing',this)">🔧 PLUMBING</button>
+    <button class="filter-btn" onclick="filterFails('structure',this)">🧱 STRUCTURE</button>
+    <button class="filter-btn" onclick="filterFails('hvac',this)">💨 HVAC</button>
+    <button class="filter-btn" onclick="filterFails('water',this)">💧 WATER</button>
+  </div>
+
+  <!-- FAIL CARDS -->
+  <div id="fails-container"></div>
+
+  <!-- PAGE CTA -->
+  <div class="page-cta">
+    <h3>TAKE THIS INTO YOUR NEXT SHOWING</h3>
+    <p>The checklist in the Compare tool generates these flags automatically based on the zip code and age of the home — before you walk in the door.</p>
+    <a href="compare.html" class="btn-gold">⚖️ BUILD YOUR PRE-SHOWING CHECKLIST →</a>
+    <a href="home-cost.html" class="btn-outline">🔧 FLAG ISSUES AS YOU WALK THROUGH →</a>
+  </div>
+
+</div>
+
+<div class="footer">
+  <p>George Kindler · The Closing Pros LLC · Licensed Missouri Real Estate Agent · St. Louis, MO</p>
+  <p>
+    <a href="https://sites.google.com/view/st-louis-real-estate-guides/freestlouisrealestateguides" target="_blank">Free Buyer Resources</a>
+    &nbsp;·&nbsp;
+    <a href="tel:3144351087">314.435.1087</a>
+  </p>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+// FAIL DATA — each entry has an SVG illustration + full context
+// ════════════════════════════════════════════════════════════════
+const FAILS = [
+
+  // ── FEDERAL PACIFIC PANEL ────────────────────────────────────
+  {
+    id:'fed-pacific',
+    category:'electrical',
+    priority:'critical',
+    name:'Federal Pacific Electrical Panel',
+    tagline:'The panel that insurers refuse to cover — and most buyers miss',
+    costLow:2500,costHigh:8000,
+    stlContext:'<strong>Common in St. Louis homes built 1950–1985.</strong> Heavily present in south city, south county, and older west county neighborhoods. Many insurance companies will not issue a homeowner policy on an active Federal Pacific panel — you may not be able to get coverage without replacing it at closing.',
+    whatItIs:'Federal Pacific Electric manufactured Stab-Lok breaker panels from the 1950s through the 1980s. The breakers have a documented failure rate — they do not trip under overload the way they should, which creates a fire risk. The company no longer exists. There is no certified repair. The only fix is full replacement.',
+    lookFor:[
+      {icon:'👁️', text:'Open the panel door. Look for the words "Stab-Lok" printed on the breakers. That is the brand name — not a model number.'},
+      {icon:'👁️', text:'Federal Pacific panels often say "FPE" or "Federal Pacific Electric" on the panel door or inside label.'},
+      {icon:'👁️', text:'The breakers are typically double-wide with a distinctive notched shape. Some are bright red or orange at the top.'},
+      {icon:'📍', text:'Usually located in the basement, utility room, or garage. In older city homes sometimes in a hallway closet.'},
+    ],
+    negotiate:'This is a legitimate ask for full replacement credit. Get a licensed electrician quote — usually $2,500–$5,000 for a standard replacement, up to $8,000 for larger homes or complicated installs. Do not accept a partial panel upgrade. The entire panel needs to go.',
+    svg:`<svg viewBox="0 0 340 240" xmlns="http://www.w3.org/2000/svg" width="340" height="240">
+  <!-- Panel box -->
+  <rect x="80" y="20" width="180" height="200" rx="4" fill="#1B2A3A" stroke="#3a5a9a" stroke-width="2"/>
+  <!-- Panel door open -->
+  <rect x="20" y="20" width="60" height="200" rx="2" fill="#243E6E" stroke="#3a5a9a" stroke-width="1.5"/>
+  <text x="50" y="115" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="#8A9BB0" transform="rotate(-90 50 115)">PANEL DOOR (OPEN)</text>
+  <!-- Main breaker -->
+  <rect x="95" y="35" width="150" height="28" rx="2" fill="#243E6E" stroke="#5a7a9a" stroke-width="1"/>
+  <text x="170" y="53" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="11" fill="#B0C0D0" letter-spacing="1">MAIN BREAKER</text>
+  <!-- Breaker rows - left column -->
+  <rect x="95" y="75" width="68" height="18" rx="1" fill="#C0392B" stroke="#E88080" stroke-width="1"/>
+  <rect x="95" y="97" width="68" height="18" rx="1" fill="#C0392B" stroke="#E88080" stroke-width="1"/>
+  <rect x="95" y="119" width="68" height="18" rx="1" fill="#C0392B" stroke="#E88080" stroke-width="1"/>
+  <rect x="95" y="141" width="68" height="18" rx="1" fill="#8B1A1A" stroke="#E88080" stroke-width="1"/>
+  <rect x="95" y="163" width="68" height="18" rx="1" fill="#8B1A1A" stroke="#E88080" stroke-width="1"/>
+  <rect x="95" y="185" width="68" height="18" rx="1" fill="#C0392B" stroke="#E88080" stroke-width="1"/>
+  <!-- Breaker rows - right column -->
+  <rect x="177" y="75" width="68" height="18" rx="1" fill="#C0392B" stroke="#E88080" stroke-width="1"/>
+  <rect x="177" y="97" width="68" height="18" rx="1" fill="#C0392B" stroke="#E88080" stroke-width="1"/>
+  <rect x="177" y="119" width="68" height="18" rx="1" fill="#8B1A1A" stroke="#E88080" stroke-width="1"/>
+  <rect x="177" y="141" width="68" height="18" rx="1" fill="#C0392B" stroke="#E88080" stroke-width="1"/>
+  <rect x="177" y="163" width="68" height="18" rx="1" fill="#C0392B" stroke="#E88080" stroke-width="1"/>
+  <rect x="177" y="185" width="68" height="18" rx="1" fill="#8B1A1A" stroke="#E88080" stroke-width="1"/>
+  <!-- Stab-Lok label -->
+  <rect x="100" y="79" width="58" height="10" rx="1" fill="rgba(0,0,0,.4)"/>
+  <text x="129" y="87" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="8" fill="#E88080" letter-spacing=".5">STAB-LOK</text>
+  <!-- RED FLAG callout -->
+  <rect x="245" y="55" width="85" height="36" rx="4" fill="rgba(192,57,43,.2)" stroke="#E88080" stroke-width="1.5"/>
+  <text x="287" y="69" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="9" fill="#E88080" letter-spacing=".5">🚩 RED FLAG</text>
+  <text x="287" y="82" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="#c8d8e8">STAB-LOK LABEL</text>
+  <line x1="245" y1="73" x2="187" y2="84" stroke="#E88080" stroke-width="1" stroke-dasharray="3,2"/>
+  <!-- Label at bottom -->
+  <text x="170" y="228" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="10" fill="#8A9BB0" letter-spacing="1">FEDERAL PACIFIC STAB-LOK PANEL</text>
+</svg>`
+  },
+
+  // ── KNOB AND TUBE WIRING ─────────────────────────────────────
+  {
+    id:'knob-tube',
+    category:'electrical',
+    priority:'critical',
+    name:'Knob & Tube Wiring',
+    tagline:'Pre-1950 wiring with no ground — insurers call it uninsurable',
+    costLow:8000,costHigh:18000,
+    stlContext:'<strong>Common in St. Louis City and older inner-ring suburbs built before 1950.</strong> Shaw, Tower Grove, Soulard, Benton Park, and many south city neighborhoods still have active knob and tube in portions of the home. Some homes have been partially updated — the visible wiring was replaced but knob and tube remains hidden in walls.',
+    whatItIs:'Knob and tube was the standard wiring method from roughly 1880 to 1940. It consists of individual cloth-wrapped conductors run through ceramic knobs (to hold them in place) and ceramic tubes (where they pass through joists). It has no ground wire, no insulation around the conductors, and was never designed for modern electrical loads. The fire risk comes primarily from DIY work done on it over the decades — improper splices, added load, and insulation packed against it.',
+    lookFor:[
+      {icon:'👁️', text:'Look in the basement ceiling joists. Knob and tube runs as individual wires — not in cables or conduit — held by white ceramic spools mounted to the wood.'},
+      {icon:'👁️', text:'The wires have cloth or rubber insulation — not the modern plastic you see on newer wiring. The cloth is often cracked or brittle on older runs.'},
+      {icon:'👁️', text:'Ceramic tubes poke through joists where the wires pass through the wood. These are distinctive white or cream-colored cylinders.'},
+      {icon:'👁️', text:'Check the attic as well. Knob and tube was often run through attic spaces and may still be there even if the basement has been updated.'},
+    ],
+    negotiate:'Full rewire is the only real solution. Partial rewire leaves unknown knob and tube in walls. Get a licensed electrician assessment before making an offer — the cost depends heavily on home size and whether plaster walls need opening. A rewire of a standard south city two-story runs $8,000–$15,000. Larger homes or full plaster wall restoration can reach $18,000+.',
+    svg:`<svg viewBox="0 0 340 220" xmlns="http://www.w3.org/2000/svg" width="340" height="220">
+  <!-- Basement joist view -->
+  <!-- Background -->
+  <rect x="0" y="0" width="340" height="220" fill="#0d1e3a" rx="4"/>
+  <!-- Joists -->
+  <rect x="0" y="30" width="340" height="22" fill="#1a2e1a" stroke="#2a4a2a" stroke-width="1"/>
+  <rect x="0" y="100" width="340" height="22" fill="#1a2e1a" stroke="#2a4a2a" stroke-width="1"/>
+  <rect x="0" y="170" width="340" height="22" fill="#1a2e1a" stroke="#2a4a2a" stroke-width="1"/>
+  <!-- Joist label -->
+  <text x="8" y="44" font-family="'DM Sans',sans-serif" font-size="8" fill="#8A9BB0">JOIST</text>
+  <!-- Ceramic knobs on top joist -->
+  <ellipse cx="80" cy="30" rx="7" ry="5" fill="#e8e0d0" stroke="#c0b090" stroke-width="1"/>
+  <ellipse cx="160" cy="30" rx="7" ry="5" fill="#e8e0d0" stroke="#c0b090" stroke-width="1"/>
+  <ellipse cx="240" cy="30" rx="7" ry="5" fill="#e8e0d0" stroke="#c0b090" stroke-width="1"/>
+  <!-- Wires running along -->
+  <line x1="0" y1="27" x2="340" y2="27" stroke="#8B7355" stroke-width="3"/>
+  <line x1="0" y1="33" x2="340" y2="33" stroke="#5a4a35" stroke-width="3"/>
+  <!-- Ceramic tubes through joists -->
+  <rect x="76" y="96" width="8" height="28" rx="3" fill="#e8e0d0" stroke="#c0b090" stroke-width="1"/>
+  <rect x="196" y="96" width="8" height="28" rx="3" fill="#e8e0d0" stroke="#c0b090" stroke-width="1"/>
+  <!-- Wire through tube -->
+  <line x1="80" y1="70" x2="80" y2="170" stroke="#8B7355" stroke-width="2.5"/>
+  <line x1="200" y1="70" x2="200" y2="170" stroke="#5a4a35" stroke-width="2.5"/>
+  <!-- Cloth wrapping texture hint -->
+  <line x1="60" y1="27" x2="65" y2="27" stroke="#c0a870" stroke-width="1" stroke-dasharray="2,1"/>
+  <line x1="110" y1="27" x2="115" y2="27" stroke="#c0a870" stroke-width="1" stroke-dasharray="2,1"/>
+  <!-- Labels -->
+  <rect x="240" y="18" width="85" height="22" rx="3" fill="rgba(232,160,32,.15)" stroke="#E8A020" stroke-width="1"/>
+  <text x="282" y="28" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="8" fill="#E8A020" letter-spacing=".5">CERAMIC KNOB</text>
+  <text x="282" y="37" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7" fill="#c8d8e8">holds wire to joist</text>
+  <line x1="240" y1="28" x2="247" y2="30" stroke="#E8A020" stroke-width="1" stroke-dasharray="2,2"/>
+  <rect x="240" y="96" width="82" height="22" rx="3" fill="rgba(232,160,32,.15)" stroke="#E8A020" stroke-width="1"/>
+  <text x="281" y="106" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="8" fill="#E8A020" letter-spacing=".5">CERAMIC TUBE</text>
+  <text x="281" y="115" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7" fill="#c8d8e8">wire passes through</text>
+  <line x1="240" y1="107" x2="204" y2="107" stroke="#E8A020" stroke-width="1" stroke-dasharray="2,2"/>
+  <!-- Cloth wire callout -->
+  <rect x="5" y="50" width="90" height="30" rx="3" fill="rgba(192,57,43,.15)" stroke="#E88080" stroke-width="1"/>
+  <text x="50" y="62" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="8" fill="#E88080" letter-spacing=".5">🚩 CLOTH-WRAPPED</text>
+  <text x="50" y="73" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7" fill="#c8d8e8">no ground wire · fire risk</text>
+  <line x1="95" y1="63" x2="110" y2="30" stroke="#E88080" stroke-width="1" stroke-dasharray="2,2"/>
+  <!-- Bottom label -->
+  <text x="170" y="210" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="10" fill="#8A9BB0" letter-spacing="1">KNOB &amp; TUBE — BASEMENT JOIST VIEW</text>
+</svg>`
+  },
+
+  // ── POLYBUTYLENE PIPES ───────────────────────────────────────
+  {
+    id:'poly-pipe',
+    category:'plumbing',
+    priority:'critical',
+    name:'Polybutylene Pipes',
+    tagline:'Gray plastic pipe that fails without warning — not if, when',
+    costLow:4000,costHigh:15000,
+    stlContext:'<strong>Common in St. Louis homes built 1978–1995.</strong> Used heavily in the suburban build-out of west county, south county, St. Charles County, and Jefferson County during the 1980s. A class action settlement covered replacement costs for many homeowners — but millions of homes still have it. Chlorine in municipal water degrades the pipe from the inside out.',
+    whatItIs:'Polybutylene (poly-B or PB) was a gray plastic pipe used as a cheap alternative to copper from the late 1970s through the mid-1990s. It reacts with chlorine and oxidants in municipal water, causing the pipe to become brittle and crack from the inside. Failures often happen at fittings and can cause sudden catastrophic leaks. There is no repair — full replacement is the only option.',
+    lookFor:[
+      {icon:'👁️', text:'Look under every sink. Polybutylene is gray, blue, or black flexible plastic pipe — usually 1/2 inch to 1 inch diameter.'},
+      {icon:'👁️', text:'Check at the water heater. Poly pipe connects to the heater at the top — you will see the gray flexible plastic running up and away from the unit.'},
+      {icon:'👁️', text:'Check the main shutoff valve where the water line enters the house. If the supply line coming in is gray plastic — that is poly.'},
+      {icon:'👁️', text:'Fittings are a key tell — poly pipe uses small metal or plastic crimp rings at every connection. Look for these distinctive crimped joints.'},
+    ],
+    negotiate:'Full replacement is a legitimate demand or a full offset. Do not accept partial replacement — it leaves unknown poly throughout the walls. Replacement runs $4,000–$8,000 for a typical 3-bed home, up to $15,000 for larger homes or complex plumbing layouts. This is one of the strongest negotiating positions you can have.',
+    svg:`<svg viewBox="0 0 340 220" xmlns="http://www.w3.org/2000/svg" width="340" height="220">
+  <!-- Under-sink view -->
+  <rect x="0" y="0" width="340" height="220" fill="#0d1e3a" rx="4"/>
+  <!-- Cabinet interior -->
+  <rect x="20" y="20" width="300" height="180" rx="3" fill="#162040" stroke="#2a4a8a" stroke-width="1.5"/>
+  <!-- Drain pipe (white PVC - OK) -->
+  <rect x="148" y="20" width="14" height="80" rx="3" fill="#e0e0e0" stroke="#c0c0c0" stroke-width="1"/>
+  <path d="M148,100 Q148,120 130,120 L110,120" stroke="#e0e0e0" stroke-width="14" fill="none" stroke-linecap="round"/>
+  <text x="85" y="118" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="#8A9BB0">drain (PVC OK)</text>
+  <!-- HOT poly pipe -->
+  <path d="M80,200 L80,150 Q80,130 100,130 L155,130" stroke="#7a8a9a" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <!-- COLD poly pipe -->
+  <path d="M260,200 L260,150 Q260,130 240,130 L165,130" stroke="#6a7a8a" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <!-- Crimp fittings -->
+  <rect x="74" y="145" width="12" height="10" rx="2" fill="#c0a030" stroke="#D4A017" stroke-width="1.5"/>
+  <rect x="254" y="145" width="12" height="10" rx="2" fill="#c0a030" stroke="#D4A017" stroke-width="1.5"/>
+  <!-- RED FLAG callout for poly -->
+  <rect x="25" y="130" width="100" height="38" rx="4" fill="rgba(192,57,43,.2)" stroke="#E88080" stroke-width="1.5"/>
+  <text x="75" y="145" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="9" fill="#E88080" letter-spacing=".5">🚩 POLYBUTYLENE</text>
+  <text x="75" y="156" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="#c8d8e8">gray/blue flexible plastic</text>
+  <text x="75" y="165" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="#c8d8e8">replace entire system</text>
+  <line x1="125" y1="148" x2="155" y2="133" stroke="#E88080" stroke-width="1" stroke-dasharray="2,2"/>
+  <!-- Crimp ring callout -->
+  <rect x="215" y="130" width="100" height="28" rx="4" fill="rgba(212,160,23,.15)" stroke="#D4A017" stroke-width="1"/>
+  <text x="265" y="143" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="9" fill="#D4A017" letter-spacing=".5">CRIMP RING</text>
+  <text x="265" y="153" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="#c8d8e8">key identifier</text>
+  <line x1="254" y1="148" x2="254" y2="148" stroke="#D4A017" stroke-width="1"/>
+  <!-- Hot/Cold labels -->
+  <text x="80" y="212" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="9" fill="#E88080" letter-spacing=".5">HOT</text>
+  <text x="260" y="212" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="9" fill="#8AB0D0" letter-spacing=".5">COLD</text>
+  <text x="170" y="212" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="10" fill="#8A9BB0" letter-spacing="1">UNDER-SINK SUPPLY LINES</text>
+</svg>`
+  },
+
+  // ── BASEMENT EFFLORESCENCE ───────────────────────────────────
+  {
+    id:'efflorescence',
+    category:'water',
+    priority:'high',
+    name:'Basement Water Intrusion',
+    tagline:'White mineral stains on basement walls are a past or present water problem',
+    costLow:3000,costHigh:30000,
+    stlContext:'<strong>The most common major defect across all St. Louis homes regardless of age.</strong> St. Louis clay soils expand and contract seasonally, creating hydrostatic pressure against foundation walls. Efflorescence — white chalky deposits — means water has moved through the wall at some point. Active seepage requires professional drainage remediation.',
+    whatItIs:'Efflorescence is the white or gray chalky residue left when water moves through concrete or masonry and carries dissolved minerals to the surface. It does not damage the wall itself but it is unmistakable evidence that water has been present. Active seepage — actual moisture or water coming through — indicates a drainage or waterproofing failure that can cost $5,000–$30,000 to remediate depending on severity.',
+    lookFor:[
+      {icon:'👁️', text:'Look at the base of every basement wall — especially corners and where wall meets floor. White chalky deposits are efflorescence.'},
+      {icon:'👁️', text:'Check for active moisture by pressing a paper towel to the wall. If it comes away damp the seepage is active, not historic.'},
+      {icon:'👁️', text:'Look for staining patterns — a tide line of white mineral deposits indicates the water level that regularly accumulates against the wall.'},
+      {icon:'👁️', text:'Check the sump pit if present. A dry sump pit in spring is suspicious. A sump pump that has never run means water is going somewhere else.'},
+      {icon:'👁️', text:'Look at floor joists above the foundation. Black staining or soft wood near the sill plate indicates prolonged moisture contact.'},
+    ],
+    negotiate:'Minor historic efflorescence with no active moisture is a maintenance item — not a major negotiating point. Active seepage, failed drain tile, or a wet basement is a different conversation. Get a waterproofing contractor assessment before making an offer. Remediation costs vary enormously: $3,000 for targeted crack injection to $30,000 for full interior drain tile replacement.',
+    svg:`<svg viewBox="0 0 340 220" xmlns="http://www.w3.org/2000/svg" width="340" height="220">
+  <rect x="0" y="0" width="340" height="220" fill="#0d1e3a" rx="4"/>
+  <!-- Basement wall -->
+  <rect x="30" y="20" width="280" height="160" rx="2" fill="#1a2535" stroke="#2a4a8a" stroke-width="2"/>
+  <!-- Block pattern on wall -->
+  <g stroke="#243a52" stroke-width="0.5" fill="none">
+    <line x1="30" y1="58" x2="310" y2="58"/>
+    <line x1="30" y1="96" x2="310" y2="96"/>
+    <line x1="30" y1="134" x2="310" y2="134"/>
+    <line x1="100" y1="20" x2="100" y2="180"/>
+    <line x1="170" y1="20" x2="170" y2="180"/>
+    <line x1="240" y1="20" x2="240" y2="180"/>
+    <line x1="65" y1="58" x2="65" y2="96"/>
+    <line x1="135" y1="58" x2="135" y2="96"/>
+    <line x1="205" y1="58" x2="205" y2="96"/>
+    <line x1="275" y1="58" x2="275" y2="96"/>
+  </g>
+  <!-- Floor -->
+  <rect x="0" y="180" width="340" height="40" fill="#162040" stroke="#1e3060" stroke-width="1"/>
+  <text x="170" y="196" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="9" fill="#4a6a8a">BASEMENT FLOOR</text>
+  <!-- Efflorescence deposits - white chalky stains at base -->
+  <ellipse cx="80" cy="172" rx="28" ry="8" fill="rgba(220,220,200,.25)" stroke="rgba(220,220,200,.5)" stroke-width="1"/>
+  <ellipse cx="155" cy="174" rx="22" ry="6" fill="rgba(220,220,200,.2)" stroke="rgba(220,220,200,.4)" stroke-width="1"/>
+  <ellipse cx="230" cy="171" rx="32" ry="9" fill="rgba(220,220,200,.3)" stroke="rgba(220,220,200,.5)" stroke-width="1"/>
+  <!-- Tide line staining going up wall -->
+  <path d="M50,135 Q55,120 60,130 Q65,115 70,128 Q80,110 90,125 Q95,130 100,120 Q105,132 110,122" stroke="rgba(180,170,140,.4)" stroke-width="2" fill="none"/>
+  <!-- Active seepage crack -->
+  <path d="M200,80 Q205,100 198,120 Q202,140 200,165" stroke="#3a7aaa" stroke-width="2" fill="none" stroke-dasharray="3,2"/>
+  <!-- Water drops -->
+  <ellipse cx="200" cy="168" rx="4" ry="6" fill="rgba(58,122,170,.5)" stroke="#5a9aaa" stroke-width="1"/>
+  <ellipse cx="196" cy="172" rx="3" ry="4" fill="rgba(58,122,170,.4)"/>
+  <!-- Efflorescence callout -->
+  <rect x="25" y="100" width="115" height="38" rx="4" fill="rgba(232,160,32,.15)" stroke="#E8A020" stroke-width="1.5"/>
+  <text x="82" y="114" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="9" fill="#E8A020" letter-spacing=".5">WHITE CHALKY DEPOSITS</text>
+  <text x="82" y="125" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="#c8d8e8">= water has been here</text>
+  <text x="82" y="134" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="#c8d8e8">efflorescence</text>
+  <line x1="100" y1="138" x2="100" y2="168" stroke="#E8A020" stroke-width="1" stroke-dasharray="2,2"/>
+  <!-- Active seepage callout -->
+  <rect x="215" y="80" width="110" height="38" rx="4" fill="rgba(192,57,43,.2)" stroke="#E88080" stroke-width="1.5"/>
+  <text x="270" y="94" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="9" fill="#E88080" letter-spacing=".5">🚩 ACTIVE SEEPAGE</text>
+  <text x="270" y="105" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="#c8d8e8">water moving through</text>
+  <text x="270" y="114" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="#c8d8e8">crack in block</text>
+  <line x1="215" y1="98" x2="204" y2="110" stroke="#E88080" stroke-width="1" stroke-dasharray="2,2"/>
+  <text x="170" y="214" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="10" fill="#8A9BB0" letter-spacing="1">BASEMENT WALL — WATER INTRUSION SIGNS</text>
+</svg>`
+  },
+
+  // ── TUCKPOINTING FAILURE ─────────────────────────────────────
+  {
+    id:'tuckpointing',
+    category:'structure',
+    priority:'high',
+    name:'Failed Tuckpointing — Brick Mortar',
+    tagline:'Missing or crumbling mortar is how water gets inside a brick home',
+    costLow:2000,costHigh:20000,
+    stlContext:'<strong>Specific to St. Louis — the most heavily brick-built residential market in the Midwest.</strong> Brick construction dominates the city and older inner-ring suburbs. Mortar joints have a lifespan of 25–30 years and require periodic repointing. Neglected joints allow water infiltration that causes interior damage, freeze-thaw spalling of brick faces, and eventually structural deterioration. Check the chimney closely — it is always the first place mortar fails.',
+    whatItIs:'Tuckpointing is the process of replacing deteriorated mortar in brick joints. When mortar fails it becomes recessed, crumbles, or disappears entirely, exposing the brick joints to water. Water enters, freezes in winter, and expands — spalling the brick face and widening the joint further. Spot tuckpointing ($2,000–$5,000) handles isolated areas. Full façade repointing ($10,000–$20,000) is required when mortar failure is widespread.',
+    lookFor:[
+      {icon:'👁️', text:'Stand back 20 feet from the exterior and look at the mortar lines. Failed mortar appears recessed — the joint looks hollow or shadowed compared to good mortar that sits flush.'},
+      {icon:'👁️', text:'Look for white staining (efflorescence) running down brick faces from mortar joints — this is mineral deposit from water moving through failed joints.'},
+      {icon:'👁️', text:'Check the chimney from the ground. Chimney mortar fails first because it is the most exposed. Look for visible gaps or missing mortar at the cap and top courses.'},
+      {icon:'👁️', text:'Look for spalling brick — where the face of the brick is flaking or popping off. This is freeze-thaw damage caused by water getting behind the face through failed mortar.'},
+    ],
+    negotiate:'Spot tuckpointing is a maintenance item and is rarely a strong negotiating point unless it is extensive. Widespread mortar failure affecting the full façade or chimney is a legitimate ask — get a licensed mason to scope the work before making an offer. A masonry assessment costs $200–$400 and gives you a defensible number.',
+    svg:`<svg viewBox="0 0 340 220" xmlns="http://www.w3.org/2000/svg" width="340" height="220">
+  <rect x="0" y="0" width="340" height="220" fill="#0d1e3a" rx="4"/>
+  <!-- Brick wall -->
+  <!-- Row 1 -->
+  <rect x="20" y="20" width="70" height="28" rx="1" fill="#7a3a28" stroke="#5a2a18" stroke-width="1"/>
+  <rect x="98" y="20" width="70" height="28" rx="1" fill="#8a4030" stroke="#5a2a18" stroke-width="1"/>
+  <rect x="176" y="20" width="70" height="28" rx="1" fill="#7a3a28" stroke="#5a2a18" stroke-width="1"/>
+  <rect x="254" y="20" width="66" height="28" rx="1" fill="#8a4030" stroke="#5a2a18" stroke-width="1"/>
+  <!-- Mortar row 1 - GOOD (filled) -->
+  <rect x="20" y="48" width="300" height="8" fill="#8a7a6a"/>
+  <!-- Row 2 -->
+  <rect x="20" y="56" width="70" height="28" rx="1" fill="#8a4030" stroke="#5a2a18" stroke-width="1"/>
+  <rect x="98" y="56" width="70" height="28" rx="1" fill="#7a3a28" stroke="#5a2a18" stroke-width="1"/>
+  <rect x="176" y="56" width="70" height="28" rx="1" fill="#8a4030" stroke="#5a2a18" stroke-width="1"/>
+  <rect x="254" y="56" width="66" height="28" rx="1" fill="#7a3a28" stroke="#5a2a18" stroke-width="1"/>
+  <!-- Mortar row 2 - FAILING (recessed/gaps) -->
+  <rect x="20" y="84" width="300" height="8" fill="#3a2a1a"/>
+  <!-- Gap showing failure -->
+  <rect x="80" y="84" width="40" height="8" fill="#1a1008"/>
+  <rect x="180" y="84" width="60" height="8" fill="#1a1008"/>
+  <!-- Row 3 -->
+  <rect x="20" y="92" width="70" height="28" rx="1" fill="#7a3a28" stroke="#5a2a18" stroke-width="1"/>
+  <rect x="98" y="92" width="70" height="28" rx="1" fill="#8a4030" stroke="#5a2a18" stroke-width="1"/>
+  <rect x="176" y="92" width="70" height="28" rx="1" fill="#7a3a28" stroke="#5a2a18" stroke-width="1"/>
+  <rect x="254" y="92" width="66" height="28" rx="1" fill="#8a4030" stroke="#5a2a18" stroke-width="1"/>
+  <!-- Mortar row 3 - BAD (mostly missing) -->
+  <rect x="20" y="120" width="300" height="8" fill="#1a1008"/>
+  <rect x="20" y="120" width="30" height="8" fill="#3a2a1a"/>
+  <rect x="200" y="120" width="40" height="8" fill="#3a2a1a"/>
+  <!-- Row 4 - spalling brick -->
+  <rect x="20" y="128" width="70" height="28" rx="1" fill="#7a3a28" stroke="#5a2a18" stroke-width="1"/>
+  <!-- Spalling on one brick -->
+  <polygon points="50,128 65,128 68,140 55,145 45,138" fill="#5a2a18" opacity=".8"/>
+  <rect x="98" y="128" width="70" height="28" rx="1" fill="#8a4030" stroke="#5a2a18" stroke-width="1"/>
+  <rect x="176" y="128" width="70" height="28" rx="1" fill="#7a3a28" stroke="#5a2a18" stroke-width="1"/>
+  <rect x="254" y="128" width="66" height="28" rx="1" fill="#8a4030" stroke="#5a2a18" stroke-width="1"/>
+  <!-- Efflorescence staining -->
+  <path d="M105,56 L100,120" stroke="rgba(220,210,180,.3)" stroke-width="4" fill="none"/>
+  <path d="M190,56 L185,128" stroke="rgba(220,210,180,.25)" stroke-width="3" fill="none"/>
+  <!-- Failed mortar callout -->
+  <rect x="25" y="158" width="130" height="36" rx="4" fill="rgba(192,57,43,.2)" stroke="#E88080" stroke-width="1.5"/>
+  <text x="90" y="170" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="9" fill="#E88080" letter-spacing=".5">🚩 FAILED MORTAR</text>
+  <text x="90" y="180" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="#c8d8e8">recessed / missing joints</text>
+  <text x="90" y="190" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="#c8d8e8">water entry point</text>
+  <line x1="100" y1="158" x2="130" y2="128" stroke="#E88080" stroke-width="1" stroke-dasharray="2,2"/>
+  <!-- Spalling callout -->
+  <rect x="185" y="158" width="130" height="36" rx="4" fill="rgba(232,160,32,.15)" stroke="#E8A020" stroke-width="1"/>
+  <text x="250" y="170" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="9" fill="#E8A020" letter-spacing=".5">SPALLING BRICK</text>
+  <text x="250" y="180" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="#c8d8e8">face popping off</text>
+  <text x="250" y="190" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="#c8d8e8">freeze-thaw damage</text>
+  <line x1="215" y1="158" x2="175" y2="148" stroke="#E8A020" stroke-width="1" stroke-dasharray="2,2"/>
+  <text x="170" y="214" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="10" fill="#8A9BB0" letter-spacing="1">BRICK MORTAR FAILURE — EXTERIOR WALL</text>
+</svg>`
+  },
+
+  // ── HVAC END OF LIFE ─────────────────────────────────────────
+  {
+    id:'hvac-age',
+    category:'hvac',
+    priority:'high',
+    name:'End-of-Life HVAC System',
+    tagline:'A furnace or AC over 18 years old is a replacement, not a repair',
+    costLow:6500,costHigh:14000,
+    stlContext:'<strong>Relevant in every St. Louis zip code regardless of age.</strong> HVAC systems have a 15–20 year useful life. A home built in 2000 with the original system is at or past replacement time. St. Louis has both extreme heat and extreme cold — HVAC failure is not a minor inconvenience. The data plate on every unit shows the manufacture date.',
+    whatItIs:'A furnace and central air conditioning system typically last 15–20 years with regular service. Systems past this age are not necessarily failed — but they are living on borrowed time. An aging system also runs inefficiently, raising utility costs. The risk for a buyer is closing on a home and replacing the HVAC in year one or two — an unbudgeted $6,500–$14,000 expense.',
+    lookFor:[
+      {icon:'👁️', text:'Find the data plate on the furnace (usually inside the front panel or on the side). The manufacture date is printed directly — look for month and year.'},
+      {icon:'👁️', text:'Find the data plate on the AC compressor outside. Same information. Check both — they may be different ages if one was replaced separately.'},
+      {icon:'👁️', text:'Ask if there are service records. An unmaintained 12-year-old system is worse than a maintained 18-year-old one. Ask to see receipts.'},
+      {icon:'👁️', text:'Check the filter. A dirty filter is the single most common sign of deferred maintenance. A system that has not been serviced has not been maintained.'},
+      {icon:'👁️', text:'Look for rust on the air handler, condensate pan, or around the flue pipe. Surface rust is cosmetic. Structural rust on the heat exchanger is a safety issue.'},
+    ],
+    negotiate:'A system under 10 years old in good condition is not a negotiating point. A system 15+ years old — ask for a professional HVAC assessment as a condition of your offer. A system past 18 years is a legitimate credit ask. Get an HVAC contractor quote. Budget $6,500–$9,000 for a standard split system, $10,000–$14,000 for larger homes or two-zone systems.',
+    svg:`<svg viewBox="0 0 340 220" xmlns="http://www.w3.org/2000/svg" width="340" height="220">
+  <rect x="0" y="0" width="340" height="220" fill="#0d1e3a" rx="4"/>
+  <!-- Furnace body -->
+  <rect x="40" y="30" width="100" height="150" rx="4" fill="#162040" stroke="#3a5a9a" stroke-width="2"/>
+  <!-- Furnace label -->
+  <text x="90" y="58" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="11" fill="#8A9BB0" letter-spacing="1">FURNACE</text>
+  <!-- Flue pipe -->
+  <rect x="78" y="10" width="24" height="25" rx="2" fill="#243E6E" stroke="#3a5a9a" stroke-width="1.5"/>
+  <text x="90" y="25" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7" fill="#8A9BB0">flue</text>
+  <!-- Data plate -->
+  <rect x="52" y="65" width="76" height="50" rx="2" fill="#0d1e3a" stroke="#5a7a9a" stroke-width="1"/>
+  <text x="90" y="80" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7" fill="#8A9BB0">DATA PLATE</text>
+  <text x="90" y="92" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="9" fill="#E8A020">MFG: 2001</text>
+  <text x="90" y="103" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7" fill="#c8d8e8">Model: XC20-60</text>
+  <text x="90" y="113" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7" fill="#c8d8e8">Serial: 0108A12345</text>
+  <!-- Filter slot -->
+  <rect x="52" y="140" width="76" height="18" rx="1" fill="#1a1008" stroke="#5a3a1a" stroke-width="1"/>
+  <text x="90" y="152" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7" fill="#8a5a2a">FILTER (DIRTY)</text>
+  <!-- AC Compressor outside -->
+  <rect x="200" y="60" width="110" height="110" rx="6" fill="#162040" stroke="#3a5a9a" stroke-width="2"/>
+  <text x="255" y="88" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="11" fill="#8A9BB0" letter-spacing="1">A/C UNIT</text>
+  <!-- Fan grille -->
+  <circle cx="255" cy="115" r="35" fill="none" stroke="#2a4a8a" stroke-width="1.5"/>
+  <circle cx="255" cy="115" r="25" fill="none" stroke="#2a4a8a" stroke-width="1"/>
+  <line x1="255" y1="80" x2="255" y2="150" stroke="#2a4a8a" stroke-width="1"/>
+  <line x1="220" y1="115" x2="290" y2="115" stroke="#2a4a8a" stroke-width="1"/>
+  <!-- AC data plate -->
+  <rect x="208" y="142" width="94" height="20" rx="2" fill="#0d1e3a" stroke="#5a7a9a" stroke-width="1"/>
+  <text x="255" y="151" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="9" fill="#E8A020">MFG: 2004</text>
+  <text x="255" y="160" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7" fill="#c8d8e8">check this plate</text>
+  <!-- Age callout furnace -->
+  <rect x="25" y="168" width="130" height="36" rx="4" fill="rgba(192,57,43,.2)" stroke="#E88080" stroke-width="1.5"/>
+  <text x="90" y="180" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="9" fill="#E88080" letter-spacing=".5">🚩 23 YEARS OLD</text>
+  <text x="90" y="191" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="#c8d8e8">past useful life</text>
+  <text x="90" y="200" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="#c8d8e8">budget for replacement</text>
+  <!-- Age callout AC -->
+  <rect x="185" y="168" width="130" height="36" rx="4" fill="rgba(232,160,32,.15)" stroke="#E8A020" stroke-width="1"/>
+  <text x="250" y="180" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="9" fill="#E8A020" letter-spacing=".5">⚠️ 21 YEARS OLD</text>
+  <text x="250" y="191" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="#c8d8e8">at end of useful life</text>
+  <text x="250" y="200" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="#c8d8e8">get assessment</text>
+  <text x="170" y="214" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="10" fill="#8A9BB0" letter-spacing="1">FURNACE + A/C — CHECK DATA PLATE DATES</text>
+</svg>`
+  },
+
+  // ── CLAY TILE SEWER ──────────────────────────────────────────
+  {
+    id:'clay-sewer',
+    category:'plumbing',
+    priority:'critical',
+    name:'Clay Tile Sewer Lateral',
+    tagline:'The most expensive hidden defect in St. Louis City — $3K to $15K and you cannot see it',
+    costLow:3000,costHigh:15000,
+    stlContext:'<strong>Specific to St. Louis City and older inner-ring suburbs — pre-1960 construction.</strong> Original clay tile sewer laterals are still present in large numbers throughout the city. Tree root infiltration, joint separation, and pipe collapse are common. This defect is invisible from inside the house. A sewer scope ($300–400) is the only way to know. Do not make an offer on a pre-1960 city home without one.',
+    whatItIs:'The sewer lateral is the pipe that runs from your house to the city main under the street. In homes built before 1960, this pipe is often original clay tile — sections of fired clay fitted together at joints. Over decades the joints separate, roots infiltrate, and the pipe deteriorates or collapses. A partial blockage causes slow drains. A collapsed section means raw sewage cannot leave the house. Repair ranges from $3,000 for localized work to $15,000+ for full lateral replacement under landscaping or concrete.',
+    lookFor:[
+      {icon:'👁️', text:'You cannot see this from inside the house. A sewer scope is a camera inspection of the lateral — the only way to know the condition.'},
+      {icon:'👁️', text:'Ask if a sewer scope has been done recently. Ask for the report. If the seller does not have one — make your offer contingent on a scope.'},
+      {icon:'👁️', text:'Watch all drains in the house for slow drainage or gurgling sounds when another fixture is used — these suggest partial blockage.'},
+      {icon:'👁️', text:'Ask the seller directly: has there ever been a sewer backup in this home? Sellers must disclose known material defects in Missouri.'},
+      {icon:'📍', text:'Large trees near the front of the house are the primary risk factor. Tree roots follow moisture and will find any joint gap.'},
+    ],
+    negotiate:'A failed or marginal sewer scope is one of the strongest negotiating positions you can have in St. Louis. Sellers either fix it, reduce the price, or offer a credit. Do not close without this. Replacement costs vary by depth, distance, and whether you have to break concrete or remove landscaping. Get at least two contractor bids.',
+    svg:`<svg viewBox="0 0 340 220" xmlns="http://www.w3.org/2000/svg" width="340" height="220">
+  <rect x="0" y="0" width="340" height="220" fill="#0d1e3a" rx="4"/>
+  <!-- Ground surface -->
+  <rect x="0" y="60" width="340" height="10" fill="#1a3a1a" stroke="#2a5a2a" stroke-width="1"/>
+  <text x="170" y="55" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="#4a8a4a">GROUND SURFACE</text>
+  <!-- House foundation -->
+  <rect x="20" y="0" width="80" height="65" rx="2" fill="#162040" stroke="#2a4a8a" stroke-width="2"/>
+  <text x="60" y="35" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="10" fill="#8A9BB0" letter-spacing="1">HOUSE</text>
+  <!-- Street -->
+  <rect x="260" y="0" width="80" height="220" fill="#0a1020" stroke="#1e3060" stroke-width="1"/>
+  <text x="300" y="110" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="9" fill="#4a6a8a" letter-spacing="1" transform="rotate(90 300 110)">STREET</text>
+  <!-- City main -->
+  <rect x="260" y="155" width="80" height="24" rx="3" fill="#162040" stroke="#3a5a9a" stroke-width="2"/>
+  <text x="300" y="170" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7" fill="#8A9BB0">CITY MAIN</text>
+  <!-- Good section of lateral -->
+  <rect x="100" y="148" width="60" height="18" rx="2" fill="#243E6E" stroke="#3a7a9a" stroke-width="1.5"/>
+  <!-- Failed clay tile section - gaps at joints -->
+  <rect x="160" y="148" width="22" height="18" rx="1" fill="#3a2a18" stroke="#8a6a40" stroke-width="1.5"/>
+  <line x1="182" y1="148" x2="182" y2="166" stroke="#1a0808" stroke-width="2"/>
+  <rect x="183" y="148" width="20" height="18" rx="1" fill="#3a2a18" stroke="#8a6a40" stroke-width="1.5"/>
+  <line x1="203" y1="148" x2="203" y2="166" stroke="#1a0808" stroke-width="2"/>
+  <rect x="204" y="148" width="20" height="18" rx="1" fill="#2a1a10" stroke="#8a6a40" stroke-width="1.5"/>
+  <!-- Root infiltration -->
+  <path d="M190,90 Q185,110 175,148" stroke="#2a5a2a" stroke-width="3" fill="none"/>
+  <path d="M190,90 Q195,120 195,148" stroke="#2a5a2a" stroke-width="2" fill="none"/>
+  <path d="M185,120 Q170,130 165,148" stroke="#2a5a2a" stroke-width="1.5" fill="none"/>
+  <path d="M195,130 Q210,138 210,148" stroke="#2a5a2a" stroke-width="1.5" fill="none"/>
+  <!-- Tree -->
+  <circle cx="190" cy="70" r="22" fill="#1a3a1a" stroke="#2a5a2a" stroke-width="1"/>
+  <rect x="186" y="70" width="8" height="25" fill="#3a2a18"/>
+  <text x="190" y="48" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="8" fill="#4a8a4a">TREE</text>
+  <!-- Connection to house -->
+  <rect x="100" y="148" width="5" height="18" fill="#162040" stroke="#3a5a9a" stroke-width="1"/>
+  <!-- Lateral to main -->
+  <rect x="224" y="155" width="40" height="12" rx="1" fill="#243E6E" stroke="#3a7a9a" stroke-width="1.5"/>
+  <!-- Red flag callout -->
+  <rect x="30" y="148" width="65" height="44" rx="4" fill="rgba(192,57,43,.2)" stroke="#E88080" stroke-width="1.5"/>
+  <text x="62" y="162" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="8" fill="#E88080" letter-spacing=".5">🚩 ROOT</text>
+  <text x="62" y="172" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="8" fill="#E88080" letter-spacing=".5">INFILTRATION</text>
+  <text x="62" y="183" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7" fill="#c8d8e8">pipe joints failed</text>
+  <text x="62" y="191" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7" fill="#c8d8e8">scope required</text>
+  <line x1="95" y1="170" x2="160" y2="157" stroke="#E88080" stroke-width="1" stroke-dasharray="2,2"/>
+  <!-- Gap callout -->
+  <rect x="165" y="108" width="80" height="28" rx="3" fill="rgba(232,160,32,.15)" stroke="#E8A020" stroke-width="1"/>
+  <text x="205" y="120" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="8" fill="#E8A020" letter-spacing=".5">JOINT GAPS</text>
+  <text x="205" y="130" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="7" fill="#c8d8e8">clay tile sections separate</text>
+  <line x1="190" y1="136" x2="185" y2="148" stroke="#E8A020" stroke-width="1" stroke-dasharray="2,2"/>
+  <text x="170" y="214" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="10" fill="#8A9BB0" letter-spacing="1">SEWER LATERAL — CROSS SECTION VIEW</text>
+</svg>`
+  },
+
+];
+
+// ════════════════════════════════════════════════════════════════
+// RENDER
+// ════════════════════════════════════════════════════════════════
+function renderFails(filter='all'){
+  const container=document.getElementById('fails-container');
+  const items=filter==='all'?FAILS:FAILS.filter(f=>f.category===filter);
+
+  container.innerHTML=items.map(f=>`
+    <div class="fail-card priority-${f.priority}" id="fc-${f.id}">
+      <div class="fail-header" onclick="toggleFail('${f.id}')">
+        <div class="fail-priority-dot dot-${f.priority}"></div>
+        <div class="fail-title-wrap">
+          <div class="fail-name">${f.name}</div>
+          <div class="fail-tagline">${f.tagline}</div>
+        </div>
+        <div>
+          <div class="fail-cost">$${f.costLow.toLocaleString()}–$${(f.costHigh/1000).toFixed(0)}K</div>
+          <div class="fail-cost-label">est. repair</div>
+        </div>
+        <div class="fail-expand">▼</div>
+      </div>
+      <div class="fail-body">
+        <div class="fail-illustration">${f.svg}</div>
+        <div class="fail-content">
+
+          <div class="fc-section">
+            <div class="fc-label">WHAT IT IS</div>
+            <div class="fc-text">${f.whatItIs}</div>
+          </div>
+
+          <div class="stl-flag"><strong>ST. LOUIS CONTEXT:</strong> ${f.stlContext}</div>
+
+          <div class="fc-section" style="margin-top:12px;">
+            <div class="fc-label">WHAT TO LOOK FOR AT THE SHOWING</div>
+            <ul class="look-list">
+              ${f.lookFor.map(l=>`<li><span class="li-icon">${l.icon}</span>${l.text}</li>`).join('')}
+            </ul>
+          </div>
+
+          <div class="cost-row">
+            <div class="cost-box">
+              <div class="cost-box-val" style="color:var(--warn);">$${f.costLow.toLocaleString()} – $${f.costHigh.toLocaleString()}</div>
+              <div class="cost-box-lbl">Estimated Repair Range</div>
+            </div>
+            <div class="cost-box">
+              <div class="cost-box-val" style="color:var(--red-light);">NEGOTIATE</div>
+              <div class="cost-box-lbl">This is a price reduction ask</div>
+            </div>
+          </div>
+
+          <div class="negotiate-box"><strong>HOW TO USE THIS:</strong> ${f.negotiate}</div>
+
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleFail(id){
+  const card=document.getElementById('fc-'+id);
+  const wasOpen=card.classList.contains('open');
+  // Close all
+  document.querySelectorAll('.fail-card').forEach(c=>c.classList.remove('open'));
+  // Open this one if it was closed
+  if(!wasOpen){
+    card.classList.add('open');
+    gtag('event','fail_expanded',{item:id});
+  }
+}
+
+function filterFails(category,btn){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderFails(category);
+  gtag('event','fail_filter',{category});
+}
+
+// Init
+renderFails();
+</script>
+</body>
+</html>
