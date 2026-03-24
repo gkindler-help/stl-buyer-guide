@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>St. Louis Home Cost Survival Guide — George Kindler</title>
+
+<!-- Google Analytics GA4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EEE14BZT9P"></script>
+<script>
+  window.dataLayer=window.dataLayer||[];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js',new Date());
+  gtag('config','G-EEE14BZT9P');
+</script>
+
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+
+<style>
+/* ══════════════════════════════════════════════════
+   VARIABLES & RESET
+══════════════════════════════════════════════════ */
+:root{
+  --navy:#0A1628;
+  --navy-mid:#1B3A6B;
+  --card:#162040;
+  --deep:#0d1e3a;
+  --gold:#D4A017;
+  --gold-light:#E8B820;
+  --green:#1a7a4a;
+  --green-light:#5DCAA5;
+  --red:#C0392B;
+  --red-light:#E88080;
+  --warn:#E8A020;
+  --gray:#8A9BB0;
+  --gray-light:#B0C0D0;
+  --cream:#F5F0E8;
+  --border:#1e3060;
+  --text:#c8d8e8;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--cream);min-height:100vh;}
+
+/* ══════════════════════════════════════════════════
+   HEADER
+══════════════════════════════════════════════════ */
+.header{
+  background:var(--navy);padding:12px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:600;
+}
+.hdr-l h1{font-family:'Bebas Neue',sans-serif;font-size:18px;color:white;letter-spacing:2px;line-height:1;}
+.hdr-l h1 span{color:var(--gold);}
+.hdr-l p{font-size:9px;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+.hdr-r{font-family:'Bebas Neue',sans-serif;font-size:12px;color:var(--gold);letter-spacing:1px;text-align:right;}
+.hdr-r small{display:block;font-family:'DM Sans',sans-serif;font-size:9px;color:var(--gray);}
+
+/* ══════════════════════════════════════════════════
+   MODE TOGGLE  (Buyer / Seller)
+══════════════════════════════════════════════════ */
+.mode-bar{
+  background:var(--deep);padding:10px 16px;
+  display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid var(--border);flex-wrap:wrap;
+}
+.mode-label{font-size:10px;color:var(--gray);text-transform:uppercase;letter-spacing:1px;flex-shrink:0;}
+.mode-toggle{display:flex;gap:0;border:1.5px solid #3a5a9a;border-radius:4px;overflow:hidden;}
+.mode-btn{
+  padding:7px 18px;border:none;background:transparent;
+  font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;
+  color:var(--gray);cursor:pointer;transition:all .15s;
+}
+.mode-btn.active{background:var(--gold);color:var(--navy);}
+.mode-desc{font-size:11px;color:var(--gray-light);line-height:1.4;flex:1;}
+
+/* ══════════════════════════════════════════════════
+   ADDRESS BAR + MAP
+══════════════════════════════════════════════════ */
+.address-bar{
+  background:var(--card);padding:10px 16px;
+  display:flex;gap:8px;flex-wrap:wrap;
+  border-bottom:1px solid var(--border);
+}
+.address-bar input{
+  flex:1;min-width:0;padding:9px 12px;
+  background:var(--deep);border:1.5px solid #3a5a9a;
+  border-radius:3px;font-family:'DM Sans',sans-serif;
+  font-size:13px;color:white;
+}
+.address-bar input:focus{outline:none;border-color:var(--gold);}
+.address-bar input::placeholder{color:#5a7a9a;}
+.addr-btn{
+  padding:9px 14px;border:none;border-radius:3px;
+  font-family:'Bebas Neue',sans-serif;font-size:12px;
+  letter-spacing:1px;cursor:pointer;white-space:nowrap;
+}
+.btn-map{background:var(--gold);color:var(--navy);}
+.btn-map:hover{background:var(--gold-light);}
+.btn-geo{background:var(--card);color:var(--gray-light);border:1.5px solid #3a5a9a;}
+.btn-geo:hover{border-color:var(--gold);color:var(--gold);}
+#property-map{height:160px;width:100%;border-bottom:1px solid var(--border);}
+
+/* ══════════════════════════════════════════════════
+   TAB NAV
+══════════════════════════════════════════════════ */
+.tab-nav{
+  background:var(--navy);border-bottom:1px solid var(--border);
+  display:flex;position:sticky;top:57px;z-index:500;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;
+}
+.tab-nav::-webkit-scrollbar{display:none;}
+.tnav-btn{
+  flex:1;min-width:80px;padding:11px 8px;border:none;background:transparent;
+  font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;
+  color:var(--gray);cursor:pointer;border-bottom:3px solid transparent;
+  transition:all .15s;white-space:nowrap;text-align:center;
+  position:relative;
+}
+.tnav-btn.active{color:var(--gold);border-bottom-color:var(--gold);}
+.tnav-btn:hover:not(.active){color:white;}
+.tab-badge{
+  position:absolute;top:6px;right:8px;
+  background:var(--warn);color:var(--navy);
+  font-family:'Bebas Neue',sans-serif;font-size:9px;
+  width:16px;height:16px;border-radius:50%;
+  display:none;align-items:center;justify-content:center;
+}
+.tab-badge.visible{display:flex;}
+
+/* ══════════════════════════════════════════════════
+   PANELS
+══════════════════════════════════════════════════ */
+.panel{display:none;}
+.panel.active{display:block;}
+.panel-wrap{max-width:640px;margin:0 auto;padding:16px 14px 80px;}
+
+/* ══════════════════════════════════════════════════
+   SECTION HEADERS
+══════════════════════════════════════════════════ */
+.sec-head{
+  font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;
+  color:var(--gold);margin-bottom:10px;padding-bottom:6px;
+  border-bottom:1px solid var(--border);
+}
+.context-box{
+  background:var(--card);border:1px solid var(--border);
+  border-left:3px solid var(--gold);border-radius:0 4px 4px 0;
+  padding:10px 12px;margin-bottom:14px;
+  font-size:11px;color:var(--text);line-height:1.7;
+}
+.context-box strong{color:var(--gold);}
+.context-box.seller{border-left-color:var(--green-light);}
+.context-box.seller strong{color:var(--green-light);}
+
+/* ══════════════════════════════════════════════════
+   SVG HOUSE DIAGRAM
+══════════════════════════════════════════════════ */
+.house-wrap{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:4px;padding:12px;margin-bottom:14px;
+  position:relative;
+}
+.house-title{
+  font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1.5px;
+  color:var(--gray-light);margin-bottom:8px;text-align:center;
+}
+.house-svg-container{
+  position:relative;width:100%;max-width:460px;margin:0 auto;
+}
+#house-svg{width:100%;height:auto;display:block;}
+
+/* Hotspot zones */
+.hs-zone{
+  cursor:pointer;
+  transition:opacity .15s;
+}
+.hs-zone:hover .hs-fill{opacity:.35;}
+.hs-zone.flagged .hs-fill{opacity:.5;}
+.hs-fill{opacity:0;transition:opacity .2s;}
+
+/* Hotspot labels */
+.hs-label{
+  pointer-events:none;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:9px;letter-spacing:.5px;
+  fill:white;opacity:0;
+  transition:opacity .2s;
+}
+.hs-zone:hover .hs-label,
+.hs-zone.flagged .hs-label{opacity:1;}
+
+/* Flag indicators on house */
+.hs-dot{
+  r:5;
+  fill:var(--warn);stroke:var(--navy);stroke-width:1.5;
+  opacity:0;transition:opacity .2s;
+  pointer-events:none;
+}
+.hs-zone.flagged .hs-dot{opacity:1;}
+
+/* Legend */
+.house-legend{
+  display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;justify-content:center;
+}
+.hl-item{
+  display:flex;align-items:center;gap:4px;
+  font-size:10px;color:var(--gray-light);cursor:pointer;
+  background:var(--deep);border:1px solid #2a4a8a;
+  border-radius:3px;padding:5px 8px;transition:all .15s;
+}
+.hl-item:hover{border-color:#5a7aaa;}
+.hl-item.flagged{border-color:var(--warn);background:rgba(232,160,32,.08);}
+.hl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+/* ══════════════════════════════════════════════════
+   REPAIR LIST (text cards below house)
+══════════════════════════════════════════════════ */
+.repair-section{margin-bottom:14px;}
+.cat-hdr{
+  font-size:9px;font-weight:700;text-transform:uppercase;
+  letter-spacing:1.5px;color:var(--gray);
+  margin:12px 0 6px;padding-left:2px;
+}
+.repair-card{
+  background:var(--card);border:1.5px solid #2a4a8a;
+  border-radius:4px;padding:10px 12px;margin-bottom:6px;
+  cursor:pointer;display:flex;align-items:center;
+  justify-content:space-between;transition:all .15s;
+}
+.repair-card:hover{border-color:#5a7aaa;}
+.repair-card.flagged{border-color:var(--warn);background:rgba(232,160,32,.06);}
+.repair-card.flagged.major{border-color:var(--red-light);background:rgba(224,136,128,.06);}
+.rc-left{flex:1;}
+.rc-name{
+  font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.3px;
+  color:white;margin-bottom:1px;
+}
+.rc-range{font-size:11px;color:var(--gray-light);}
+.rc-stl{font-size:10px;color:var(--warn);margin-top:2px;font-style:italic;}
+.rc-check{
+  width:22px;height:22px;border-radius:50%;flex-shrink:0;margin-left:10px;
+  border:2px solid #3a5a9a;background:var(--deep);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;color:transparent;transition:all .15s;
+}
+.repair-card.flagged .rc-check{background:var(--warn);border-color:var(--warn);color:var(--navy);}
+.repair-card.flagged.major .rc-check{background:var(--red-light);border-color:var(--red-light);color:var(--navy);}
+
+/* ══════════════════════════════════════════════════
+   TAB 2 — SF CALCULATOR
+══════════════════════════════════════════════════ */
+.sf-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.sf-field label{
+  display:block;font-size:9px;font-weight:700;text-transform:uppercase;
+  letter-spacing:1.2px;color:var(--gray-light);margin-bottom:5px;
+}
+.sf-field input{
+  width:100%;padding:9px 12px;
+  background:var(--deep);border:1.5px solid #3a5a9a;
+  border-radius:3px;font-family:'DM Sans',sans-serif;font-size:14px;color:white;
+}
+.sf-field input:focus{outline:none;border-color:var(--gold);}
+.sf-field input::placeholder{color:#5a7a9a;}
+.wt-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.wt-card{
+  background:var(--deep);border:1.5px solid #3a5a9a;
+  border-radius:3px;padding:8px 10px;cursor:pointer;transition:all .15s;
+}
+.wt-card.selected{border-color:var(--gold);background:rgba(212,160,23,.08);}
+.wt-card:hover:not(.selected){border-color:#5a7aaa;}
+.wt-name{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.3px;color:white;}
+.wt-rate{font-size:10px;color:var(--gray-light);margin-top:1px;}
+
+.sf-result-box{
+  background:var(--deep);border:1px solid #8a6010;border-radius:4px;
+  padding:12px 14px;margin-bottom:10px;display:none;
+}
+.sf-result-box.visible{display:block;}
+.sfr-val{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold);letter-spacing:.5px;}
+.sfr-sub{font-size:11px;color:var(--gray-light);margin-top:3px;}
+
+/* SF Report list */
+.sf-report-list{margin-top:16px;}
+.sf-list-item{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:3px;padding:9px 12px;margin-bottom:6px;
+  display:flex;align-items:center;justify-content:space-between;font-size:12px;
+}
+.sfl-name{color:var(--text);}
+.sfl-cost{font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--warn);letter-spacing:.3px;}
+.sfl-remove{background:transparent;border:none;color:var(--gray);cursor:pointer;font-size:14px;padding-left:8px;}
+.sfl-remove:hover{color:var(--red-light);}
+
+.sf-subtotal{
+  background:var(--deep);border:1.5px solid #8a6010;border-radius:4px;
+  padding:10px 14px;display:flex;justify-content:space-between;align-items:center;
+  margin-top:6px;
+}
+.sfs-label{font-size:10px;color:var(--gray-light);text-transform:uppercase;letter-spacing:.5px;}
+.sfs-val{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold);letter-spacing:.5px;}
+
+.merge-btn{
+  width:100%;margin-top:8px;padding:10px;border:1.5px solid var(--green-light);
+  background:transparent;border-radius:3px;
+  font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1px;
+  color:var(--green-light);cursor:pointer;transition:all .15s;
+}
+.merge-btn:hover{background:rgba(93,202,165,.08);}
+.merge-btn:disabled{opacity:.4;cursor:not-allowed;}
+.merge-note{font-size:10px;color:var(--gray-light);text-align:center;margin-top:6px;line-height:1.5;}
+
+/* ══════════════════════════════════════════════════
+   TAB 3 — REPORT
+══════════════════════════════════════════════════ */
+.report-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:4px;margin-bottom:12px;overflow:hidden;
+}
+.rc-header{
+  background:var(--deep);padding:10px 14px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);
+}
+.rc-title{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1.5px;color:var(--gold);}
+.rc-subtitle{font-size:10px;color:var(--gray-light);}
+.rc-empty{padding:16px;text-align:center;font-size:12px;color:var(--gray);line-height:1.6;}
+.rc-rows{}
+.rc-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 14px;border-bottom:1px solid var(--border);font-size:12px;
+}
+.rc-row:last-child{border-bottom:none;}
+.rcr-name{color:var(--text);}
+.rcr-cost{font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--warn);letter-spacing:.3px;}
+.rcr-del{background:transparent;border:none;color:var(--gray);cursor:pointer;font-size:13px;padding-left:8px;}
+.rcr-del:hover{color:var(--red-light);}
+.rc-total-row{
+  background:var(--deep);padding:10px 14px;
+  display:flex;justify-content:space-between;align-items:center;
+  border-top:2px solid #2a4a8a;
+}
+.rct-label{font-size:10px;color:var(--gray-light);text-transform:uppercase;letter-spacing:.5px;}
+.rct-val{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold);letter-spacing:.5px;}
+.rct-val.danger{color:var(--red-light);}
+
+/* Context boxes */
+.context-insight{
+  border-radius:0 4px 4px 0;padding:12px 14px;margin-bottom:12px;
+  font-size:11px;line-height:1.7;border-left:3px solid;
+}
+.ci-buyer{background:rgba(232,160,32,.06);border-color:var(--warn);color:var(--text);}
+.ci-buyer strong{color:var(--warn);}
+.ci-seller{background:rgba(93,202,165,.06);border-color:var(--green-light);color:var(--text);}
+.ci-seller strong{color:var(--green-light);}
+
+/* Grand total */
+.grand-total{
+  background:rgba(212,160,23,.08);border:1.5px solid var(--gold);
+  border-radius:4px;padding:14px 16px;margin-bottom:12px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
+}
+.gt-label{font-size:10px;color:var(--gray-light);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
+.gt-val{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--gold);letter-spacing:.5px;line-height:1;}
+.gt-sub{font-size:10px;color:var(--gray-light);margin-top:3px;}
+.gt-right{text-align:right;}
+.gt-midpoint{font-family:'Bebas Neue',sans-serif;font-size:18px;color:white;letter-spacing:.3px;}
+.gt-mid-label{font-size:10px;color:var(--gray-light);}
+
+/* ══════════════════════════════════════════════════
+   TAB 4 — SEND
+══════════════════════════════════════════════════ */
+.send-field{margin-bottom:12px;}
+.send-field label{
+  display:block;font-size:9px;font-weight:700;text-transform:uppercase;
+  letter-spacing:1.2px;color:var(--gray-light);margin-bottom:5px;
+}
+.send-field input{
+  width:100%;padding:10px 12px;
+  background:var(--deep);border:1.5px solid #3a5a9a;
+  border-radius:3px;font-family:'DM Sans',sans-serif;font-size:14px;color:white;
+}
+.send-field input:focus{outline:none;border-color:var(--gold);}
+.send-field input::placeholder{color:#5a7a9a;}
+.cc-row{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--gray-light);margin-bottom:12px;}
+.cc-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--gold);}
+
+.cta-george{
+  background:var(--card);border:2px solid var(--gold);
+  border-radius:4px;padding:14px;text-align:center;margin-bottom:12px;
+}
+.cta-george h3{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1.5px;color:white;margin-bottom:4px;}
+.cta-george p{font-size:11px;color:var(--gray-light);line-height:1.5;margin-bottom:10px;}
+
+/* ══════════════════════════════════════════════════
+   SHARED BUTTONS
+══════════════════════════════════════════════════ */
+.btn-gold{
+  width:100%;padding:11px;border:none;border-radius:3px;
+  background:var(--gold);color:var(--navy);
+  font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1.5px;
+  cursor:pointer;transition:all .15s;margin-bottom:6px;
+}
+.btn-gold:hover{background:var(--gold-light);}
+.btn-outline{
+  width:100%;padding:10px;border:1.5px solid #3a5a9a;border-radius:3px;
+  background:transparent;color:var(--gray-light);
+  font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1px;
+  cursor:pointer;transition:all .15s;margin-bottom:6px;
+}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+.btn-call{
+  display:block;background:var(--gold);border:none;
+  padding:13px;width:100%;border-radius:3px;
+  font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;
+  color:var(--navy);cursor:pointer;text-decoration:none;text-align:center;
+  transition:all .15s;
+}
+.btn-call:hover{background:var(--gold-light);}
+
+/* ══════════════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════════════ */
+.footer{
+  background:var(--card);padding:10px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-top:1px solid var(--border);flex-wrap:wrap;gap:8px;
+}
+.footer p{font-size:10px;color:var(--gray);}
+.footer a{color:var(--gold);text-decoration:none;}
+
+/* ══════════════════════════════════════════════════
+   MOBILE
+══════════════════════════════════════════════════ */
+@media(max-width:480px){
+  .sf-grid{grid-template-columns:1fr;}
+  .hdr-r{display:none;}
+  .address-bar{flex-direction:column;}
+  .addr-btn{width:100%;}
+  .wt-grid{grid-template-columns:1fr 1fr;}
+  .grand-total{flex-direction:column;}
+  .gt-right{text-align:left;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header class="header">
+  <div class="hdr-l">
+    <h1>HOME COST <span>SURVIVAL GUIDE</span></h1>
+    <p>George Kindler · The Closing Pros · St. Louis</p>
+  </div>
+  <div class="hdr-r">GEORGE KINDLER<small>314.435.1087</small></div>
+</header>
+
+<!-- ══ MODE TOGGLE ══ -->
+<div class="mode-bar">
+  <span class="mode-label">I AM A:</span>
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="btn-buyer" onclick="setMode('buyer')">🏠 BUYER</button>
+    <button class="mode-btn" id="btn-seller" onclick="setMode('seller')">📋 SELLER</button>
+  </div>
+  <span class="mode-desc" id="mode-desc">Flag issues before you make an offer</span>
+</div>
+
+<!-- ══ ADDRESS + MAP ══ -->
+<div class="address-bar">
+  <input id="propAddress" placeholder="Enter property address...">
+  <button class="addr-btn btn-map" onclick="searchAddress()">📍 MAP</button>
+  <button class="addr-btn btn-geo" onclick="geoLocate()">📡 LOCATE</button>
+</div>
+<div id="property-map"></div>
+
+<!-- ══ TAB NAV ══ -->
+<nav class="tab-nav">
+  <button class="tnav-btn active" id="tnav-inspect" onclick="switchTab('inspect')">
+    🏚 INSPECT
+    <span class="tab-badge" id="badge-inspect">0</span>
+  </button>
+  <button class="tnav-btn" id="tnav-measure" onclick="switchTab('measure')">
+    📐 MEASURE
+    <span class="tab-badge" id="badge-measure">0</span>
+  </button>
+  <button class="tnav-btn" id="tnav-report" onclick="switchTab('report')">
+    📋 REPORT
+    <span class="tab-badge" id="badge-report">0</span>
+  </button>
+  <button class="tnav-btn" id="tnav-send" onclick="switchTab('send')">
+    📧 SEND
+  </button>
+</nav>
+
+<!-- ══════════════════════════════════════════════
+     PANEL 1 — INSPECT
+══════════════════════════════════════════════════ -->
+<div id="panel-inspect" class="panel active">
+<div class="panel-wrap">
+
+  <div class="context-box" id="inspect-context">
+    <strong>Walk the property and tap what you see.</strong> This tool uses St. Louis market rates — not national averages. Every dollar you identify is a dollar you can negotiate before you make an offer.
+  </div>
+
+  <!-- SVG HOUSE DIAGRAM -->
+  <div class="house-wrap">
+    <div class="house-title" id="house-title">TAP A ZONE TO FLAG AN ISSUE</div>
+    <div class="house-svg-container">
+      <svg id="house-svg" viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg">
+
+        <!-- ── HOUSE BASE STRUCTURE ── -->
+        <!-- Sky background -->
+        <rect x="0" y="0" width="400" height="280" fill="#0d1e3a" rx="4"/>
+
+        <!-- Ground -->
+        <rect x="0" y="240" width="400" height="40" fill="#0a1628"/>
+        <line x1="0" y1="240" x2="400" y2="240" stroke="#1e3060" stroke-width="1.5"/>
+
+        <!-- Main house body -->
+        <rect x="60" y="110" width="280" height="130" fill="#162040" stroke="#2a4a8a" stroke-width="1.5"/>
+
+        <!-- Roof -->
+        <polygon points="40,115 200,30 360,115" fill="#1B3A6B" stroke="#3a5a9a" stroke-width="1.5"/>
+
+        <!-- Chimney -->
+        <rect x="270" y="45" width="28" height="50" fill="#162040" stroke="#2a4a8a" stroke-width="1.5"/>
+        <rect x="267" y="40" width="34" height="8" fill="#1B3A6B" stroke="#3a5a9a" stroke-width="1"/>
+
+        <!-- Garage -->
+        <rect x="60" y="155" width="100" height="85" fill="#0d1e3a" stroke="#2a4a8a" stroke-width="1.5"/>
+        <!-- Garage door lines -->
+        <line x1="60" y1="175" x2="160" y2="175" stroke="#2a4a8a" stroke-width="1"/>
+        <line x1="60" y1="195" x2="160" y2="195" stroke="#2a4a8a" stroke-width="1"/>
+        <line x1="60" y1="215" x2="160" y2="215" stroke="#2a4a8a" stroke-width="1"/>
+        <line x1="110" y1="155" x2="110" y2="240" stroke="#2a4a8a" stroke-width="1"/>
+
+        <!-- Front door -->
+        <rect x="178" y="180" width="44" height="60" fill="#0d1e3a" stroke="#3a5a9a" stroke-width="1.5"/>
+        <circle cx="215" cy="213" r="3" fill="#D4A017"/>
+        <!-- Door arch -->
+        <path d="M178,180 Q200,162 222,180" fill="none" stroke="#3a5a9a" stroke-width="1.5"/>
+
+        <!-- Windows - Front -->
+        <rect x="240" y="155" width="45" height="35" fill="#0d1e3a" stroke="#3a5a9a" stroke-width="1.5" rx="1"/>
+        <line x1="262" y1="155" x2="262" y2="190" stroke="#3a5a9a" stroke-width="1"/>
+        <line x1="240" y1="172" x2="285" y2="172" stroke="#3a5a9a" stroke-width="1"/>
+
+        <!-- Windows - Second story (gable area) -->
+        <rect x="177" y="75" width="46" height="30" fill="#0d1e3a" stroke="#3a5a9a" stroke-width="1.5" rx="1"/>
+        <line x1="200" y1="75" x2="200" y2="105" stroke="#3a5a9a" stroke-width="1"/>
+        <line x1="177" y1="90" x2="223" y2="90" stroke="#3a5a9a" stroke-width="1"/>
+
+        <!-- Trees/landscaping hint -->
+        <circle cx="22" cy="200" r="22" fill="#0a2018" stroke="#1a5a30" stroke-width="1"/>
+        <rect x="18" y="218" width="8" height="22" fill="#0a1628"/>
+        <circle cx="378" cy="195" r="18" fill="#0a2018" stroke="#1a5a30" stroke-width="1"/>
+        <rect x="374" y="210" width="8" height="30" fill="#0a1628"/>
+
+        <!-- Basement indicator line -->
+        <line x1="60" y1="240" x2="340" y2="240" stroke="#8A9BB0" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="200" y="253" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="8" fill="#8A9BB0" letter-spacing="1">BASEMENT / FOUNDATION</text>
+
+        <!-- ══ HOTSPOT OVERLAY ZONES ══ -->
+
+        <!-- ZONE: Roof -->
+        <g class="hs-zone" id="zone-roof" onclick="toggleZone('roof')">
+          <polygon class="hs-fill" points="40,115 200,30 360,115" fill="#E8A020"/>
+          <text class="hs-label" x="200" y="88" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="11" letter-spacing="1" fill="white">ROOF</text>
+          <circle class="hs-dot" cx="200" cy="72" r="5" id="dot-roof"/>
+        </g>
+
+        <!-- ZONE: Chimney -->
+        <g class="hs-zone" id="zone-chimney" onclick="toggleZone('chimney')">
+          <rect class="hs-fill" x="265" y="38" width="38" height="58" fill="#E8A020"/>
+          <text class="hs-label" x="284" y="68" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="8" fill="white">CHIMNEY</text>
+          <circle class="hs-dot" cx="284" cy="58" r="5" id="dot-chimney"/>
+        </g>
+
+        <!-- ZONE: Exterior Walls / Tuckpointing -->
+        <g class="hs-zone" id="zone-exterior" onclick="toggleZone('exterior')">
+          <rect class="hs-fill" x="160" y="110" width="180" height="130" fill="#C0392B"/>
+          <text class="hs-label" x="250" y="133" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="9" fill="white">EXTERIOR</text>
+          <circle class="hs-dot" cx="320" cy="130" r="5" id="dot-exterior"/>
+        </g>
+
+        <!-- ZONE: Windows -->
+        <g class="hs-zone" id="zone-windows" onclick="toggleZone('windows')">
+          <rect class="hs-fill" x="232" y="148" width="62" height="50" fill="#1B3A6B" rx="2"/>
+          <text class="hs-label" x="263" y="165" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="8" fill="white">WINDOWS</text>
+          <circle class="hs-dot" cx="291" cy="157" r="5" id="dot-windows"/>
+        </g>
+
+        <!-- ZONE: Garage -->
+        <g class="hs-zone" id="zone-garage" onclick="toggleZone('garage')">
+          <rect class="hs-fill" x="58" y="153" width="104" height="89" fill="#8A9BB0" rx="1"/>
+          <text class="hs-label" x="110" y="200" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="10" fill="white">GARAGE</text>
+          <circle class="hs-dot" cx="110" cy="165" r="5" id="dot-garage"/>
+        </g>
+
+        <!-- ZONE: HVAC (side of house) -->
+        <g class="hs-zone" id="zone-hvac" onclick="toggleZone('hvac')">
+          <rect class="hs-fill" x="330" y="190" width="28" height="50" fill="#D4A017" rx="2"/>
+          <text class="hs-label" x="344" y="220" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="8" fill="white" transform="rotate(-90 344 220)">HVAC</text>
+          <circle class="hs-dot" cx="344" cy="210" r="5" id="dot-hvac"/>
+        </g>
+
+        <!-- ZONE: Electrical Panel (inside wall indicator) -->
+        <g class="hs-zone" id="zone-electrical" onclick="toggleZone('electrical')">
+          <rect class="hs-fill" x="62" y="112" width="30" height="40" fill="#5DCAA5" rx="1"/>
+          <text class="hs-label" x="77" y="128" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="7" fill="white">ELEC</text>
+          <text class="hs-label" x="77" y="138" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="7" fill="white">PANEL</text>
+          <circle class="hs-dot" cx="77" cy="120" r="5" id="dot-electrical"/>
+        </g>
+
+        <!-- ZONE: Basement / Foundation -->
+        <g class="hs-zone" id="zone-basement" onclick="toggleZone('basement')">
+          <rect class="hs-fill" x="60" y="230" width="280" height="12" fill="#C0392B"/>
+          <text class="hs-label" x="200" y="239" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="8" fill="white">BASEMENT / FOUNDATION</text>
+          <circle class="hs-dot" cx="200" cy="236" r="5" id="dot-basement"/>
+        </g>
+
+        <!-- ZONE: Sewer / Plumbing (below grade indicator) -->
+        <g class="hs-zone" id="zone-sewer" onclick="toggleZone('sewer')">
+          <rect class="hs-fill" x="145" y="248" width="110" height="24" fill="#8A9BB0" rx="2"/>
+          <text class="hs-label" x="200" y="264" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="8" fill="white">SEWER LATERAL</text>
+          <circle class="hs-dot" cx="200" cy="258" r="5" id="dot-sewer"/>
+        </g>
+
+      </svg>
+    </div>
+
+    <!-- HOTSPOT LEGEND -->
+    <div class="house-legend" id="house-legend">
+      <!-- Injected by JS -->
+    </div>
+  </div>
+
+  <!-- TEXT REPAIR CARDS (all items, grouped) -->
+  <div class="sec-head">ALL ITEMS — TAP TO FLAG</div>
+  <div id="repair-list">
+    <!-- Injected by JS -->
+  </div>
+
+</div>
+</div><!-- /panel-inspect -->
+
+
+<!-- ══════════════════════════════════════════════
+     PANEL 2 — MEASURE (SF CALCULATOR)
+══════════════════════════════════════════════════ -->
+<div id="panel-measure" class="panel">
+<div class="panel-wrap">
+
+  <div class="context-box">
+    <strong>Measure rooms or surfaces</strong> and get a cost estimate for specific work types. Add each calculation to your SF Summary. When you are done, merge the SF total into your full report — or keep it separate to share with a contractor.
+  </div>
+
+  <div class="sec-head">📐 ENTER DIMENSIONS</div>
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:4px;padding:14px;margin-bottom:14px;">
+    <div class="sf-grid">
+      <div class="sf-field">
+        <label>Length (ft)</label>
+        <input id="sf-length" type="number" placeholder="e.g. 20" min="1" step="0.5">
+      </div>
+      <div class="sf-field">
+        <label>Width (ft)</label>
+        <input id="sf-width" type="number" placeholder="e.g. 15" min="1" step="0.5">
+      </div>
+    </div>
+
+    <div style="font-size:9px;color:var(--gray-light);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px;font-weight:700;">Work Type</div>
+    <div class="wt-grid" id="wt-grid"><!-- Injected --></div>
+
+    <div class="sf-result-box" id="sf-result-box">
+      <div class="sfr-val" id="sfr-val">—</div>
+      <div class="sfr-sub" id="sfr-sub">—</div>
+    </div>
+
+    <button class="btn-gold" onclick="calculateSF()">CALCULATE</button>
+    <button class="btn-outline" id="btn-add-sf" onclick="addToSFReport()" style="display:none;">+ ADD TO SF SUMMARY</button>
+  </div>
+
+  <!-- SF SUMMARY LIST -->
+  <div class="sec-head">SF SUMMARY</div>
+  <div id="sf-empty" style="padding:16px;text-align:center;font-size:12px;color:var(--gray);line-height:1.6;">
+    No measurements added yet. Calculate dimensions above and add them here.
+  </div>
+  <div class="sf-report-list" id="sf-report-list"></div>
+
+  <div id="sf-subtotal-wrap" style="display:none;">
+    <div class="sf-subtotal">
+      <div>
+        <div class="sfs-label">SF Summary Total</div>
+        <div style="font-size:10px;color:var(--gray-light);margin-top:2px;">All measurements combined</div>
+      </div>
+      <div class="sfs-val" id="sfs-val">$0</div>
+    </div>
+    <button class="merge-btn" id="merge-btn" onclick="mergeSFIntoReport()">
+      ✚ MERGE INTO FULL REPORT
+    </button>
+    <div class="merge-note">Merges the SF total range into the Inspect tab report. You can also keep it separate and share just the SF summary with a contractor.</div>
+  </div>
+
+</div>
+</div><!-- /panel-measure -->
+
+
+<!-- ══════════════════════════════════════════════
+     PANEL 3 — REPORT
+══════════════════════════════════════════════════ -->
+<div id="panel-report" class="panel">
+<div class="panel-wrap">
+
+  <!-- Repair items report -->
+  <div class="report-card">
+    <div class="rc-header">
+      <div class="rc-title">FLAGGED REPAIR ITEMS</div>
+      <div class="rc-subtitle" id="repair-count">0 items</div>
+    </div>
+    <div id="rp-empty" class="rc-empty">No repair items flagged yet. Go to the Inspect tab and tap items you see.</div>
+    <div id="rp-rows" class="rc-rows"></div>
+    <div class="rc-total-row" id="repair-total-row" style="display:none;">
+      <div>
+        <div class="rct-label">Repair Estimate</div>
+      </div>
+      <div class="rct-val" id="repair-total-val">$0</div>
+    </div>
+  </div>
+
+  <!-- SF report (if merged) -->
+  <div class="report-card" id="sf-merged-card" style="display:none;">
+    <div class="rc-header">
+      <div class="rc-title">SF WORK SUMMARY (MERGED)</div>
+      <div class="rc-subtitle" id="sf-merged-count">0 items</div>
+    </div>
+    <div id="sf-merged-rows" class="rc-rows"></div>
+    <div class="rc-total-row">
+      <div><div class="rct-label">SF Work Estimate</div></div>
+      <div class="rct-val" id="sf-merged-total">$0</div>
+    </div>
+  </div>
+
+  <!-- Grand total -->
+  <div class="grand-total" id="grand-total" style="display:none;">
+    <div>
+      <div class="gt-label">Total Estimated Cost</div>
+      <div class="gt-val" id="gt-val">$0</div>
+      <div class="gt-sub">Low – High range</div>
+    </div>
+    <div class="gt-right">
+      <div class="gt-mid-label">Midpoint (use for negotiation)</div>
+      <div class="gt-midpoint" id="gt-midpoint">$0</div>
+    </div>
+  </div>
+
+  <!-- Context insight (buyer or seller) -->
+  <div id="report-context-box" style="display:none;"></div>
+
+  <div class="sec-head" style="margin-top:4px;">NEXT STEPS</div>
+  <a href="tel:3144351087" class="btn-call">📞 TALK TO GEORGE — 314.435.1087</a>
+  <button class="btn-outline" style="margin-top:6px;" onclick="switchTab('send')">SAVE OR EMAIL THIS REPORT →</button>
+
+</div>
+</div><!-- /panel-report -->
+
+
+<!-- ══════════════════════════════════════════════
+     PANEL 4 — SEND
+══════════════════════════════════════════════════ -->
+<div id="panel-send" class="panel">
+<div class="panel-wrap">
+
+  <div class="context-box">
+    Enter your email and this report will open in your mail app pre-filled with your flagged items and cost estimates. Check the box below to send George a copy — he will follow up with negotiation context specific to this zip code.
+  </div>
+
+  <div class="sec-head">YOUR DETAILS</div>
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:4px;padding:14px;margin-bottom:14px;">
+    <div class="send-field">
+      <label>Your Name</label>
+      <input id="userName" placeholder="First name" type="text">
+    </div>
+    <div class="send-field">
+      <label>Your Email</label>
+      <input id="userEmail" placeholder="you@email.com" type="email">
+    </div>
+    <div class="cc-row">
+      <input type="checkbox" id="ccMe">
+      <label for="ccMe">Send a copy to George — he will follow up with offer strategy for this zip code</label>
+    </div>
+    <button class="btn-gold" onclick="sendReport()">📧 SEND MY REPORT</button>
+    <button class="btn-outline" onclick="copyReport()">📋 COPY TO CLIPBOARD</button>
+  </div>
+
+  <div class="cta-george">
+    <h3>WANT GEORGE TO WALK THIS PROPERTY?</h3>
+    <p>13 years and 3,000+ property walkthroughs across St. Louis. He can tell you whether what you're seeing is normal for this zip code — and whether the cost estimate justifies a price reduction or a concession ask.</p>
+    <a href="tel:3144351087" class="btn-call">📞 CALL 314.435.1087</a>
+  </div>
+
+  <div style="margin-top:12px;">
+    <a href="https://sites.google.com/view/st-louis-real-estate-guides/freestlouisrealestateguides"
+       target="_blank" class="btn-outline" style="display:block;text-align:center;text-decoration:none;">
+      📊 ALL FREE BUYER RESOURCES →
+    </a>
+  </div>
+
+</div>
+</div><!-- /panel-send -->
+
+<!-- FOOTER -->
+<div class="footer">
+  <p>George Kindler · The Closing Pros LLC · Licensed Missouri Real Estate Agent · 2025 St. Louis Market Rates</p>
+  <p><a href="https://sites.google.com/view/st-louis-real-estate-guides/freestlouisrealestateguides" target="_blank">Free Resources</a></p>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     LEAFLET
+════════════════════════════════════════════════════ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+<script>
+// ════════════════════════════════════════════════════
+// DATA
+// ════════════════════════════════════════════════════
+
+// Hotspot zones mapped to repair items
+const ZONE_MAP = {
+  roof:       ['roof'],
+  chimney:    ['chimney'],
+  exterior:   ['tuckpoint','siding'],
+  windows:    ['windows'],
+  garage:     ['garage'],
+  hvac:       ['hvac'],
+  electrical: ['panel','rewire'],
+  basement:   ['basement','foundation'],
+  sewer:      ['sewer','plumbing']
+};
+
+// All repair items — update costs here
+const REPAIR_ITEMS = [
+  // Major Systems
+  {id:'hvac',      cat:'major',      name:'HVAC System',                    low:6500,  high:14000, stl:'End-of-life units common in pre-1990 St. Louis homes'},
+  {id:'roof',      cat:'major',      name:'Roof Replacement',               low:8000,  high:18000, stl:'St. Louis hail and ice cycles accelerate wear — ask age first'},
+  {id:'basement',  cat:'major',      name:'Basement Waterproofing',         low:4000,  high:30000, stl:'Most common major cost in St. Louis — clay soils shift seasonally'},
+  {id:'sewer',     cat:'major',      name:'Sewer Lateral',                  low:3000,  high:15000, stl:'Pre-1960 homes often have original clay tile — scope before you offer'},
+  {id:'foundation',cat:'major',      name:'Foundation Repair',              low:3500,  high:25000, stl:'Horizontal cracks more serious than vertical — get a structural opinion'},
+  // Electrical
+  {id:'panel',     cat:'electrical', name:'Electrical Panel (Fed. Pacific)', low:2500, high:8000,  stl:'Known safety issues — many insurers require replacement'},
+  {id:'rewire',    cat:'electrical', name:'Partial / Full Rewire',          low:5000,  high:18000, stl:'Knob-and-tube wiring common in pre-1950 St. Louis homes'},
+  // Plumbing
+  {id:'plumbing',  cat:'plumbing',   name:'Plumbing (pipes / supply)',      low:2000,  high:12000, stl:'Galvanized and lead pipes still present in older South City homes'},
+  {id:'water-htr', cat:'plumbing',   name:'Water Heater',                   low:800,   high:3500,  stl:'Standard life 8–12 years — check age on the label'},
+  // Exterior
+  {id:'tuckpoint', cat:'exterior',   name:'Tuckpointing (brick)',           low:2000,  high:20000, stl:'St. Louis brick homes require periodic mortar repointing'},
+  {id:'chimney',   cat:'exterior',   name:'Chimney Repair / Tuckpoint',     low:800,   high:6000,  stl:'Check mortar and flashing — common source of water entry'},
+  {id:'siding',    cat:'exterior',   name:'Siding Repair / Replace',        low:3000,  high:14000, null:true},
+  {id:'windows',   cat:'exterior',   name:'Window Replacement',             low:4000,  high:15000, stl:'Failed seals common — fogged glass means insulation is gone'},
+  {id:'garage',    cat:'exterior',   name:'Garage Door / Structure',        low:800,   high:5000,  null:true},
+  // Interior
+  {id:'kitchen',   cat:'interior',   name:'Kitchen Update',                 low:8000,  high:35000, null:true},
+  {id:'bath',      cat:'interior',   name:'Bathroom Update',                low:4000,  high:15000, null:true},
+  {id:'drywall-r', cat:'interior',   name:'Drywall Repair',                 low:500,   high:4000,  null:true},
+  {id:'paint-int', cat:'interior',   name:'Interior Paint (full house)',    low:2500,  high:6000,  null:true},
+  {id:'flooring-r',cat:'interior',   name:'Flooring Replacement',           low:3000,  high:12000, null:true},
+];
+
+// SF Work types
+const WORK_TYPES = [
+  {id:'paint',    name:'Interior Paint', low:2,  high:4,  unit:'SF'},
+  {id:'drywall',  name:'Drywall',        low:5,  high:10, unit:'SF'},
+  {id:'flooring', name:'Flooring',       low:6,  high:15, unit:'SF'},
+  {id:'demo',     name:'Demo',           low:2,  high:6,  unit:'SF'},
+  {id:'tile',     name:'Tile Work',      low:8,  high:20, unit:'SF'},
+  {id:'concrete', name:'Concrete',       low:6,  high:12, unit:'SF'},
+];
+
+// Zone colors for house legend
+const ZONE_COLORS = {
+  roof:'#E8A020', chimney:'#E8A020', exterior:'#E88080',
+  windows:'#8AB0D0', garage:'#8A9BB0', hvac:'#D4A017',
+  electrical:'#5DCAA5', basement:'#E88080', sewer:'#8A9BB0'
+};
+
+const ZONE_LABELS = {
+  roof:'Roof', chimney:'Chimney', exterior:'Exterior/Walls',
+  windows:'Windows', garage:'Garage', hvac:'HVAC',
+  electrical:'Electrical', basement:'Basement/Foundation', sewer:'Sewer/Plumbing'
+};
+
+// ════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════
+let mode = 'buyer';          // 'buyer' | 'seller'
+let repairReport = [];       // [{id,name,low,high}]
+let sfReport = [];           // [{id,name,low,high}]
+let sfMerged = false;        // has SF been merged into full report
+let sfLast = null;           // last calculated SF result
+let currentTab = 'inspect';
+let mapMarker = null;
+
+// ════════════════════════════════════════════════════
+// MAP INIT
+// ════════════════════════════════════════════════════
+const map = L.map('property-map').setView([38.627,-90.199],12);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+  maxZoom:19,subdomains:'abcd',attribution:''
+}).addTo(map);
+
+function geoLocate(){
+  if(!navigator.geolocation){alert('Geolocation not available.');return;}
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const{latitude:lat,longitude:lng}=pos.coords;
+    map.setView([lat,lng],16);
+    if(mapMarker) map.removeLayer(mapMarker);
+    mapMarker=L.marker([lat,lng]).addTo(map);
+    gtag('event','geo_locate');
+  },()=>alert('Could not get location. Please enter the address manually.'));
+}
+
+async function searchAddress(){
+  const addr=document.getElementById('propAddress').value.trim();
+  if(!addr) return;
+  try{
+    const res=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addr)}&limit=1`);
+    const data=await res.json();
+    if(data.length){
+      const lat=parseFloat(data[0].lat),lng=parseFloat(data[0].lon);
+      map.setView([lat,lng],16);
+      if(mapMarker) map.removeLayer(mapMarker);
+      mapMarker=L.marker([lat,lng]).addTo(map);
+      gtag('event','address_search',{address:addr});
+    } else {
+      alert('Address not found. Try adding "St. Louis, MO" to your search.');
+    }
+  }catch(e){alert('Search failed. Check your connection.');}
+}
+
+// ════════════════════════════════════════════════════
+// MODE TOGGLE
+// ════════════════════════════════════════════════════
+function setMode(m){
+  mode=m;
+  document.getElementById('btn-buyer').classList.toggle('active',m==='buyer');
+  document.getElementById('btn-seller').classList.toggle('active',m==='seller');
+
+  // Update descriptive text
+  document.getElementById('mode-desc').textContent=
+    m==='buyer'?'Flag issues before you make an offer':'Identify what to fix before you list';
+
+  // Update inspect context box
+  const ic=document.getElementById('inspect-context');
+  ic.className='context-box'+(m==='seller'?' seller':'');
+  ic.innerHTML=m==='buyer'
+    ?'<strong>Walk the property and tap what you see.</strong> This tool uses St. Louis market rates — not national averages. Every dollar you identify is a dollar you can negotiate before you make an offer.'
+    :'<strong>Walk your home like a buyer would.</strong> Identify what needs attention before listing. Buyers will find these items — price them in now or fix them strategically. George can advise which repairs have the best ROI in your zip code.';
+
+  // Update house title
+  document.getElementById('house-title').textContent=
+    m==='buyer'?'TAP A ZONE TO FLAG AN ISSUE':'TAP A ZONE TO FLAG WHAT NEEDS ATTENTION';
+
+  // Update report context
+  renderReport();
+  gtag('event','mode_switch',{mode:m});
+}
+
+// ════════════════════════════════════════════════════
+// TAB NAVIGATION
+// ════════════════════════════════════════════════════
+function switchTab(tab){
+  // Hide all panels
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tnav-btn').forEach(b=>b.classList.remove('active'));
+
+  // Show selected
+  document.getElementById('panel-'+tab).classList.add('active');
+  document.getElementById('tnav-'+tab).classList.add('active');
+  currentTab=tab;
+
+  // Refresh map size when inspect tab is shown
+  if(tab==='inspect') setTimeout(()=>map.invalidateSize(),100);
+
+  // Render report when switching to report tab
+  if(tab==='report') renderReport();
+
+  // GA4 tab view event
+  gtag('event','tab_view',{tab_name:tab,mode:mode});
+
+  window.scrollTo(0,0);
+}
+
+// ════════════════════════════════════════════════════
+// BUILD HOUSE LEGEND
+// ════════════════════════════════════════════════════
+function buildLegend(){
+  const wrap=document.getElementById('house-legend');
+  Object.entries(ZONE_LABELS).forEach(([zoneId,label])=>{
+    const el=document.createElement('div');
+    el.className='hl-item';
+    el.id='legend-'+zoneId;
+    el.innerHTML=`<div class="hl-dot" style="background:${ZONE_COLORS[zoneId]||'#8A9BB0'};"></div>${label}`;
+    el.onclick=()=>toggleZone(zoneId);
+    wrap.appendChild(el);
+  });
+}
+
+// ════════════════════════════════════════════════════
+// SVG ZONE TOGGLE
+// ════════════════════════════════════════════════════
+function toggleZone(zoneId){
+  const zone=document.getElementById('zone-'+zoneId);
+  if(!zone) return;
+
+  const isActive=zone.classList.contains('flagged');
+
+  if(isActive){
+    // Unflag zone and all its items
+    zone.classList.remove('flagged');
+    const legend=document.getElementById('legend-'+zoneId);
+    if(legend) legend.classList.remove('flagged');
+    // Remove associated repair items
+    const itemIds=ZONE_MAP[zoneId]||[];
+    itemIds.forEach(id=>{
+      repairReport=repairReport.filter(r=>r.id!==id);
+      const card=document.getElementById('rc-'+id);
+      if(card) card.classList.remove('flagged');
+    });
+  } else {
+    // Flag zone and add its items
+    zone.classList.add('flagged');
+    const legend=document.getElementById('legend-'+zoneId);
+    if(legend) legend.classList.add('flagged');
+    const itemIds=ZONE_MAP[zoneId]||[];
+    itemIds.forEach(id=>{
+      if(!repairReport.find(r=>r.id===id)){
+        const item=REPAIR_ITEMS.find(x=>x.id===id);
+        if(item) repairReport.push({id:item.id,name:item.name,low:item.low,high:item.high});
+      }
+      const card=document.getElementById('rc-'+id);
+      if(card) card.classList.add('flagged');
+    });
+    gtag('event','zone_flagged',{zone:zoneId,mode:mode});
+  }
+
+  updateBadges();
+}
+
+// ════════════════════════════════════════════════════
+// BUILD REPAIR CARDS
+// ════════════════════════════════════════════════════
+function buildRepairList(){
+  const wrap=document.getElementById('repair-list');
+  const cats={
+    major:'🔴 Major Systems — flag these first',
+    electrical:'⚡ Electrical',
+    plumbing:'🔧 Plumbing',
+    exterior:'🧱 Exterior',
+    interior:'🏠 Interior'
+  };
+  let currentCat='';
+
+  REPAIR_ITEMS.forEach(item=>{
+    if(item.cat!==currentCat){
+      currentCat=item.cat;
+      const lbl=document.createElement('div');
+      lbl.className='cat-hdr';
+      lbl.textContent=cats[item.cat]||item.cat;
+      wrap.appendChild(lbl);
+    }
+    const el=document.createElement('div');
+    el.className='repair-card'+(item.cat==='major'?' major':'');
+    el.id='rc-'+item.id;
+    el.innerHTML=`
+      <div class="rc-left">
+        <div class="rc-name">${item.name}</div>
+        <div class="rc-range">$${item.low.toLocaleString()} – $${item.high.toLocaleString()}</div>
+        ${item.stl?`<div class="rc-stl">⚠ ${item.stl}</div>`:''}
+      </div>
+      <div class="rc-check">✓</div>`;
+    el.onclick=()=>toggleRepairCard(item.id,item.name,item.low,item.high,el,item.cat);
+    wrap.appendChild(el);
+  });
+}
+
+function toggleRepairCard(id,name,low,high,el,cat){
+  const idx=repairReport.findIndex(r=>r.id===id);
+  if(idx>-1){
+    repairReport.splice(idx,1);
+    el.classList.remove('flagged');
+    // Unflag related zone if all its items are unflagged
+    syncZonesFromReport();
+  } else {
+    repairReport.push({id,name,low,high});
+    el.classList.add('flagged');
+    gtag('event','repair_flagged',{item:name,category:cat,mode:mode});
+  }
+  updateBadges();
+}
+
+// Keep zone highlights in sync when cards are toggled individually
+function syncZonesFromReport(){
+  Object.entries(ZONE_MAP).forEach(([zoneId,itemIds])=>{
+    const anyFlagged=itemIds.some(id=>repairReport.find(r=>r.id===id));
+    const zoneEl=document.getElementById('zone-'+zoneId);
+    const legendEl=document.getElementById('legend-'+zoneId);
+    if(zoneEl) zoneEl.classList.toggle('flagged',anyFlagged);
+    if(legendEl) legendEl.classList.toggle('flagged',anyFlagged);
+  });
+}
+
+// ════════════════════════════════════════════════════
+// SF CALCULATOR
+// ════════════════════════════════════════════════════
+function buildWorkTypes(){
+  const grid=document.getElementById('wt-grid');
+  WORK_TYPES.forEach((wt,i)=>{
+    const el=document.createElement('div');
+    el.className='wt-card'+(i===0?' selected':'');
+    el.id='wt-'+wt.id;
+    el.innerHTML=`<div class="wt-name">${wt.name}</div><div class="wt-rate">$${wt.low}–$${wt.high}/${wt.unit}</div>`;
+    el.onclick=()=>{
+      document.querySelectorAll('.wt-card').forEach(x=>x.classList.remove('selected'));
+      el.classList.add('selected');
+    };
+    grid.appendChild(el);
+  });
+}
+
+function calculateSF(){
+  const l=parseFloat(document.getElementById('sf-length').value)||0;
+  const w=parseFloat(document.getElementById('sf-width').value)||0;
+  if(!l||!w){alert('Enter both length and width.');return;}
+
+  const sf=l*w;
+  const selEl=document.querySelector('.wt-card.selected');
+  const wtId=selEl?selEl.id.replace('wt-',''):'paint';
+  const wt=WORK_TYPES.find(x=>x.id===wtId)||WORK_TYPES[0];
+  const costLow=Math.round(sf*wt.low);
+  const costHigh=Math.round(sf*wt.high);
+
+  sfLast={
+    id:'sf-'+wtId+'-'+Date.now(),
+    name:`${wt.name} — ${sf.toLocaleString()} SF`,
+    low:costLow,
+    high:costHigh,
+    sf:sf,
+    wt:wt.name
+  };
+
+  document.getElementById('sfr-val').textContent=`$${costLow.toLocaleString()} – $${costHigh.toLocaleString()}`;
+  document.getElementById('sfr-sub').textContent=`${sf.toLocaleString()} SF × $${wt.low}–$${wt.high}/SF = $${costLow.toLocaleString()}–$${costHigh.toLocaleString()}`;
+  document.getElementById('sf-result-box').classList.add('visible');
+  document.getElementById('btn-add-sf').style.display='block';
+  gtag('event','sf_calculated',{work_type:wt.name,sqft:sf});
+}
+
+function addToSFReport(){
+  if(!sfLast) return;
+  sfReport.push({...sfLast});
+  sfLast=null;
+
+  // Reset result display
+  document.getElementById('sf-result-box').classList.remove('visible');
+  document.getElementById('btn-add-sf').style.display='none';
+  document.getElementById('sf-length').value='';
+  document.getElementById('sf-width').value='';
+
+  renderSFReport();
+  updateBadges();
+  gtag('event','sf_added_to_report',{items:sfReport.length});
+}
+
+function removeSFItem(id){
+  sfReport=sfReport.filter(x=>x.id!==id);
+  // If already merged, remove from repair report too
+  if(sfMerged){
+    repairReport=repairReport.filter(x=>x.id!==id);
+    renderReport();
+  }
+  renderSFReport();
+  updateBadges();
+}
+
+function renderSFReport(){
+  const empty=document.getElementById('sf-empty');
+  const list=document.getElementById('sf-report-list');
+  const subtotalWrap=document.getElementById('sf-subtotal-wrap');
+  const sfsVal=document.getElementById('sfs-val');
+
+  if(sfReport.length===0){
+    empty.style.display='block';
+    list.innerHTML='';
+    subtotalWrap.style.display='none';
+    return;
+  }
+
+  empty.style.display='none';
+  list.innerHTML=sfReport.map(r=>`
+    <div class="sf-list-item">
+      <span class="sfl-name">${r.name}</span>
+      <span class="sfl-cost">$${r.low.toLocaleString()}–$${r.high.toLocaleString()}</span>
+      <button class="sfl-remove" onclick="removeSFItem('${r.id}')">✕</button>
+    </div>`).join('');
+
+  let totLow=0,totHigh=0;
+  sfReport.forEach(r=>{totLow+=r.low;totHigh+=r.high;});
+  sfsVal.textContent=`$${totLow.toLocaleString()} – $${totHigh.toLocaleString()}`;
+  subtotalWrap.style.display='block';
+
+  // Update merge button state
+  const mergeBtn=document.getElementById('merge-btn');
+  mergeBtn.textContent=sfMerged?'✓ MERGED INTO FULL REPORT':'✚ MERGE INTO FULL REPORT';
+  mergeBtn.disabled=sfMerged;
+}
+
+function mergeSFIntoReport(){
+  if(sfMerged||sfReport.length===0) return;
+  // Add each SF item into repairReport
+  sfReport.forEach(r=>{
+    if(!repairReport.find(x=>x.id===r.id)){
+      repairReport.push({...r});
+    }
+  });
+  sfMerged=true;
+  renderSFReport();
+  renderReport();
+  updateBadges();
+  // Switch to report tab to show result
+  switchTab('report');
+  gtag('event','sf_merged',{items:sfReport.length});
+}
+
+// ════════════════════════════════════════════════════
+// RENDER REPORT
+// ════════════════════════════════════════════════════
+function renderReport(){
+  const rpEmpty=document.getElementById('rp-empty');
+  const rpRows=document.getElementById('rp-rows');
+  const rpTotalRow=document.getElementById('repair-total-row');
+  const rpTotalVal=document.getElementById('repair-total-val');
+  const repairCount=document.getElementById('repair-count');
+
+  // Separate repair items from SF merged items for display
+  const repairItems=repairReport.filter(r=>!r.id.startsWith('sf-'));
+  const sfItems=repairReport.filter(r=>r.id.startsWith('sf-'));
+
+  // Repair items section
+  if(repairItems.length===0){
+    rpEmpty.style.display='block';
+    rpRows.innerHTML='';
+    rpTotalRow.style.display='none';
+    repairCount.textContent='0 items';
+  } else {
+    rpEmpty.style.display='none';
+    repairCount.textContent=repairItems.length+' item'+(repairItems.length===1?'':'s');
+    let rLow=0,rHigh=0;
+    rpRows.innerHTML=repairItems.map(r=>{
+      rLow+=r.low;rHigh+=r.high;
+      return`<div class="rc-row">
+        <span class="rcr-name">${r.name}</span>
+        <span class="rcr-cost">$${r.low.toLocaleString()}–$${r.high.toLocaleString()}</span>
+        <button class="rcr-del" onclick="deleteRepairFromReport('${r.id}')">✕</button>
+      </div>`;
+    }).join('');
+    rpTotalVal.textContent=`$${rLow.toLocaleString()} – $${rHigh.toLocaleString()}`;
+    rpTotalVal.className='rct-val'+(rLow>15000?' danger':'');
+    rpTotalRow.style.display='flex';
+  }
+
+  // SF merged section
+  const sfCard=document.getElementById('sf-merged-card');
+  if(sfMerged&&sfItems.length>0){
+    sfCard.style.display='block';
+    document.getElementById('sf-merged-count').textContent=sfItems.length+' items';
+    let sLow=0,sHigh=0;
+    document.getElementById('sf-merged-rows').innerHTML=sfItems.map(r=>{
+      sLow+=r.low;sHigh+=r.high;
+      return`<div class="rc-row">
+        <span class="rcr-name">${r.name}</span>
+        <span class="rcr-cost">$${r.low.toLocaleString()}–$${r.high.toLocaleString()}</span>
+      </div>`;
+    }).join('');
+    document.getElementById('sf-merged-total').textContent=`$${sLow.toLocaleString()} – $${sHigh.toLocaleString()}`;
+  } else {
+    sfCard.style.display='none';
+  }
+
+  // Grand total
+  const gtEl=document.getElementById('grand-total');
+  const gtVal=document.getElementById('gt-val');
+  const gtMid=document.getElementById('gt-midpoint');
+
+  if(repairReport.length>0){
+    let totalLow=0,totalHigh=0;
+    repairReport.forEach(r=>{totalLow+=r.low;totalHigh+=r.high;});
+    const midpoint=Math.round((totalLow+totalHigh)/2);
+    gtVal.textContent=`$${totalLow.toLocaleString()} – $${totalHigh.toLocaleString()}`;
+    gtMid.textContent=`$${midpoint.toLocaleString()}`;
+    gtEl.style.display='flex';
+
+    // Context insight
+    const ctxEl=document.getElementById('report-context-box');
+    if(mode==='buyer'){
+      const ask=Math.round(midpoint*0.87);
+      const askHigh=Math.round(midpoint*0.92);
+      ctxEl.className='context-insight ci-buyer';
+      ctxEl.innerHTML=`<strong>Offer negotiation context:</strong> Your flagged repair midpoint is <strong>$${midpoint.toLocaleString()}</strong>. A defensible offer adjustment accounts for the midpoint minus 10–15% for what the inspection may surface later. That puts your ask at approximately <strong>$${ask.toLocaleString()} – $${askHigh.toLocaleString()}</strong> below list price. ${totalLow>20000?'At this cost level, ask George whether a price reduction or a seller-paid concession is the stronger strategy for this zip code.':''}`;
+      ctxEl.style.display='block';
+    } else {
+      ctxEl.className='context-insight ci-seller';
+      ctxEl.innerHTML=`<strong>Pre-listing context:</strong> You have identified approximately <strong>$${midpoint.toLocaleString()}</strong> in deferred items. Buyers and their inspectors will find these. You have three options: fix them and price at full market value, disclose them and price accordingly, or offer a seller concession. George can tell you which approach yields the best net in your zip code.`;
+      ctxEl.style.display='block';
+    }
+  } else {
+    gtEl.style.display='none';
+    document.getElementById('report-context-box').style.display='none';
+  }
+}
+
+function deleteRepairFromReport(id){
+  repairReport=repairReport.filter(r=>r.id!==id);
+  // Deselect card if it exists
+  const card=document.getElementById('rc-'+id);
+  if(card) card.classList.remove('flagged');
+  syncZonesFromReport();
+  renderReport();
+  updateBadges();
+}
+
+// ════════════════════════════════════════════════════
+// BADGES
+// ════════════════════════════════════════════════════
+function updateBadges(){
+  // Inspect badge = number of flagged repair items
+  const repairCount=repairReport.filter(r=>!r.id.startsWith('sf-')).length;
+  const inspBadge=document.getElementById('badge-inspect');
+  inspBadge.textContent=repairCount;
+  inspBadge.className='tab-badge'+(repairCount>0?' visible':'');
+
+  // Measure badge = SF items
+  const sfBadge=document.getElementById('badge-measure');
+  sfBadge.textContent=sfReport.length;
+  sfBadge.className='tab-badge'+(sfReport.length>0?' visible':'');
+
+  // Report badge = total items
+  const total=repairReport.length;
+  const repBadge=document.getElementById('badge-report');
+  repBadge.textContent=total;
+  repBadge.className='tab-badge'+(total>0?' visible':'');
+}
+
+// ════════════════════════════════════════════════════
+// EMAIL / COPY
+// ════════════════════════════════════════════════════
+function buildReportText(){
+  const name=document.getElementById('userName').value.trim()||'there';
+  const address=document.getElementById('propAddress').value.trim()||'the property';
+  const modeLabel=mode==='buyer'?'BUYER INSPECTION REPORT':'PRE-LISTING COST ESTIMATE';
+
+  let text=`${modeLabel}\n${'═'.repeat(40)}\nPrepared for: ${name}\nProperty: ${address}\n\n`;
+
+  const repairItems=repairReport.filter(r=>!r.id.startsWith('sf-'));
+  if(repairItems.length>0){
+    text+=`FLAGGED REPAIR ITEMS\n${'─'.repeat(36)}\n`;
+    repairItems.forEach(r=>{
+      text+=`• ${r.name}: $${r.low.toLocaleString()} – $${r.high.toLocaleString()}\n`;
+    });
+  }
+
+  if(sfReport.length>0){
+    text+=`\nSF WORK SUMMARY\n${'─'.repeat(36)}\n`;
+    sfReport.forEach(r=>{
+      text+=`• ${r.name}: $${r.low.toLocaleString()} – $${r.high.toLocaleString()}\n`;
+    });
+  }
+
+  if(repairReport.length>0){
+    let totLow=0,totHigh=0;
+    repairReport.forEach(r=>{totLow+=r.low;totHigh+=r.high;});
+    const mid=Math.round((totLow+totHigh)/2);
+    text+=`\nTOTAL RANGE: $${totLow.toLocaleString()} – $${totHigh.toLocaleString()}\n`;
+    text+=`MIDPOINT: $${mid.toLocaleString()}\n`;
+    if(mode==='buyer'){
+      text+=`\nOFFER CONTEXT: A defensible adjustment is ~$${Math.round(mid*0.87).toLocaleString()} – $${Math.round(mid*0.92).toLocaleString()} below list.\n`;
+    } else {
+      text+=`\nLISTING CONTEXT: Buyers will find these. Fix, disclose, or price accordingly.\n`;
+    }
+  }
+
+  text+=`\n${'─'.repeat(36)}\nGeorge Kindler · The Closing Pros LLC · 314.435.1087\nLicensed Missouri Real Estate Agent · 13 Years · 3,000+ walkthroughs`;
+  return text;
+}
+
+function sendReport(){
+  const email=document.getElementById('userEmail').value.trim();
+  if(!email){alert('Enter your email address first.');return;}
+  const ccMe=document.getElementById('ccMe').checked;
+  const address=document.getElementById('propAddress').value.trim();
+  const subject=(mode==='buyer'?'Home Cost Report':'Pre-Listing Cost Estimate')+
+    (address?' — '+address:'');
+  let mailto=`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(buildReportText())}`;
+  if(ccMe) mailto+=`&cc=whatsyourstlouishomeworth@gmail.com`;
+  window.location.href=mailto;
+  gtag('event','report_sent',{mode:mode,repair_items:repairReport.length,sf_items:sfReport.length});
+}
+
+function copyReport(){
+  const text=buildReportText();
+  const copy=t=>{
+    const ta=document.createElement('textarea');
+    ta.value=t;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');alert('Copied to clipboard.');}
+    catch(e){alert('Copy failed. Use Send by Email instead.');}
+    document.body.removeChild(ta);
+  };
+  if(navigator.clipboard&&window.isSecureContext){
+    navigator.clipboard.writeText(text).then(()=>alert('Copied to clipboard.')).catch(()=>copy(text));
+  } else {
+    copy(text);
+  }
+  gtag('event','report_copied',{mode:mode,items:repairReport.length});
+}
+
+// ════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════
+buildLegend();
+buildRepairList();
+buildWorkTypes();
+updateBadges();
+
+// GA4: track how long user stays on each tab
+let tabStartTime=Date.now();
+window.addEventListener('beforeunload',()=>{
+  const elapsed=Math.round((Date.now()-tabStartTime)/1000);
+  gtag('event','tab_exit',{tab_name:currentTab,seconds:elapsed});
+});
+</script>
+
+</body>
+</html>
