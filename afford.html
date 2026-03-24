@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>St. Louis Market Heat Map — George Kindler</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<style>
+:root{--cream:#F5F0E8;--navy:#0A1628;--navy-mid:#1B3A6B;--red:#C0392B;--gold:#D4A017;--green:#1a7a4a;--gray:#8A9BB0;--warn:#E8A020;--white:#ffffff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--cream);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+
+.header{background:var(--navy);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--gold);flex-shrink:0;z-index:1000;}
+.header-left h1{font-family:'Bebas Neue',sans-serif;font-size:22px;color:white;letter-spacing:2px;}
+.header-left h1 span{color:var(--gold);}
+.header-left p{font-size:10px;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+.header-right{font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--gold);letter-spacing:1.5px;text-align:right;}
+.header-right small{display:block;font-family:'DM Sans',sans-serif;font-size:10px;color:var(--gray);letter-spacing:.5px;margin-top:2px;}
+
+.controls{background:var(--navy-mid);padding:10px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.1);}
+.metric-btn{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1.5px;padding:6px 14px;border:1.5px solid rgba(255,255,255,0.25);border-radius:3px;color:rgba(255,255,255,0.6);background:transparent;cursor:pointer;}
+.metric-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(212,160,23,0.1);}
+.metric-btn:hover:not(.active){border-color:rgba(255,255,255,0.5);color:white;}
+.controls-label{font-size:10px;color:var(--gray);letter-spacing:1px;text-transform:uppercase;}
+
+.legend-row{display:flex;align-items:center;gap:6px;margin-left:auto;}
+.legend-label{font-size:10px;color:var(--gray);}
+.legend-grad{width:120px;height:10px;border-radius:2px;}
+
+.main{display:flex;flex:1;overflow:hidden;}
+#map{flex:1;height:100%;}
+
+/* FINANCE PANEL */
+.finance-panel{width:240px;background:var(--navy);border-right:1px solid rgba(255,255,255,0.1);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;}
+.fp-head{background:var(--navy-mid);padding:12px 16px;flex-shrink:0;}
+.fp-head h2{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1.5px;color:white;}
+.fp-head p{font-size:10px;color:var(--gray);margin-top:2px;}
+.fp-body{padding:14px 16px;flex:1;}
+.fp-row{margin-bottom:10px;}
+.fp-label{display:block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray);margin-bottom:4px;}
+.fp-input{width:100%;padding:7px 10px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:3px;font-family:'DM Sans',sans-serif;font-size:12px;color:white;}
+.fp-input:focus{outline:none;border-color:var(--gold);}
+.fp-select{width:100%;padding:7px 10px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:3px;font-family:'DM Sans',sans-serif;font-size:12px;color:white;}
+.fp-select option{background:var(--navy);color:white;}
+.fp-btn{width:100%;background:var(--gold);border:none;padding:10px;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--navy);cursor:pointer;border-radius:3px;margin-top:4px;transition:all 0.15s;}
+.fp-btn:hover{background:#c49010;}
+.fp-result{background:rgba(212,160,23,0.1);border:1px solid rgba(212,160,23,0.3);border-radius:3px;padding:10px 12px;margin-top:10px;display:none;}
+.fp-result.visible{display:block;}
+.fp-result-label{font-size:9px;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.fp-result-val{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold);letter-spacing:1px;}
+.fp-result-sub{font-size:10px;color:var(--gray);margin-top:2px;}
+.fp-hint{font-size:9px;color:rgba(255,255,255,0.3);margin-top:3px;line-height:1.4;}
+
+.sidebar{width:320px;background:var(--navy);border-left:1px solid rgba(255,255,255,0.1);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;}
+.sidebar-head{background:var(--navy-mid);padding:14px 18px;flex-shrink:0;}
+.sidebar-head h2{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1.5px;color:white;}
+.sidebar-head p{font-size:11px;color:var(--gray);margin-top:2px;}
+
+.zip-detail{padding:18px;flex:1;overflow-y:auto;}
+.zip-detail.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--gray);}
+.zip-detail.empty p{font-size:12px;line-height:1.6;max-width:200px;}
+.zip-detail.empty .icon{font-size:32px;margin-bottom:12px;opacity:0.3;}
+
+.zip-name{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1.5px;color:white;line-height:1;}
+.zip-city{font-size:13px;color:var(--gray);margin-top:2px;margin-bottom:16px;}
+.zip-badge{display:inline-block;padding:3px 10px;border-radius:2px;font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1px;margin-bottom:14px;}
+.zip-badge.hot{background:rgba(26,122,74,0.2);color:#5DCAA5;border:1px solid rgba(26,122,74,0.4);}
+.zip-badge.warm{background:rgba(212,160,23,0.15);color:var(--gold);border:1px solid rgba(212,160,23,0.3);}
+.zip-badge.cool{background:rgba(192,57,43,0.15);color:#E88080;border:1px solid rgba(192,57,43,0.3);}
+
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.stat{background:rgba(255,255,255,0.05);border-radius:3px;padding:10px 12px;border:1px solid rgba(255,255,255,0.07);}
+.stat-label{font-size:9px;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:white;}
+.stat-val.green{color:#5DCAA5;}
+.stat-val.gold{color:var(--gold);}
+.stat-val.red{color:#E88080;}
+.stat-sub{font-size:10px;color:var(--gray);margin-top:2px;}
+
+.insight{background:rgba(255,255,255,0.04);border-left:3px solid var(--gold);padding:10px 12px;border-radius:0 3px 3px 0;font-size:12px;color:rgba(255,255,255,0.75);line-height:1.6;margin-bottom:10px;}
+
+.sample-note{font-size:10px;color:var(--gray);margin-top:8px;line-height:1.5;}
+
+.footer{background:var(--navy-mid);padding:8px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-top:1px solid rgba(255,255,255,0.1);}
+.footer p{font-size:10px;color:var(--gray);}
+.footer a{color:var(--gold);text-decoration:none;}
+
+/* Leaflet overrides */
+.leaflet-container{background:#0f1f3a;}
+.leaflet-control-zoom a{background:var(--navy-mid)!important;color:white!important;border-color:rgba(255,255,255,0.15)!important;}
+.leaflet-control-zoom a:hover{background:var(--navy)!important;}
+.leaflet-control-attribution{background:rgba(10,22,40,0.8)!important;color:var(--gray)!important;font-size:10px!important;}
+.leaflet-control-attribution a{color:var(--gray)!important;}
+.leaflet-popup-content-wrapper{background:var(--navy);color:white;border:1px solid rgba(255,255,255,0.15);border-radius:4px;}
+.leaflet-popup-tip{background:var(--navy);}
+.leaflet-popup-content{margin:12px 16px;font-family:'DM Sans',sans-serif;font-size:13px;}
+
+/* MOBILE UX ENHANCEMENTS */
+@media (max-width: 900px) {
+  body { overflow: visible; height: auto; }
+  .main { flex-direction: column !important; flex: 1; overflow: visible; }
+  .finance-panel {
+    width: 100% !important;
+    border-right: none !important;
+    border-bottom: 3px solid var(--gold) !important;
+    height: 64px !important; /* collapsed */
+    overflow: hidden !important;
+    transition: height 0.4s cubic-bezier(0.4,0,0.2,1) !important;
+    z-index: 15 !important;
+    position: relative;
+  }
+  .finance-panel.expanded {
+    height: 620px !important; /* increased to fit all fields */
+    overflow-y: auto !important; /* allows scrolling inside panel */
+  }
+  .fp-head { cursor: pointer !important; padding-right: 50px !important; position: relative; }
+  .fp-head::after {
+    content: "▼";
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    transition: transform 0.3s;
+  }
+  .finance-panel.expanded .fp-head::after { transform: translateY(-50%) rotate(180deg); }
+  .fp-input, .fp-select {
+    font-size: 17px !important;
+    padding: 14px 12px !important;
+    min-height: 52px;
+  }
+  #map { height: 58vh !important; flex: none !important; }
+  .controls { padding: 8px 16px !important; flex-wrap: nowrap; overflow-x: auto; }
+  .metric-btn { font-size: 13px; padding: 7px 10px; white-space: nowrap; }
+  .sidebar {
+    width: 100% !important;
+    border-left: none !important;
+    border-top: 4px solid var(--gold) !important;
+    position: fixed !important;
+    bottom: 58px !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 0 !important;
+    max-height: 68vh !important;
+    z-index: 999 !important;
+    transform: translateY(100%) !important;
+    transition: transform 0.35s cubic-bezier(0.32,0.72,0,1) !important;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.7) !important;
+    overflow-y: auto !important;
+  }
+  .sidebar.active {
+    transform: translateY(0) !important;
+    height: 62vh !important;
+  }
+  .sidebar::before {
+    content: "";
+    display: block;
+    width: 48px;
+    height: 5px;
+    background: rgba(255,255,255,0.4);
+    margin: 10px auto 8px;
+    border-radius: 999px;
+  }
+  .footer {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000 !important;
+    border-top: 2px solid var(--gold) !important;
+  }
+  .zip-detail { padding-bottom: 90px !important; }
+  .main > .sidebar { display: block !important; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <h1>ST. LOUIS <span>MARKET HEAT MAP</span></h1>
+    <p>George Kindler · The Closing Pros · St. Louis Metro · 2025 Data</p>
+  </div>
+  <div class="header-right">
+    GEORGE KINDLER
+    <small>Licensed Missouri Real Estate Agent · 13 Years</small>
+  </div>
+</header>
+
+<div class="controls">
+  <span class="controls-label">Color by:</span>
+  <button class="metric-btn active" onclick="setMetric('fw')">First Weekend Rate</button>
+  <button class="metric-btn" onclick="setMetric('dom')">Days on Market</button>
+  <button class="metric-btn" onclick="setMetric('price')">Median Price</button>
+  <button class="metric-btn" onclick="setMetric('above')">% Above List</button>
+  <div class="legend-row">
+    <span class="legend-label" id="legend-low"></span>
+    <canvas class="legend-grad" id="legend-grad" width="120" height="10"></canvas>
+    <span class="legend-label" id="legend-high"></span>
+  </div>
+</div>
+
+<div class="main">
+  <div class="finance-panel">
+    <div class="fp-head" onclick="toggleAffordPanel()">
+      <div>
+        <h2>YOUR BUDGET</h2>
+        <p>Enter finances to see what each zip costs you • <span style="font-size:10px;color:var(--gold);">TAP TO EXPAND/COLLAPSE</span></p>
+      </div>
+    </div>
+    <div class="fp-body">
+      <div class="fp-row">
+        <label class="fp-label">Monthly Payment Target ($)</label>
+        <input class="fp-input" type="number" id="fp-payment" value="1500" placeholder="1500">
+        <div class="fp-hint">PITI + maintenance</div>
+      </div>
+      <div class="fp-row">
+        <label class="fp-label">Down Payment ($)</label>
+        <input class="fp-input" type="number" id="fp-down" value="10000" placeholder="10000">
+      </div>
+      <div class="fp-row">
+        <label class="fp-label">Interest Rate (%)</label>
+        <input class="fp-input" type="number" id="fp-rate" value="6.75" step="0.125" placeholder="6.75">
+      </div>
+      <div class="fp-row">
+        <label class="fp-label">Monthly Debts ($)</label>
+        <input class="fp-input" type="number" id="fp-debts" value="0" placeholder="0">
+        <div class="fp-hint">Car, student loans, cards</div>
+      </div>
+      <div class="fp-row">
+        <label class="fp-label">Bedrooms Needed</label>
+        <select class="fp-select" id="fp-beds">
+          <option value="1">1–2 Bedrooms</option>
+          <option value="3" selected>3 Bedrooms</option>
+          <option value="4">4+ Bedrooms</option>
+        </select>
+      </div>
+      <div class="fp-row">
+        <label class="fp-label">Condition Preference</label>
+        <select class="fp-select" id="fp-cond">
+          <option value="any">Any condition</option>
+          <option value="aisis">As-Is — max budget</option>
+          <option value="mid">Mid-Tier</option>
+          <option value="move">Move-In Ready</option>
+        </select>
+      </div>
+      <button class="fp-btn" onclick="runAffordability()">FIND MY MATCH →</button>
+      <div class="fp-result" id="fp-result">
+        <div class="fp-result-label">Max Purchase Price</div>
+        <div class="fp-result-val" id="fp-maxprice">—</div>
+        <div class="fp-result-sub" id="fp-sub">Updating map highlights live...</div>
+      </div>
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.08);">
+        <a href="https://gkindler-help.github.io/Stlouishomecosttool/" target="_blank" style="display:block;background:rgba(26,122,74,0.15);border:1px solid rgba(26,122,74,0.3);color:#5DCAA5;padding:8px 10px;border-radius:3px;font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1.5px;text-decoration:none;text-align:center;margin-bottom:6px;">🔧 HOME COST SURVIVAL GUIDE</a>
+        <a href="https://m.me/georgekindler" target="_blank" style="display:block;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--gray);padding:8px 10px;border-radius:3px;font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:1.5px;text-decoration:none;text-align:center;">💬 CONTACT GEORGE</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="map"></div>
+  <div class="sidebar">
+    <div class="sidebar-head">
+      <h2>ZIP CODE DETAIL <span style="font-size:11px;color:var(--gray);float:right;cursor:pointer;" onclick="dismissDetail()">✕ CLOSE</span></h2>
+      <p>Click any zip code on the map</p>
+    </div>
+    <div class="zip-detail empty" id="detail">
+      <div class="icon">📍</div>
+      <p>Enter your budget above — map highlights update live — or click any zip for full stats.</p>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <p>Data: Residential sales · St. Louis County, St. Louis City, Jefferson County, St. Charles County · 2025</p>
+  <p style="display:flex;gap:16px;align-items:center;">
+    <a href="https://gkindler-help.github.io/Stlouishomecosttool/" target="_blank">🔧 Home Cost Survival Guide</a>
+    <a href="https://m.me/georgekindler" target="_blank">Message George</a>
+  </p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+// ── YOUR ORIGINAL DATA & LOGIC ────────────────────────────────────────────
+const ZIP_DATA = {
+  "63005":{city:"Chesterfield",n:70,fw:41.4,dom:7.5,price:800000,splp:100.0,above:52.9},
+  "63010":{city:"Arnold",n:122,fw:45.9,dom:6.5,price:282400,splp:101.4,above:67.2},
+  "63011":{city:"Ballwin",n:169,fw:47.3,dom:6,price:455000,splp:101.1,above:69.2},
+  "63012":{city:"Barnhart",n:43,fw:39.5,dom:9,price:290000,splp:100.0,above:69.8},
+  "63016":{city:"Cedar Hill",n:26,fw:26.9,dom:37.5,price:326000,splp:98.7,above:46.2},
+  "63017":{city:"Chesterfield",n:130,fw:46.9,dom:6.0,price:575000,splp:100.0,above:59.2},
+  "63019":{city:"Crystal City",n:27,fw:33.3,dom:25,price:230000,splp:100.0,above:55.6},
+  "63020":{city:"De Soto",n:126,fw:19.0,dom:38.5,price:219500,splp:100.0,above:56.3},
+  "63021":{city:"Ballwin",n:192,fw:49.0,dom:6.0,price:414200,splp:100.6,above:69.3},
+  "63023":{city:"Dittmer",n:24,fw:29.2,dom:33.0,price:332500,splp:100.0,above:54.2},
+  "63025":{city:"Eureka",n:108,fw:21.3,dom:32.5,price:442500,splp:99.9,above:50.0},
+  "63026":{city:"Fenton",n:224,fw:46.0,dom:7.0,price:387400,splp:100.7,above:70.5},
+  "63028":{city:"Festus",n:149,fw:31.5,dom:19,price:320000,splp:100.0,above:61.1},
+  "63031":{city:"Florissant",n:217,fw:36.4,dom:11,price:180000,splp:100.0,above:69.6},
+  "63033":{city:"Florissant",n:151,fw:30.5,dom:16,price:220000,splp:100.0,above:65.6},
+  "63034":{city:"Florissant",n:71,fw:26.8,dom:18,price:289000,splp:100.0,above:53.5},
+  "63038":{city:"Wildwood",n:34,fw:47.1,dom:4.5,price:626200,splp:100.0,above:58.8},
+  "63040":{city:"Wildwood",n:45,fw:53.3,dom:6,price:525000,splp:100.8,above:71.1},
+  "63042":{city:"Hazelwood",n:64,fw:34.4,dom:9.0,price:195000,splp:100.0,above:59.4},
+  "63043":{city:"Maryland Heights",n:83,fw:53.0,dom:4,price:295000,splp:101.9,above:71.1},
+  "63044":{city:"Bridgeton",n:40,fw:42.5,dom:9.5,price:267500,splp:100.0,above:65.0},
+  "63048":{city:"Herculaneum",n:25,fw:24.0,dom:24,price:319900,splp:100.0,above:64.0},
+  "63049":{city:"High Ridge",n:82,fw:45.1,dom:6.0,price:297500,splp:100.0,above:64.6},
+  "63050":{city:"Hillsboro",n:90,fw:31.1,dom:36.0,price:328500,splp:100.0,above:61.1},
+  "63051":{city:"House Springs",n:61,fw:36.1,dom:11,price:290000,splp:100.0,above:60.7},
+  "63052":{city:"Imperial",n:132,fw:50.0,dom:6.0,price:331500,splp:100.4,above:72.0},
+  "63069":{city:"Pacific",n:22,fw:22.7,dom:27.5,price:532500,splp:100.0,above:54.5},
+  "63070":{city:"Pevely",n:37,fw:40.5,dom:14,price:281000,splp:101.7,above:78.4},
+  "63074":{city:"St Ann",n:61,fw:24.6,dom:18,price:166500,splp:100.0,above:57.4},
+  "63088":{city:"Valley Park",n:37,fw:56.8,dom:5,price:320000,splp:101.4,above:73.0},
+  "63104":{city:"St Louis",n:64,fw:21.9,dom:18.0,price:443200,splp:99.3,above:45.3},
+  "63105":{city:"Clayton",n:21,fw:33.3,dom:19,price:850000,splp:100.0,above:61.9},
+  "63108":{city:"St Louis",n:17,fw:23.5,dom:32,price:581000,splp:98.4,above:35.3},
+  "63109":{city:"St Louis",n:152,fw:45.4,dom:8.0,price:301700,splp:100.0,above:66.4},
+  "63110":{city:"St Louis",n:54,fw:31.5,dom:18.0,price:349700,splp:100.0,above:53.7},
+  "63111":{city:"St Louis",n:66,fw:27.3,dom:34.0,price:165000,splp:100.0,above:62.1},
+  "63112":{city:"St Louis",n:19,fw:0.0,dom:62,price:275000,splp:98.0,above:42.1},
+  "63113":{city:"St Louis",n:6,fw:0.0,dom:21.5,price:72000,splp:98.4,above:50.0},
+  "63114":{city:"St Louis",n:136,fw:38.2,dom:8.0,price:164400,splp:100.0,above:65.4},
+  "63115":{city:"St Louis",n:9,fw:11.1,dom:44,price:74600,splp:99.6,above:44.4},
+  "63116":{city:"St Louis",n:201,fw:30.3,dom:21,price:221600,splp:100.0,above:65.2},
+  "63117":{city:"St Louis",n:31,fw:48.4,dom:9,price:355000,splp:101.9,above:67.7},
+  "63118":{city:"St Louis",n:80,fw:23.8,dom:28.5,price:263400,splp:100.0,above:51.2},
+  "63119":{city:"St Louis",n:164,fw:52.4,dom:5.0,price:393000,splp:101.6,above:71.3},
+  "63120":{city:"St Louis",n:6,fw:16.7,dom:59.0,price:72000,splp:97.6,above:50.0},
+  "63121":{city:"St Louis",n:63,fw:19.0,dom:32,price:116000,splp:98.8,above:49.2},
+  "63122":{city:"Kirkwood",n:239,fw:54.4,dom:5,price:600000,splp:100.9,above:69.0},
+  "63123":{city:"St Louis",n:236,fw:48.3,dom:6.0,price:259500,splp:100.3,above:72.0},
+  "63124":{city:"St Louis",n:30,fw:33.3,dom:35.0,price:787500,splp:99.4,above:50.0},
+  "63125":{city:"St Louis",n:122,fw:47.5,dom:7.0,price:219000,splp:101.8,above:70.5},
+  "63126":{city:"St Louis",n:80,fw:53.8,dom:5.0,price:330000,splp:102.3,above:75.0},
+  "63127":{city:"St Louis",n:20,fw:45.0,dom:6.5,price:739000,splp:100.0,above:60.0},
+  "63128":{city:"St Louis",n:107,fw:48.6,dom:5,price:421900,splp:100.0,above:69.2},
+  "63129":{city:"St Louis",n:198,fw:44.4,dom:7.5,price:360000,splp:101.1,above:70.2},
+  "63130":{city:"University City",n:127,fw:36.2,dom:11,price:457900,splp:100.0,above:61.4},
+  "63131":{city:"St Louis",n:58,fw:46.6,dom:7.5,price:832500,splp:100.2,above:63.8},
+  "63132":{city:"St Louis",n:43,fw:32.6,dom:26,price:475000,splp:100.0,above:55.8},
+  "63133":{city:"St Louis",n:14,fw:35.7,dom:30.0,price:107500,splp:98.8,above:50.0},
+  "63134":{city:"St Louis",n:53,fw:32.1,dom:12,price:120000,splp:100.0,above:56.6},
+  "63135":{city:"St Louis",n:84,fw:23.8,dom:19.5,price:115600,splp:100.0,above:52.4},
+  "63136":{city:"St Louis",n:135,fw:19.3,dom:25,price:95000,splp:99.7,above:49.6},
+  "63137":{city:"St Louis",n:59,fw:20.3,dom:23,price:110000,splp:100.0,above:55.9},
+  "63138":{city:"St Louis",n:59,fw:22.0,dom:32,price:158200,splp:100.0,above:50.8},
+  "63139":{city:"St Louis",n:118,fw:44.1,dom:7.0,price:255500,splp:100.0,above:60.2},
+  "63141":{city:"Creve Coeur",n:76,fw:46.1,dom:5.5,price:637000,splp:100.0,above:67.1},
+  "63143":{city:"St Louis",n:35,fw:40.0,dom:11,price:290000,splp:100.0,above:62.9},
+  "63144":{city:"St Louis",n:44,fw:52.3,dom:7.0,price:402500,splp:100.2,above:68.2},
+  "63146":{city:"St Louis",n:97,fw:43.3,dom:7,price:355000,splp:100.0,above:60.8},
+  "63147":{city:"St Louis",n:19,fw:5.3,dom:28,price:114000,splp:100.0,above:52.6},
+  "63301":{city:"St Charles",n:210,fw:44.3,dom:6.0,price:320000,splp:100.0,above:68.1},
+  "63303":{city:"St Charles",n:93,fw:59.1,dom:4,price:333000,splp:100.0,above:73.1},
+  "63304":{city:"St Charles",n:116,fw:50.0,dom:5.0,price:350000,splp:100.8,above:70.7},
+  "63341":{city:"Defiance",n:5,fw:0.0,dom:53,price:325000,splp:92.5,above:20.0},
+  "63348":{city:"Foristell",n:13,fw:46.2,dom:10,price:310000,splp:100.0,above:84.6},
+  "63366":{city:"O'Fallon",n:138,fw:42.0,dom:10.5,price:328200,splp:100.0,above:68.8},
+  "63367":{city:"Lake St Louis",n:65,fw:36.9,dom:11,price:345000,splp:100.0,above:50.8},
+  "63368":{city:"O'Fallon",n:84,fw:42.9,dom:6.5,price:360000,splp:100.0,above:63.1},
+  "63376":{city:"St Peters",n:272,fw:50.4,dom:5.0,price:329900,splp:100.7,above:72.1},
+  "63385":{city:"Wentzville",n:197,fw:36.5,dom:12,price:340000,splp:100.0,above:65.5}
+};
+
+const ZIP_TAX = {
+  "63005":0.0092,"63010":0.0114,"63011":0.0114,"63012":0.0114,"63016":0.0114,
+  "63017":0.0114,"63019":0.0114,"63020":0.0114,"63021":0.0114,"63023":0.0114,
+  "63025":0.0114,"63026":0.0114,"63028":0.0114,"63031":0.0114,"63033":0.0114,
+  "63034":0.0114,"63038":0.0114,"63040":0.0114,"63042":0.0114,"63043":0.0114,
+  "63044":0.0114,"63048":0.0114,"63049":0.0114,"63050":0.0114,"63051":0.0114,
+  "63052":0.0114,"63069":0.0114,"63070":0.0114,"63074":0.0114,"63088":0.0114,
+  "63104":0.0102,"63105":0.0118,"63108":0.0102,"63109":0.0102,"63110":0.0102,
+  "63111":0.0102,"63112":0.0102,"63113":0.0102,"63114":0.0114,"63115":0.0102,
+  "63116":0.0102,"63117":0.0114,"63118":0.0102,"63119":0.0128,"63120":0.0102,
+  "63121":0.0114,"63122":0.0132,"63123":0.0114,"63124":0.0114,"63125":0.0114,
+  "63126":0.0114,"63127":0.0114,"63128":0.0114,"63129":0.0114,"63130":0.0114,
+  "63131":0.0114,"63132":0.0114,"63133":0.0114,"63134":0.0114,"63135":0.0114,
+  "63136":0.0114,"63137":0.0114,"63138":0.0114,"63139":0.0102,"63141":0.0114,
+  "63143":0.0114,"63144":0.0118,"63146":0.0114,"63147":0.0102,
+  "63301":0.0092,"63303":0.0092,"63304":0.0092,"63341":0.0092,
+  "63348":0.0092,"63366":0.0092,"63367":0.0092,"63368":0.0092,
+  "63376":0.0092,"63385":0.0092
+};
+const ZIP_INS = {"default":3000};
+
+// ── COLOR SCALES & METRICS (unchanged) ────────────────────────────────────
+function lerp(a,b,t){return a+(b-a)*t;}
+function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v));}
+function hexToRgb(h){const r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);return[r,g,b];}
+function lerpColor(c1,c2,t){return[Math.round(lerp(c1[0],c2[0],t)),Math.round(lerp(c1[1],c2[1],t)),Math.round(lerp(c1[2],c2[2],t))];}
+function rgbToHex(r,g,b){return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');}
+
+const COLD = hexToRgb('#8B1A1A');
+const MID  = hexToRgb('#D4A017');
+const HOT  = hexToRgb('#1a7a4a');
+
+function heatColor(t){
+  t = clamp(t,0,1);
+  if(t<0.5) return rgbToHex(...lerpColor(COLD,MID,t*2));
+  return rgbToHex(...lerpColor(MID,HOT,(t-0.5)*2));
+}
+
+const METRICS = {
+  fw:  {label:'First Weekend Rate',low:'0%',high:'60%+',min:0,max:60,invert:false,fmt:v=>v.toFixed(1)+'%',unit:'first weekend'},
+  dom: {label:'Median Days on Market',low:'60+ days',high:'4 days',min:3,max:60,invert:true,fmt:v=>v+' days',unit:'median DOM'},
+  price:{label:'Median Sale Price',low:'$75K',high:'$850K+',min:75000,max:850000,invert:false,fmt:v=>'$'+Math.round(v/1000)+'K',unit:'median price'},
+  above:{label:'% Sold At or Above List',low:'20%',high:'85%',min:20,max:85,invert:false,fmt:v=>v.toFixed(1)+'%',unit:'at/above list'},
+};
+
+// ── AFFORDABILITY ENGINE (unchanged) ──────────────────────────────────────
+let userMaxPrice = 0;
+let userCondition = 'any';
+
+function calcPI(loan, rate){
+  const r=(rate/100)/12, n=360;
+  if(r===0) return loan/n;
+  return loan*(r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
+}
+
+function calcTrueMonthly(homePrice, down, rate, zip){
+  const loan = homePrice - down;
+  const pi = calcPI(loan, rate);
+  const tax = (homePrice*(ZIP_TAX[zip]||0.0114))/12;
+  const ins = (ZIP_INS[zip]||ZIP_INS['default'])/12;
+  const pmi = (down/homePrice)<0.20?(loan*0.0085)/12:0;
+  const maint = (homePrice*0.015)/12;
+  return {pi:Math.round(pi),tax:Math.round(tax),ins:Math.round(ins),pmi:Math.round(pmi),maint:Math.round(maint),total:Math.round(pi+tax+ins+pmi+maint)};
+}
+
+function calcMaxPrice(payment, down, rate, debts){
+  const r=(rate/100)/12, n=360;
+  const mrf=r===0?1/n:(r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
+  const factor=mrf+0.0015;
+  const net=payment-(debts*0.1);
+  return Math.round(Math.max(0,net/factor)+down);
+}
+
+function getTierPrice(d, condition){
+  const p=d.price;
+  if(condition==='aisis') return Math.round(p*0.82/1000)*1000;
+  if(condition==='mid') return Math.round(p*0.93/1000)*1000;
+  if(condition==='move') return Math.round(p*1.08/1000)*1000;
+  return p;
+}
+
+// ── MAP & CORE LOGIC (unchanged except for showDetail hooks) ──────────────
+let currentMetric = 'fw';
+let geoLayer = null;
+let map;
+
+function getVal(d, metric){
+  return metric==='fw'?d.fw : metric==='dom'?d.dom : metric==='price'?d.price : d.above;
+}
+
+function getColor(zip){
+  const d = ZIP_DATA[zip];
+  if(!d) return '#1B3A6B';
+  const m = METRICS[currentMetric];
+  const v = getVal(d, currentMetric);
+  let t = (v - m.min)/(m.max - m.min);
+  if(m.invert) t = 1-t;
+  return heatColor(clamp(t,0,1));
+}
+
+function styleFeature(feature){
+  const zip = feature.properties.z || '';
+  const hasData = !!ZIP_DATA[zip];
+  return {
+    fillColor: hasData ? getColor(zip) : '#1B3A6B',
+    fillOpacity: hasData ? 0.82 : 0.2,
+    color: '#0A1628',
+    weight: 1,
+    opacity: 0.7
+  };
+}
+
+function fmt$(n){return '$'+n.toLocaleString();}
+
+function showDetail(zip){
+  const d = ZIP_DATA[zip];
+  const el = document.getElementById('detail');
+
+  if(el._currentZip === zip){
+    el._currentZip = null;
+    el.className='zip-detail empty';
+    el.innerHTML='<div class="icon">📍</div><p>Enter your budget above — map highlights update live — or click any zip for full stats.</p>';
+    if(geoLayer) geoLayer.resetStyle();
+    if(window.innerWidth<=900) document.querySelector('.sidebar').classList.remove('active');
+    return;
+  }
+  el._currentZip = zip;
+
+  if(!d){
+    el.className='zip-detail empty';
+    el.innerHTML='<div class="icon">📍</div><p>No data available for zip '+zip+'.</p>';
+    return;
+  }
+
+  const fw = d.fw;
+  const badge = fw>=50?'hot':fw>=35?'warm':'cool';
+  const badgeLabel = fw>=50?'HOT MARKET':fw>=35?'ACTIVE MARKET':'SLOWER MARKET';
+
+  const fwColor = fw>=50?'green':fw>=35?'gold':'red';
+  const domColor = d.dom<=10?'green':d.dom<=25?'gold':'red';
+  const aboveColor = d.above>=65?'green':d.above>=50?'gold':'red';
+
+  let insight = '';
+  if(fw>=50) insight = `${fw}% of homes in this zip sold in the first weekend at or above list price. Sellers here have serious leverage — price it right and expect competition.`;
+  else if(fw>=35) insight = `${fw}% first weekend rate puts this zip in the active tier. Competitive conditions but buyer negotiations are more common than in the hottest corridors.`;
+  else insight = `At ${fw}% first weekend rate, sellers here should plan for longer market time. Pricing to the market early matters more than in high-competition zips.`;
+
+  const p = d.price;
+  const tierAsis = Math.round(p * 0.82 / 1000) * 1000;
+  const tierMid = Math.round(p * 0.93 / 1000) * 1000;
+  const tierMove = Math.round(p * 1.08 / 1000) * 1000;
+
+  el.className='zip-detail';
+  el.innerHTML=`
+    <div class="zip-name">${zip}</div>
+    <div class="zip-city">${d.city}</div>
+    <div class="zip-badge ${badge}">${badgeLabel}</div>
+    <div class="stat-grid">
+      <div class="stat">
+        <div class="stat-label">First Weekend Rate</div>
+        <div class="stat-val ${fwColor}">${fw}%</div>
+        <div class="stat-sub">sold ≤7 days at/above list</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Median DOM</div>
+        <div class="stat-val ${domColor}">${d.dom}</div>
+        <div class="stat-sub">days on market</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Median Sale Price</div>
+        <div class="stat-val gold">${fmt$(d.price)}</div>
+        <div class="stat-sub">all conditions</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Sale-to-List</div>
+        <div class="stat-val ${d.splp>=101?'green':d.splp>=99?'gold':'red'}">${d.splp}%</div>
+        <div class="stat-sub">median SP/LP ratio</div>
+      </div>
+    </div>
+    <div class="stat" style="margin-bottom:10px;">
+      <div class="stat-label">% Sold At or Above List Price</div>
+      <div class="stat-val ${aboveColor}" style="font-size:28px;">${d.above}%</div>
+      <div class="stat-sub">of all closed sales</div>
+    </div>
+    <div class="insight">${insight}</div>
+
+    <div style="margin-bottom:6px;font-size:9px;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-top:12px;">ESTIMATED PRICE TIERS</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:12px;">
+      <div class="stat">
+        <div class="stat-label">As-Is</div>
+        <div class="stat-val" style="font-size:14px;color:var(--warn);">${fmt$(tierAsis)}</div>
+        <div class="stat-sub">needs work</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Mid-Tier</div>
+        <div class="stat-val" style="font-size:14px;color:var(--gold);">${fmt$(tierMid)}</div>
+        <div class="stat-sub">some updating</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Move-In</div>
+        <div class="stat-val" style="font-size:14px;color:#5DCAA5;">${fmt$(tierMove)}</div>
+        <div class="stat-sub">ready</div>
+      </div>
+    </div>
+
+    ${userMaxPrice>0 ? (()=>{
+      const down=parseFloat(document.getElementById('fp-down').value)||10000;
+      const rate=parseFloat(document.getElementById('fp-rate').value)||6.75;
+      const costs=calcTrueMonthly(p,down,rate,zip);
+      const target=parseFloat(document.getElementById('fp-payment').value)||1500;
+      const ratio=costs.total/target;
+      const color=ratio<=1.0?'#1a7a4a':ratio<=1.2?'#E8A020':'#C0392B';
+      const msg=ratio<=1.0?'✅ Within your budget':ratio<=1.2?'⚠️ Slightly over budget':'❌ Over your budget';
+      const fmtM=n=>'$'+n.toLocaleString()+'/mo';
+      return `<div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:3px;padding:12px 14px;margin-bottom:10px;">
+        <div style="font-size:9px;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">TRUE MONTHLY COST IN ${zip}</div>
+        <div style="display:flex;flex-direction:column;gap:4px;font-size:11px;">
+          <div style="display:flex;justify-content:space-between;"><span style="color:rgba(255,255,255,0.6);">P&I</span><span style="font-family:'Bebas Neue',sans-serif;letter-spacing:0.5px;">${fmtM(costs.pi)}</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:rgba(255,255,255,0.6);">Taxes</span><span style="font-family:'Bebas Neue',sans-serif;letter-spacing:0.5px;">${fmtM(costs.tax)}</span></div>
+          <div style="display:flex;justify-content:space-between;"><span style="color:rgba(255,255,255,0.6);">Insurance</span><span style="font-family:'Bebas Neue',sans-serif;letter-spacing:0.5px;">${fmtM(costs.ins)}</span></div>
+          ${costs.pmi>0?`<div style="display:flex;justify-content:space-between;"><span style="color:rgba(255,255,255,0.6);">PMI</span><span style="font-family:'Bebas Neue',sans-serif;letter-spacing:0.5px;">${fmtM(costs.pmi)}</span></div>`:''}
+          <div style="display:flex;justify-content:space-between;"><span style="color:rgba(255,255,255,0.6);">Maintenance</span><span style="font-family:'Bebas Neue',sans-serif;letter-spacing:0.5px;">${fmtM(costs.maint)}</span></div>
+          <div style="display:flex;justify-content:space-between;border-top:1px solid rgba(255,255,255,0.15);padding-top:6px;margin-top:2px;">
+            <span style="font-weight:700;color:white;">ALL-IN TOTAL</span>
+            <span style="font-family:'Bebas Neue',sans-serif;font-size:15px;color:${color};">${fmtM(costs.total)}</span>
+          </div>
+        </div>
+        <div style="font-size:10px;font-weight:700;margin-top:6px;color:${color};">${msg}</div>
+      </div>`;
+    })() : ''}
+
+    <div style="font-size:10px;color:rgba(255,255,255,0.3);text-align:center;">Click zip again to deselect · ${d.n} sales analyzed</div>
+  `;
+
+  if(window.innerWidth <= 900){
+    document.querySelector('.finance-panel').classList.remove('expanded');
+    document.querySelector('.sidebar').classList.add('active');
+    if(map) map.invalidateSize();
+  }
+}
+
+function updateLegend(){
+  const m = METRICS[currentMetric];
+  document.getElementById('legend-low').textContent = m.low;
+  document.getElementById('legend-high').textContent = m.high;
+  const canvas = document.getElementById('legend-grad');
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  for(let i=0;i<w;i++){
+    let t = i/w;
+    if(m.invert) t = 1-t;
+    ctx.fillStyle = heatColor(t);
+    ctx.fillRect(i,0,1,h);
+  }
+}
+
+function setMetric(m){
+  currentMetric = m;
+  document.querySelectorAll('.metric-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  updateLegend();
+  if(geoLayer) geoLayer.setStyle(styleFeature);
+}
+
+function toggleAffordPanel(){
+  const fp = document.querySelector('.finance-panel');
+  fp.classList.toggle('expanded');
+  if(map) map.invalidateSize();
+}
+
+function dismissDetail(){
+  document.querySelector('.sidebar').classList.remove('active');
+  if(window.innerWidth<=900) document.querySelector('.finance-panel').classList.add('expanded');
+}
+
+// ── AUTO-UPDATING AFFORDABILITY (live on mobile) ──────────────────────────
+let affordabilityTimer = null;
+const AFFORD_DEBOUNCE_MS = 600;
+
+function updateAffordabilityLive() {
+  const payment = parseFloat(document.getElementById('fp-payment').value) || 1500;
+  const down    = parseFloat(document.getElementById('fp-down').value)    || 10000;
+  const rate    = parseFloat(document.getElementById('fp-rate').value)    || 6.75;
+  const debts   = parseFloat(document.getElementById('fp-debts').value)   || 0;
+  userCondition = document.getElementById('fp-cond').value;
+
+  userMaxPrice = calcMaxPrice(payment, down, rate, debts);
+
+  const res = document.getElementById('fp-result');
+  document.getElementById('fp-maxprice').textContent = '$' + userMaxPrice.toLocaleString();
+  document.getElementById('fp-sub').textContent = 'Updating map highlights live...';
+  res.classList.add('visible');
+
+  if (geoLayer) {
+    geoLayer.eachLayer(layer => {
+      const zip = layer.feature?.properties?.z || '';
+      const d = ZIP_DATA[zip];
+      if (!d) { layer.setStyle({fillOpacity:0.1, weight:0.5}); return; }
+      const tp = getTierPrice(d, userCondition);
+      const ratio = userMaxPrice / tp;
+      if (ratio >= 1.0) layer.setStyle({fillColor:'#1a7a4a', fillOpacity:0.75, color:'#D4A017', weight:2});
+      else if (ratio >= 0.85) layer.setStyle({fillColor:'#E8A020', fillOpacity:0.6, color:'#8A7A5A', weight:1});
+      else layer.setStyle({fillColor:'#8B1A1A', fillOpacity:0.3, color:'#8A7A5A', weight:0.5});
+    });
+  }
+}
+
+// ── MAP INITIALIZATION (unchanged) ────────────────────────────────────────
+map = L.map('map',{
+  center:[38.627,-90.197],
+  zoom:10,
+  zoomControl:true,
+  preferCanvas:true
+});
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',{
+  attribution:'© OpenStreetMap contributors © CARTO',
+  maxZoom:18
+}).addTo(map);
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{
+  attribution:'',
+  maxZoom:18,
+  pane:'overlayPane'
+}).addTo(map);
+
+(function(){
+ (function(){
+  const data = {"type":"FeatureCollection","features":[{"type":"Feature","properties":{"z":"63070"},"geometry":{"type":"Polygon","coordinates":[[[-90.406462,38.295847],[-90.40804,38.28643],[-90.40386,38.28703],[-90.40353,38.30663],[-90.415686,38.306749],[-90.415625,38.311188],[-90.401874,38.316229],[-90.401188,38.32366],[-90.38317,38.31503],[-90.38511,38.296018],[-90.372666,38.293594],[-90.371754,38.280536],[-90.377518,38.28259],[-90.380377,38.276606],[-90.387892,38.276233],[-90.389712,38.264462],[-90.395098,38.268231],[-90.425867,38.254232],[-90.434448,38.257826],[-90.447519,38.253338],[-90.455039,38.253166],[-90.462277,38.262111],[-90.45447,38.26442],[-90.46068,38.27072],[-90.45912,38.28172],[-90.469888,38.285639],[-90.471518,38.297942],[-90.467,38.29616],[-90.45751,38.30365],[-90.45135,38.29271],[-90.452254,38.299167],[-90.44411,38.302278],[-90.428065,38.293406],[-90.408024,38.300953],[-90.406462,38.295847]]]}},{"type":"Feature","properties":{"z":"63052"},"geometry":{"type":"Polygon","coordinates":[[[-90.430336,38.360782],[-90.46095,38.35698],[-90.46758,38.35994],[-90.47623,38.35109],[-90.47454,38.364504],[-90.50125,38.37206],[-90.495859,38.380752],[-90.49915,38.38705],[-90.494522,38.399467],[-90.50217,38.39536],[-90.499335,38.414611],[-90.508302,38.415512],[-90.508164,38.420283],[-90.495918,38.427851],[-90.487936,38.426652],[-90.489978,38.442704],[-90.483349,38.442593],[-90.48266,38.45266],[-90.46079,38.45823],[-90.460967,38.449434],[-90.467278,38.441629],[-90.46472,38.43875],[-90.45959,38.44517],[-90.45638,38.44136],[-90.462859,38.42796],[-90.43926,38.419318],[-90.420997,38.419988],[-90.41545,38.41652],[-90.415101,38.408956],[-90.405643,38.40978],[-90.402897,38.40348],[-90.395806,38.404757],[-90.382929,38.39389],[-90.37557,38.39919],[-90.36455,38.385459],[-90.358306,38.384566],[-90.35929,38.380143],[-90.347526,38.379704],[-90.370819,38.333554],[-90.381633,38.342319],[-90.387933,38.341302],[-90.38402,38.34352],[-90.386084,38.35853],[-90.39588,38.34848],[-90.390559,38.357555],[-90.393348,38.360689],[-90.40679,38.36334],[-90.41085,38.35286],[-90.430336,38.360782]],[[-90.3658,38.36636],[-90.36239,38.36756],[-90.3658,38.36636]]]}},{"type":"Feature","properties":{"z":"63049"},"geometry":{"type":"Polygon","coordinates":[[[-90.561538,38.454125],[-90.565019,38.449681],[-90.56548,38.45427],[-90.574426,38.457899],[-90.57007,38.4611],[-90.57855,38.46169],[-90.593429,38.472211],[-90.592844,38.476078],[-90.578687,38.479942],[-90.578599,38.487059],[-90.583974,38.487199],[-90.584109,38.501653],[-90.591131,38.504464],[-90.55823,38.507591],[-90.542413,38.526916],[-90.507761,38.53724],[-90.513336,38.526975],[-90.511634,38.507515],[-90.503431,38.506287],[-90.502751,38.501353],[-90.510362,38.501361],[-90.51167,38.49623],[-90.502308,38.490726],[-90.492326,38.494892],[-90.47595,38.47139],[-90.48874,38.45742],[-90.487936,38.426652],[-90.495918,38.427851],[-90.513163,38.419698],[-90.512984,38.4389],[-90.52451,38.44065],[-90.53277,38.45487],[-90.546286,38.44522],[-90.550558,38.454036],[-90.561538,38.454125]]]}},{"type":"Feature","properties":{"z":"63341"},"geometry":{"type":"Polygon","coordinates":[[[-90.846883,38.638116],[-90.852527,38.635116],[-90.863569,38.651342],[-90.870841,38.648689],[-90.870336,38.657679],[-90.884685,38.643027],[-90.889178,38.64275],[-90.886233,38.649732],[-90.89126,38.65407],[-90.91269,38.65136],[-90.91961,38.67522],[-90.909323,38.685949],[-90.886873,38.694318],[-90.88325,38.70908],[-90.86948,38.71406],[-90.849363,38.709634],[-90.839842,38.723474],[-90.827439,38.725981],[-90.82451,38.72167],[-90.833599,38.717015],[-90.83386,38.70609],[-90.821605,38.7079],[-90.816056,38.712758],[-90.8149,38.72251],[-90.799041,38.72272],[-90.795936,38.737001],[-90.779634,38.742065],[-90.749285,38.744175],[-90.72828,38.72461],[-90.737179,38.731721],[-90.74338,38.72878],[-90.74286,38.71814],[-90.73574,38.71126],[-90.742,38.70568],[-90.77757,38.70466],[-90.77763,38.70036],[-90.76257,38.690613],[-90.73351,38.69087],[-90.73195,38.66892],[-90.761301,38.658635],[-90.753743,38.65043],[-90.735905,38.643913],[-90.75609,38.611318],[-90.78814,38.61726],[-90.799959,38.600581],[-90.818263,38.607542],[-90.818305,38.604359],[-90.834048,38.604487],[-90.8182,38.61264],[-90.817765,38.630522],[-90.806096,38.638829],[-90.82313,38.6358],[-90.826065,38.629807],[-90.837438,38.63088],[-90.846883,38.638116]]]}},{"type":"Feature","properties":{"z":"63021"},"geometry":{"type":"Polygon","coordinates":[[[-90.58131,38.588483],[-90.578167,38.592725],[-90.573391,38.589521],[-90.57215,38.592743],[-90.508789,38.592778],[-90.506814,38.589428],[-90.488046,38.596395],[-90.478279,38.592201],[-90.477908,38.596153],[-90.467577,38.596886],[-90.468794,38.58747],[-90.462878,38.588285],[-90.466764,38.584748],[-90.461934,38.578448],[-90.476188,38.567144],[-90.500316,38.567748],[-90.49765,38.563927],[-90.511037,38.56041],[-90.511657,38.55115],[-90.520495,38.552012],[-90.520678,38.546768],[-90.534592,38.548756],[-90.532722,38.540753],[-90.556439,38.546754],[-90.571824,38.532153],[-90.585134,38.533147],[-90.612581,38.542909],[-90.607657,38.548407],[-90.60574,38.568177],[-90.600582,38.571351],[-90.600137,38.583163],[-90.604837,38.586696],[-90.587402,38.592627],[-90.58131,38.588483]]]}},{"type":"Feature","properties":{"z":"63131"},"geometry":{"type":"Polygon","coordinates":[[[-90.483694,38.596475],[-90.490632,38.602022],[-90.484955,38.612239],[-90.488621,38.629319],[-90.483103,38.62755],[-90.481077,38.634404],[-90.453041,38.631554],[-90.453119,38.638373],[-90.443501,38.63865],[-90.443412,38.647944],[-90.408499,38.647667],[-90.405373,38.652068],[-90.405948,38.618349],[-90.400917,38.618252],[-90.401217,38.603452],[-90.425218,38.606146],[-90.425413,38.596655],[-90.449766,38.597158],[-90.448793,38.581411],[-90.455424,38.579917],[-90.465363,38.579938],[-90.462878,38.588285],[-90.468794,38.58747],[-90.467577,38.596886],[-90.483694,38.596475]]]}},{"type":"Feature","properties":{"z":"63074"},"geometry":{"type":"Polygon","coordinates":[[[-90.405778,38.727254],[-90.404656,38.73575],[-90.395433,38.74369],[-90.369456,38.739587],[-90.369619,38.721099],[-90.377874,38.711481],[-90.408563,38.710965],[-90.405778,38.727254]]]}},{"type":"Feature","properties":{"z":"63112"},"geometry":{"type":"Polygon","coordinates":[[[-90.300719,38.6492],[-90.298134,38.660152],[-90.282744,38.679683],[-90.262272,38.67348],[-90.272005,38.660869],[-90.27516,38.640932],[-90.284609,38.633215],[-90.288947,38.637538],[-90.285966,38.646125],[-90.300719,38.6492]]]}},{"type":"Feature","properties":{"z":"63016"},"geometry":{"type":"Polygon","coordinates":[[[-90.57152,38.32269],[-90.57475,38.31647],[-90.58139,38.32228],[-90.61096,38.32985],[-90.6162,38.32407],[-90.630325,38.322032],[-90.630674,38.306243],[-90.64118,38.30729],[-90.64751,38.31],[-90.64936,38.31932],[-90.65702,38.315953],[-90.656812,38.32672],[-90.667573,38.327513],[-90.667593,38.339598],[-90.67681,38.34047],[-90.684824,38.35056],[-90.67292,38.35504],[-90.67732,38.36286],[-90.68327,38.36573],[-90.69198,38.36219],[-90.70012,38.3693],[-90.71651,38.36958],[-90.721,38.3775],[-90.717336,38.383418],[-90.70223,38.38658],[-90.69066,38.38369],[-90.65638,38.39078],[-90.656462,38.384041],[-90.65263,38.384168],[-90.650374,38.389516],[-90.636882,38.38777],[-90.638392,38.39209],[-90.632815,38.388548],[-90.634299,38.38174],[-90.612266,38.378947],[-90.603222,38.369487],[-90.608395,38.369553],[-90.608887,38.354823],[-90.590103,38.354524],[-90.59082,38.34059],[-90.576471,38.347597],[-90.57502,38.34032],[-90.565377,38.339257],[-90.555533,38.351012],[-90.56183,38.33659],[-90.5705,38.33659],[-90.57152,38.32269]]]}},{"type":"Feature","properties":{"z":"63023"},"geometry":{"type":"Polygon","coordinates":[[[-90.740792,38.164041],[-90.780185,38.204112],[-90.762804,38.29555],[-90.75502,38.28796],[-90.75192,38.29056],[-90.755996,38.302768],[-90.737446,38.302419],[-90.73883,38.31164],[-90.75298,38.30911],[-90.75055,38.31669],[-90.75657,38.325401],[-90.750222,38.355078],[-90.736383,38.349101],[-90.74363,38.36272],[-90.72103,38.37739],[-90.71651,38.36958],[-90.70012,38.3693],[-90.69198,38.36219],[-90.68327,38.36573],[-90.67732,38.36286],[-90.67292,38.35504],[-90.684824,38.35056],[-90.67681,38.34047],[-90.667593,38.339598],[-90.667573,38.327513],[-90.656812,38.32672],[-90.65702,38.315953],[-90.64936,38.31932],[-90.64751,38.31],[-90.630674,38.306243],[-90.630684,38.317681],[-90.622631,38.314865],[-90.61368,38.30707],[-90.61169,38.296261],[-90.616755,38.293481],[-90.62916,38.304634],[-90.636741,38.305328],[-90.632456,38.289428],[-90.642047,38.282728],[-90.640029,38.274443],[-90.652172,38.275407],[-90.660888,38.267382],[-90.681141,38.273821],[-90.693768,38.265803],[-90.692292,38.259173],[-90.682159,38.253455],[-90.686257,38.249341],[-90.680367,38.249111],[-90.670002,38.237041],[-90.670378,38.230606],[-90.685534,38.232453],[-90.67098,38.21285],[-90.662,38.21339],[-90.67429,38.19957],[-90.68245,38.18017],[-90.717038,38.178631],[-90.721923,38.170217],[-90.729947,38.169356],[-90.737908,38.161154],[-90.740792,38.164041]]]}},{"type":"Feature","properties":{"z":"63105"},"geometry":{"type":"Polygon","coordinates":[[[-90.329822,38.651389],[-90.304287,38.646291],[-90.300678,38.649418],[-90.304533,38.632634],[-90.351008,38.639077],[-90.347971,38.657977],[-90.3347,38.656733],[-90.329822,38.651389]]]}},{"type":"Feature","properties":{"z":"63117"},"geometry":{"type":"Polygon","coordinates":[[[-90.334911,38.62964],[-90.362258,38.630116],[-90.360555,38.640842],[-90.301652,38.632372],[-90.306551,38.629884],[-90.30714,38.621402],[-90.313067,38.622713],[-90.31509,38.618729],[-90.334466,38.622762],[-90.334911,38.62964]]]}},{"type":"Feature","properties":{"z":"63043"},"geometry":{"type":"Polygon","coordinates":[[[-90.450525,38.698403],[-90.472277,38.705506],[-90.486972,38.729579],[-90.497909,38.726426],[-90.494207,38.71489],[-90.510489,38.719062],[-90.519963,38.737413],[-90.49579,38.748256],[-90.482299,38.764348],[-90.439484,38.74859],[-90.441712,38.738828],[-90.439214,38.742806],[-90.430532,38.739361],[-90.429367,38.72904],[-90.407296,38.722293],[-90.408716,38.696322],[-90.421549,38.706985],[-90.437659,38.708569],[-90.444843,38.702214],[-90.44974,38.70395],[-90.450525,38.698403]]]}},{"type":"Feature","properties":{"z":"63134"},"geometry":{"type":"Polygon","coordinates":[[[-90.335214,38.721251],[-90.372184,38.725096],[-90.369456,38.739587],[-90.380459,38.748772],[-90.382001,38.756137],[-90.350933,38.75836],[-90.349216,38.773655],[-90.343862,38.773886],[-90.338516,38.764547],[-90.318728,38.761936],[-90.319066,38.745652],[-90.327929,38.745687],[-90.325049,38.741349],[-90.329028,38.734512],[-90.324355,38.729804],[-90.313968,38.732973],[-90.310582,38.720817],[-90.326283,38.72555],[-90.323767,38.720081],[-90.335214,38.721251]]]}},{"type":"Feature","properties":{"z":"63137"},"geometry":{"type":"Polygon","coordinates":[[[-90.216138,38.721358],[-90.221238,38.728904],[-90.240643,38.723303],[-90.238736,38.770634],[-90.184715,38.76716],[-90.184196,38.774431],[-90.166409,38.772649],[-90.179113,38.750269],[-90.216138,38.721358]]]}},{"type":"Feature","properties":{"z":"63020"},"geometry":{"type":"Polygon","coordinates":[[[-90.661896,38.183085],[-90.64211,38.18558],[-90.62199,38.17846],[-90.62248,38.170967],[-90.575377,38.169458],[-90.565755,38.174693],[-90.55973,38.18552],[-90.56265,38.20087],[-90.55696,38.21926],[-90.561314,38.221404],[-90.528089,38.217917],[-90.523721,38.210949],[-90.51772,38.21181],[-90.51886,38.19229],[-90.52357,38.18918],[-90.51989,38.18356],[-90.53046,38.18246],[-90.518025,38.1824],[-90.5176,38.16145],[-90.509838,38.161219],[-90.509671,38.154413],[-90.483119,38.154184],[-90.483298,38.149676],[-90.473772,38.149628],[-90.47373,38.145586],[-90.465169,38.145424],[-90.448689,38.133582],[-90.447124,38.142369],[-90.431296,38.139224],[-90.43299,38.116238],[-90.42472,38.116207],[-90.425948,38.108822],[-90.41511,38.10368],[-90.42686,38.08761],[-90.42254,38.07304],[-90.41591,38.06984],[-90.407103,38.074398],[-90.397046,38.053702],[-90.416022,38.042315],[-90.472329,38.029808],[-90.47541,38.03273],[-90.472026,38.04239],[-90.490343,38.046273],[-90.490482,38.042323],[-90.49683,38.04124],[-90.491983,38.02517],[-90.521098,38.018242],[-90.522787,38.027812],[-90.55376,38.03395],[-90.55706,38.02007],[-90.568863,38.012134],[-90.569132,38.00686],[-90.583324,38.003499],[-90.628084,38.007743],[-90.612787,38.015895],[-90.621508,38.040357],[-90.612914,38.071631],[-90.662431,38.08461],[-90.699082,38.075321],[-90.687118,38.093144],[-90.676175,38.095066],[-90.737908,38.161154],[-90.729947,38.169356],[-90.721798,38.170305],[-90.717038,38.178631],[-90.661896,38.183085]]]}},{"type":"Feature","properties":{"z":"63026"},"geometry":{"type":"Polygon","coordinates":[[[-90.47595,38.47139],[-90.492326,38.494892],[-90.502308,38.490726],[-90.5027,38.494304],[-90.51052,38.49395],[-90.510362,38.501361],[-90.502751,38.501353],[-90.503431,38.506287],[-90.511544,38.507121],[-90.512154,38.5349],[-90.500676,38.536964],[-90.493261,38.530843],[-90.496003,38.536447],[-90.494485,38.532953],[-90.491593,38.539809],[-90.47341,38.541906],[-90.476537,38.546177],[-90.442727,38.559308],[-90.433838,38.543431],[-90.435626,38.515483],[-90.420209,38.505758],[-90.406633,38.503771],[-90.405636,38.486542],[-90.411805,38.480988],[-90.422519,38.483118],[-90.415011,38.462959],[-90.445888,38.463025],[-90.446265,38.452916],[-90.452849,38.44967],[-90.452044,38.455273],[-90.460967,38.449434],[-90.46079,38.45823],[-90.467853,38.457273],[-90.48266,38.45266],[-90.483349,38.442593],[-90.489906,38.442878],[-90.48874,38.45742],[-90.47595,38.47139]]]}},{"type":"Feature","properties":{"z":"63136"},"geometry":{"type":"Polygon","coordinates":[[[-90.268729,38.703286],[-90.2855,38.711392],[-90.277525,38.731914],[-90.281996,38.769849],[-90.267064,38.770956],[-90.270839,38.774071],[-90.26518,38.775477],[-90.26684,38.779015],[-90.234299,38.785376],[-90.238682,38.773629],[-90.239851,38.723525],[-90.255774,38.71375],[-90.249475,38.706821],[-90.252992,38.703323],[-90.260795,38.698043],[-90.268729,38.703286]]]}},{"type":"Feature","properties":{"z":"63124"},"geometry":{"type":"Polygon","coordinates":[[[-90.383132,38.660939],[-90.361837,38.662497],[-90.355696,38.657864],[-90.357151,38.662233],[-90.349668,38.66142],[-90.351008,38.639077],[-90.360555,38.640842],[-90.362946,38.612863],[-90.40105,38.611148],[-90.400917,38.618252],[-90.405948,38.618349],[-90.405305,38.657269],[-90.383132,38.660939]]]}},{"type":"Feature","properties":{"z":"63130"},"geometry":{"type":"Polygon","coordinates":[[[-90.329822,38.651389],[-90.3347,38.656733],[-90.349624,38.658599],[-90.347856,38.668159],[-90.353454,38.673036],[-90.348716,38.673645],[-90.347015,38.68561],[-90.328791,38.683567],[-90.324082,38.676119],[-90.314573,38.675995],[-90.295504,38.664071],[-90.304287,38.646291],[-90.329822,38.651389]]]}},{"type":"Feature","properties":{"z":"63146"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-90.438008,38.675288],[-90.435409,38.671272],[-90.441641,38.672708],[-90.438008,38.675288]]],[[[-90.463185,38.676329],[-90.461278,38.680259],[-90.494575,38.684724],[-90.497631,38.692516],[-90.506717,38.689671],[-90.512317,38.694979],[-90.522236,38.693013],[-90.522752,38.687625],[-90.537616,38.688018],[-90.530363,38.69863],[-90.53134,38.731178],[-90.519963,38.737413],[-90.510489,38.719062],[-90.494207,38.71489],[-90.497909,38.726426],[-90.486972,38.729579],[-90.472414,38.70563],[-90.457318,38.703231],[-90.454239,38.697476],[-90.437659,38.708569],[-90.421549,38.706985],[-90.408716,38.696322],[-90.404676,38.676448],[-90.429094,38.675371],[-90.430688,38.671755],[-90.436448,38.675666],[-90.447062,38.6723],[-90.44719,38.675715],[-90.449061,38.672373],[-90.463185,38.676329]]]]}},{"type":"Feature","properties":{"z":"63042"},"geometry":{"type":"Polygon","coordinates":[[[-90.403276,38.771621],[-90.412343,38.775106],[-90.41473,38.785162],[-90.417344,38.782358],[-90.426137,38.791889],[-90.429086,38.797447],[-90.424427,38.797241],[-90.443722,38.813137],[-90.43114,38.821609],[-90.402858,38.806056],[-90.391315,38.811068],[-90.387758,38.797654],[-90.38748,38.800888],[-90.373302,38.792455],[-90.368467,38.797785],[-90.339583,38.7866],[-90.337728,38.77591],[-90.328266,38.774754],[-90.329182,38.769026],[-90.324215,38.768563],[-90.324852,38.764772],[-90.338516,38.764547],[-90.343862,38.773886],[-90.349216,38.773655],[-90.350933,38.75836],[-90.360726,38.7586],[-90.387779,38.760358],[-90.403276,38.771621]]]}},{"type":"Feature","properties":{"z":"63115"},"geometry":{"type":"Polygon","coordinates":[[[-90.228853,38.666438],[-90.234127,38.660188],[-90.262913,38.672568],[-90.260223,38.678244],[-90.264375,38.683774],[-90.239127,38.694965],[-90.249475,38.706821],[-90.243987,38.712385],[-90.23012,38.705302],[-90.228378,38.700253],[-90.238548,38.694221],[-90.23008,38.684421],[-90.211133,38.679581],[-90.223749,38.67901],[-90.219354,38.674059],[-90.228853,38.666438]]]}},{"type":"Feature","properties":{"z":"63109"},"geometry":{"type":"Polygon","coordinates":[[[-90.28266,38.595212],[-90.270885,38.593899],[-90.275812,38.579743],[-90.281755,38.578844],[-90.282779,38.572244],[-90.2939,38.568634],[-90.295356,38.563477],[-90.320515,38.594152],[-90.315733,38.599859],[-90.28266,38.595212]]]}},{"type":"Feature","properties":{"z":"63111"},"geometry":{"type":"Polygon","coordinates":[[[-90.249287,38.574577],[-90.244657,38.581008],[-90.221103,38.576798],[-90.257413,38.531852],[-90.267055,38.534275],[-90.272717,38.54859],[-90.25997,38.557127],[-90.261431,38.561873],[-90.249287,38.574577]]]}},{"type":"Feature","properties":{"z":"63050"},"geometry":{"type":"Polygon","coordinates":[[[-90.686933,38.256618],[-90.694223,38.264978],[-90.68419,38.273205],[-90.662376,38.27088],[-90.660888,38.267382],[-90.652172,38.275407],[-90.639619,38.27475],[-90.642047,38.282728],[-90.632456,38.289428],[-90.636741,38.305328],[-90.612332,38.294112],[-90.61368,38.30707],[-90.630684,38.317681],[-90.630325,38.322032],[-90.6162,38.32407],[-90.61081,38.32984],[-90.57304,38.31644],[-90.5705,38.33659],[-90.56183,38.33659],[-90.555533,38.351012],[-90.554009,38.356657],[-90.559497,38.362679],[-90.538405,38.361646],[-90.53217,38.354458],[-90.518448,38.358215],[-90.51792,38.3437],[-90.524301,38.33928],[-90.51775,38.32843],[-90.496756,38.324871],[-90.50192,38.31271],[-90.4973,38.31032],[-90.473229,38.308168],[-90.469888,38.285639],[-90.45912,38.28172],[-90.46068,38.27072],[-90.45447,38.26442],[-90.46607,38.25798],[-90.455155,38.247335],[-90.462212,38.251679],[-90.48482,38.24822],[-90.485661,38.25808],[-90.490818,38.261175],[-90.503676,38.249043],[-90.515791,38.250592],[-90.52049,38.21785],[-90.53888,38.21626],[-90.54629,38.22151],[-90.561314,38.221404],[-90.55696,38.21926],[-90.56265,38.20087],[-90.55973,38.18552],[-90.565755,38.174693],[-90.575377,38.169458],[-90.62248,38.170967],[-90.62199,38.17846],[-90.64211,38.18558],[-90.65332,38.181314],[-90.67805,38.18428],[-90.67429,38.19957],[-90.662,38.21339],[-90.67098,38.21285],[-90.685631,38.23262],[-90.66938,38.233244],[-90.673312,38.242513],[-90.686257,38.249341],[-90.682063,38.253233],[-90.686933,38.256618]]]}},{"type":"Feature","properties":{"z":"63301"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-90.570306,38.802398],[-90.570306,38.802398]]],[[[-90.537074,38.787525],[-90.56985,38.795196],[-90.570766,38.805455],[-90.549647,38.809729],[-90.558543,38.823626],[-90.56036,38.83788],[-90.56463,38.83811],[-90.56427,38.85309],[-90.57816,38.85341],[-90.60168,38.86253],[-90.63055,38.85648],[-90.63273,38.87029],[-90.61821,38.86849],[-90.658807,38.883194],[-90.646667,38.89603],[-90.653816,38.900224],[-90.657091,38.915325],[-90.669249,38.934159],[-90.663181,38.934224],[-90.663018,38.926283],[-90.636994,38.905123],[-90.623356,38.887149],[-90.582259,38.868794],[-90.548917,38.872937],[-90.507451,38.902767],[-90.487058,38.925862],[-90.483071,38.94307],[-90.472122,38.958838],[-90.451279,38.967731],[-90.434405,38.965745],[-90.434409,38.959006],[-90.453776,38.949397],[-90.434541,38.950827],[-90.43505,38.9202],[-90.45854,38.92045],[-90.45886,38.89805],[-90.444806,38.897504],[-90.427601,38.909001],[-90.39024,38.91442],[-90.35224,38.91061],[-90.35774,38.8981],[-90.332606,38.903451],[-90.32566,38.90922],[-90.31372,38.90785],[-90.31466,38.90125],[-90.28446,38.89827],[-90.28891,38.88936],[-90.28185,38.88176],[-90.289224,38.887283],[-90.289787,38.882838],[-90.31423,38.891146],[-90.334464,38.884586],[-90.349113,38.841695],[-90.369951,38.82383],[-90.440617,38.82765],[-90.473188,38.790978],[-90.482455,38.764013],[-90.537074,38.787525]]]]}},{"type":"Feature","properties":{"z":"63121"},"geometry":{"type":"Polygon","coordinates":[[[-90.312314,38.727381],[-90.309718,38.731513],[-90.298013,38.72975],[-90.299496,38.726124],[-90.280519,38.726895],[-90.2855,38.711392],[-90.268623,38.703859],[-90.279828,38.683274],[-90.301882,38.68779],[-90.305328,38.706964],[-90.309333,38.687931],[-90.325713,38.697592],[-90.32649,38.706805],[-90.334454,38.707972],[-90.331878,38.713542],[-90.336943,38.706969],[-90.333282,38.720763],[-90.322341,38.720883],[-90.326283,38.72555],[-90.310582,38.720817],[-90.312314,38.727381]]]}},{"type":"Feature","properties":{"z":"63128"},"geometry":{"type":"Polygon","coordinates":[[[-90.406179,38.485696],[-90.405484,38.502328],[-90.41312,38.504727],[-90.405329,38.513578],[-90.413864,38.51562],[-90.398773,38.525355],[-90.381942,38.529544],[-90.343077,38.519304],[-90.342874,38.504885],[-90.338396,38.503502],[-90.372021,38.465362],[-90.376841,38.452861],[-90.391031,38.450561],[-90.39294,38.458093],[-90.409223,38.453226],[-90.414408,38.456971],[-90.422519,38.483118],[-90.411805,38.480988],[-90.406179,38.485696]]]}},{"type":"Feature","properties":{"z":"63127"},"geometry":{"type":"Polygon","coordinates":[[[-90.43352,38.543542],[-90.397862,38.561725],[-90.397917,38.544407],[-90.389195,38.54425],[-90.389372,38.536604],[-90.380811,38.529418],[-90.38938,38.529842],[-90.413864,38.51562],[-90.405329,38.513578],[-90.417422,38.504868],[-90.435626,38.515483],[-90.43352,38.543542]]]}},{"type":"Feature","properties":{"z":"63116"},"geometry":{"type":"Polygon","coordinates":[[[-90.245436,38.586373],[-90.244657,38.581008],[-90.265777,38.553428],[-90.295356,38.563477],[-90.2939,38.568634],[-90.282779,38.572244],[-90.281755,38.578844],[-90.275812,38.579743],[-90.270251,38.599558],[-90.265483,38.599066],[-90.26865,38.607793],[-90.241854,38.604986],[-90.243064,38.597321],[-90.246915,38.5977],[-90.243093,38.597122],[-90.245436,38.586373]]]}},{"type":"Feature","properties":{"z":"63147"},"geometry":{"type":"Polygon","coordinates":[[[-90.24394,38.722086],[-90.221238,38.728904],[-90.217496,38.721729],[-90.21141,38.72135],[-90.21024,38.704401],[-90.187806,38.67759],[-90.18145,38.659668],[-90.193545,38.652525],[-90.207388,38.677018],[-90.23008,38.684421],[-90.238548,38.694221],[-90.228378,38.700253],[-90.23012,38.705302],[-90.243987,38.712385],[-90.249475,38.706821],[-90.255774,38.71375],[-90.24394,38.722086]]]}},{"type":"Feature","properties":{"z":"63019"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-90.39528,38.24623],[-90.397956,38.243648],[-90.39528,38.24623]]],[[[-90.38774,38.2171],[-90.38555,38.22692],[-90.39497,38.24101],[-90.3857,38.23994],[-90.38844,38.2467],[-90.382843,38.248395],[-90.366948,38.248344],[-90.35543,38.216306],[-90.370365,38.218503],[-90.373725,38.210821],[-90.39237,38.20282],[-90.393094,38.210555],[-90.384378,38.215696],[-90.38774,38.2171]]]]}},{"type":"Feature","properties":{"z":"63012"},"geometry":{"type":"Polygon","coordinates":[[[-90.41108,38.35337],[-90.40657,38.3634],[-90.390559,38.357555],[-90.39588,38.34848],[-90.386084,38.35853],[-90.38402,38.34352],[-90.387933,38.341302],[-90.381633,38.342319],[-90.370819,38.333554],[-90.372666,38.293594],[-90.38511,38.296018],[-90.38317,38.31503],[-90.401188,38.32366],[-90.401874,38.316229],[-90.415625,38.311188],[-90.415686,38.306749],[-90.40353,38.30663],[-90.40688,38.28655],[-90.407402,38.300994],[-90.428065,38.293406],[-90.44411,38.302278],[-90.452254,38.299167],[-90.45153,38.29275],[-90.45751,38.30365],[-90.47081,38.29729],[-90.473229,38.308168],[-90.50192,38.31271],[-90.496756,38.324871],[-90.513739,38.325231],[-90.524301,38.33928],[-90.51391,38.351338],[-90.513521,38.37816],[-90.49995,38.37776],[-90.50369,38.37358],[-90.49967,38.37004],[-90.47545,38.36521],[-90.47623,38.35109],[-90.46758,38.35994],[-90.46054,38.35699],[-90.43517,38.36166],[-90.41108,38.35337]],[[-90.401066,38.343697],[-90.410109,38.343131],[-90.401066,38.343697]]]}},{"type":"Feature","properties":{"z":"63051"},"geometry":{"type":"Polygon","coordinates":[[[-90.639474,38.417046],[-90.6279,38.4108],[-90.61668,38.42034],[-90.588906,38.420994],[-90.593885,38.425581],[-90.583807,38.435212],[-90.58575,38.45141],[-90.57807,38.45667],[-90.569833,38.457916],[-90.565019,38.449681],[-90.561494,38.454373],[-90.550558,38.454036],[-90.546286,38.44522],[-90.53373,38.45538],[-90.52451,38.44065],[-90.512984,38.4389],[-90.513163,38.419698],[-90.499335,38.414611],[-90.50217,38.39536],[-90.494522,38.399467],[-90.49915,38.38705],[-90.495859,38.380752],[-90.50125,38.37206],[-90.49995,38.37776],[-90.513521,38.37816],[-90.515995,38.347938],[-90.518448,38.358215],[-90.53217,38.354458],[-90.538405,38.361646],[-90.559497,38.362679],[-90.554009,38.356657],[-90.565377,38.339257],[-90.57502,38.34032],[-90.576471,38.347597],[-90.590733,38.340547],[-90.590103,38.354524],[-90.608887,38.354823],[-90.608395,38.369553],[-90.603222,38.369487],[-90.612266,38.378947],[-90.634299,38.38174],[-90.632815,38.388548],[-90.63834,38.39207],[-90.636882,38.38777],[-90.650374,38.389516],[-90.65263,38.384168],[-90.656462,38.384041],[-90.65638,38.39078],[-90.69066,38.38369],[-90.71114,38.38877],[-90.702903,38.406578],[-90.703093,38.402046],[-90.696053,38.4018],[-90.68386,38.415272],[-90.67069,38.40945],[-90.673169,38.415039],[-90.66136,38.41489],[-90.65919,38.42301],[-90.65363,38.41934],[-90.652163,38.431475],[-90.634872,38.428847],[-90.62843,38.423078],[-90.639474,38.417046]]]}},{"type":"Feature","properties":{"z":"63025"},"geometry":{"type":"Polygon","coordinates":[[[-90.648357,38.5489],[-90.629272,38.546319],[-90.622892,38.540181],[-90.571824,38.532153],[-90.557452,38.546512],[-90.545961,38.546926],[-90.534422,38.540553],[-90.552384,38.534296],[-90.555203,38.527404],[-90.529704,38.530589],[-90.543134,38.526401],[-90.557772,38.507777],[-90.591131,38.504464],[-90.584109,38.501653],[-90.583974,38.487199],[-90.578599,38.487059],[-90.578687,38.479942],[-90.592844,38.476078],[-90.593429,38.472211],[-90.57855,38.46169],[-90.57007,38.4611],[-90.58572,38.45152],[-90.583642,38.435549],[-90.593885,38.425581],[-90.588906,38.420994],[-90.61668,38.42034],[-90.62967,38.41117],[-90.639474,38.417046],[-90.627477,38.421796],[-90.634872,38.428847],[-90.652163,38.431475],[-90.660578,38.442631],[-90.670638,38.439254],[-90.668325,38.447963],[-90.654228,38.458054],[-90.660703,38.479195],[-90.664703,38.478336],[-90.662701,38.484923],[-90.668093,38.484774],[-90.663591,38.49091],[-90.66909,38.499205],[-90.655837,38.502871],[-90.676363,38.5036],[-90.662646,38.504294],[-90.68064,38.509564],[-90.678406,38.525682],[-90.670002,38.534548],[-90.676221,38.541516],[-90.672512,38.546611],[-90.648357,38.5489]]]}},{"type":"Feature","properties":{"z":"63366"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-90.67259,38.79805],[-90.66956,38.79566],[-90.67397,38.79304],[-90.67707,38.79647],[-90.67259,38.79805]]],[[[-90.77399,38.80401],[-90.808277,38.809792],[-90.78615,38.817625],[-90.774858,38.813932],[-90.77825,38.81926],[-90.769665,38.822221],[-90.768078,38.833106],[-90.767762,38.846607],[-90.79307,38.84872],[-90.814293,38.878508],[-90.806213,38.879016],[-90.810283,38.886358],[-90.807937,38.900459],[-90.797935,38.903098],[-90.804418,38.911139],[-90.792678,38.917408],[-90.776406,38.923016],[-90.756746,38.919811],[-90.74377,38.930118],[-90.728841,38.931141],[-90.723764,38.925175],[-90.735611,38.915832],[-90.724578,38.915181],[-90.724073,38.908825],[-90.714198,38.909892],[-90.707557,38.902652],[-90.699434,38.908411],[-90.70623,38.913506],[-90.716366,38.912626],[-90.716006,38.917007],[-90.705896,38.921543],[-90.696243,38.91563],[-90.684048,38.915749],[-90.697534,38.931979],[-90.669249,38.934159],[-90.657091,38.915325],[-90.653816,38.900224],[-90.646667,38.89603],[-90.658807,38.883194],[-90.61821,38.86849],[-90.63348,38.86786],[-90.63062,38.85651],[-90.6191,38.85912],[-90.6202,38.8471],[-90.647923,38.847151],[-90.648023,38.839351],[-90.66138,38.84004],[-90.67665,38.83241],[-90.65036,38.81407],[-90.65171,38.80162],[-90.67848,38.803],[-90.67488,38.798674],[-90.69858,38.79222],[-90.692409,38.789969],[-90.697707,38.780162],[-90.73981,38.773262],[-90.737477,38.778658],[-90.746395,38.783955],[-90.746705,38.793923],[-90.755344,38.794035],[-90.752174,38.803454],[-90.77399,38.80401]],[[-90.79309,38.80995],[-90.789428,38.806007],[-90.79309,38.80995]]]]}},{"type":"Feature","properties":{"z":"63120"},"geometry":{"type":"Polygon","coordinates":[[[-90.278719,38.684659],[-90.269103,38.702682],[-90.260795,38.698043],[-90.249475,38.706821],[-90.239127,38.694965],[-90.264375,38.683774],[-90.260223,38.678244],[-90.263127,38.673353],[-90.282744,38.679683],[-90.278719,38.684659]]]}},{"type":"Feature","properties":{"z":"63088"},"geometry":{"type":"Polygon","coordinates":[[[-90.520631,38.547618],[-90.520495,38.552012],[-90.511657,38.55115],[-90.511037,38.56041],[-90.49765,38.563927],[-90.500316,38.567748],[-90.471205,38.568709],[-90.479659,38.561241],[-90.462569,38.557243],[-90.463552,38.552502],[-90.476537,38.546177],[-90.47341,38.541906],[-90.491593,38.539809],[-90.494485,38.532953],[-90.496003,38.536447],[-90.493261,38.530843],[-90.507761,38.53724],[-90.555079,38.527322],[-90.552384,38.534296],[-90.532722,38.540753],[-90.534592,38.548756],[-90.520631,38.547618]]]}},{"type":"Feature","properties":{"z":"63122"},"geometry":{"type":"Polygon","coordinates":[[[-90.376505,38.60306],[-90.372263,38.601744],[-90.377275,38.576125],[-90.433229,38.54365],[-90.442727,38.559308],[-90.463552,38.552502],[-90.463919,38.559565],[-90.479659,38.561241],[-90.473161,38.564653],[-90.471205,38.568709],[-90.476188,38.567144],[-90.471543,38.574494],[-90.461934,38.578448],[-90.465241,38.579484],[-90.448793,38.581411],[-90.449766,38.597158],[-90.425413,38.596655],[-90.425218,38.606146],[-90.401217,38.603452],[-90.40105,38.611148],[-90.379782,38.609343],[-90.376505,38.60306]]]}},{"type":"Feature","properties":{"z":"63135"},"geometry":{"type":"Polygon","coordinates":[[[-90.279939,38.744959],[-90.279184,38.727314],[-90.292413,38.72505],[-90.301806,38.730744],[-90.318908,38.73134],[-90.317238,38.751517],[-90.318728,38.761936],[-90.325216,38.763462],[-90.323518,38.771599],[-90.311811,38.76669],[-90.30517,38.769934],[-90.307628,38.772663],[-90.27997,38.771158],[-90.279939,38.744959]]]}},{"type":"Feature","properties":{"z":"63144"},"geometry":{"type":"Polygon","coordinates":[[[-90.362268,38.629954],[-90.334768,38.629538],[-90.334466,38.622762],[-90.329814,38.62278],[-90.334246,38.619439],[-90.331215,38.613712],[-90.3344,38.606586],[-90.342176,38.609559],[-90.350595,38.604786],[-90.358495,38.608958],[-90.363066,38.613008],[-90.362268,38.629954]]]}},{"type":"Feature","properties":{"z":"63005"},"geometry":{"type":"Polygon","coordinates":[[[-90.617326,38.613461],[-90.612379,38.619572],[-90.621523,38.621417],[-90.623344,38.632533],[-90.631482,38.63235],[-90.638064,38.619007],[-90.650374,38.616979],[-90.655414,38.61845],[-90.66333,38.634782],[-90.675348,38.616559],[-90.663611,38.600431],[-90.686061,38.589202],[-90.687731,38.598011],[-90.695842,38.597079],[-90.714197,38.612468],[-90.732441,38.600684],[-90.732328,38.639302],[-90.708809,38.645782],[-90.702305,38.657803],[-90.678559,38.666359],[-90.674531,38.682193],[-90.660509,38.688551],[-90.626519,38.690061],[-90.60415,38.681983],[-90.571822,38.681052],[-90.572137,38.66429],[-90.582074,38.661129],[-90.572451,38.660789],[-90.578347,38.648946],[-90.572309,38.643716],[-90.57196,38.636253],[-90.580583,38.627097],[-90.585689,38.604852],[-90.602677,38.604848],[-90.603602,38.611558],[-90.610842,38.60755],[-90.608896,38.612086],[-90.617326,38.613461]]]}},{"type":"Feature","properties":{"z":"63114"},"geometry":{"type":"Polygon","coordinates":[[[-90.361949,38.687118],[-90.408716,38.696322],[-90.408563,38.710965],[-90.377874,38.711481],[-90.370826,38.724919],[-90.334713,38.721643],[-90.336943,38.706969],[-90.331878,38.713542],[-90.334317,38.707658],[-90.32649,38.706805],[-90.322523,38.695954],[-90.328791,38.683567],[-90.347015,38.68561],[-90.362317,38.677256],[-90.362299,38.682476],[-90.368085,38.683613],[-90.361949,38.687118]]]}},{"type":"Feature","properties":{"z":"63133"},"geometry":{"type":"Polygon","coordinates":[[[-90.328791,38.683567],[-90.322523,38.695954],[-90.309333,38.687931],[-90.306611,38.690467],[-90.305715,38.707056],[-90.301882,38.68779],[-90.279828,38.683274],[-90.296727,38.661932],[-90.314573,38.675995],[-90.324082,38.676119],[-90.328791,38.683567]]]}},{"type":"Feature","properties":{"z":"63044"},"geometry":{"type":"Polygon","coordinates":[[[-90.423198,38.728999],[-90.429523,38.729194],[-90.430532,38.739361],[-90.439214,38.742806],[-90.441712,38.738828],[-90.439484,38.74859],[-90.455649,38.75461],[-90.45475,38.766334],[-90.449596,38.768004],[-90.453954,38.774267],[-90.476577,38.780716],[-90.473188,38.790978],[-90.440617,38.82765],[-90.428846,38.821217],[-90.443722,38.813137],[-90.424427,38.797241],[-90.429086,38.797447],[-90.424536,38.78924],[-90.417344,38.782358],[-90.41473,38.785162],[-90.412343,38.775106],[-90.389943,38.761333],[-90.374893,38.759273],[-90.382001,38.756137],[-90.381796,38.751211],[-90.370622,38.743105],[-90.371144,38.740081],[-90.395433,38.74369],[-90.404656,38.73575],[-90.407296,38.722293],[-90.423198,38.728999]]]}},{"type":"Feature","properties":{"z":"63108"},"geometry":{"type":"Polygon","coordinates":[[[-90.261192,38.638652],[-90.265539,38.639538],[-90.264798,38.644101],[-90.276781,38.646814],[-90.272626,38.657125],[-90.253265,38.654027],[-90.229955,38.641238],[-90.234264,38.633006],[-90.261192,38.638652]]]}},{"type":"Feature","properties":{"z":"63069"},"geometry":{"type":"Polygon","coordinates":[[[-90.768812,38.515028],[-90.777252,38.521376],[-90.777045,38.528724],[-90.772148,38.528534],[-90.771893,38.544244],[-90.781309,38.544062],[-90.781839,38.549956],[-90.79186,38.556849],[-90.770077,38.56428],[-90.767829,38.569949],[-90.772673,38.580364],[-90.768971,38.583509],[-90.748171,38.577412],[-90.753776,38.581935],[-90.750635,38.587199],[-90.755724,38.594374],[-90.755112,38.6045],[-90.746745,38.605081],[-90.732531,38.593247],[-90.733092,38.566784],[-90.724473,38.563635],[-90.72045,38.568478],[-90.706496,38.55669],[-90.68303,38.556845],[-90.678385,38.547458],[-90.680092,38.532831],[-90.684835,38.531262],[-90.676629,38.527598],[-90.68064,38.509564],[-90.662646,38.504294],[-90.676363,38.5036],[-90.655837,38.502871],[-90.66909,38.499205],[-90.663591,38.49091],[-90.668093,38.484774],[-90.662701,38.484923],[-90.664703,38.478336],[-90.660703,38.479195],[-90.654228,38.458054],[-90.668325,38.447963],[-90.670638,38.439254],[-90.660578,38.442631],[-90.652163,38.431475],[-90.65363,38.41934],[-90.65919,38.42301],[-90.66136,38.41489],[-90.673169,38.415039],[-90.67255,38.40877],[-90.676658,38.415122],[-90.68386,38.415272],[-90.696053,38.4018],[-90.703093,38.402046],[-90.70603,38.41865],[-90.733993,38.4145],[-90.767576,38.423914],[-90.782215,38.422005],[-90.754859,38.445259],[-90.772858,38.461072],[-90.782474,38.461103],[-90.783563,38.454506],[-90.788784,38.454147],[-90.784889,38.443214],[-90.7902,38.443064],[-90.789955,38.437743],[-90.783835,38.427702],[-90.80344,38.429645],[-90.80233,38.442549],[-90.823718,38.452434],[-90.818812,38.459128],[-90.799299,38.465515],[-90.811396,38.46154],[-90.813493,38.479136],[-90.818967,38.481636],[-90.826658,38.4779],[-90.828466,38.481223],[-90.792034,38.488499],[-90.795884,38.488932],[-90.795789,38.492895],[-90.791959,38.491252],[-90.793785,38.505434],[-90.768812,38.515028]]]}},{"type":"Feature","properties":{"z":"63376"},"geometry":{"type":"Polygon","coordinates":[[[-90.6964,38.79159],[-90.67488,38.798674],[-90.67848,38.803],[-90.65171,38.80162],[-90.65036,38.81407],[-90.67665,38.83241],[-90.66138,38.84004],[-90.648023,38.839351],[-90.647923,38.847151],[-90.6202,38.8471],[-90.61893,38.86128],[-90.60168,38.86253],[-90.57816,38.85341],[-90.56427,38.85309],[-90.56463,38.83811],[-90.56036,38.83788],[-90.558543,38.823626],[-90.549647,38.809729],[-90.570766,38.805455],[-90.56985,38.795196],[-90.56503,38.79352],[-90.568658,38.778977],[-90.555796,38.779754],[-90.565208,38.771009],[-90.555221,38.758986],[-90.56044,38.75589],[-90.557397,38.752027],[-90.589922,38.747452],[-90.58416,38.74905],[-90.58813,38.75031],[-90.58659,38.75712],[-90.599525,38.756083],[-90.59889,38.76215],[-90.611661,38.756006],[-90.61558,38.74915],[-90.632846,38.748575],[-90.633967,38.73813],[-90.641049,38.73207],[-90.643316,38.740371],[-90.63465,38.7389],[-90.636493,38.756237],[-90.652473,38.751794],[-90.661696,38.758014],[-90.674946,38.753914],[-90.683591,38.763188],[-90.69209,38.760156],[-90.69425,38.754532],[-90.7002,38.75812],[-90.69413,38.75957],[-90.69772,38.76505],[-90.69258,38.76297],[-90.685903,38.768964],[-90.685925,38.776288],[-90.697707,38.780162],[-90.692409,38.789969],[-90.6964,38.79159]],[[-90.56911,38.80229],[-90.56911,38.80229]],[[-90.59915,38.79484],[-90.603162,38.794772],[-90.59915,38.79484]],[[-90.67411,38.79749],[-90.6771,38.79625],[-90.67397,38.79304],[-90.6696,38.79555],[-90.67183,38.79993],[-90.67411,38.79749]]]}},{"type":"Feature","properties":{"z":"63367"},"geometry":{"type":"Polygon","coordinates":[[[-90.818431,38.795951],[-90.816126,38.804943],[-90.752174,38.803454],[-90.755344,38.794035],[-90.746705,38.793923],[-90.746395,38.783955],[-90.737477,38.778658],[-90.737715,38.773674],[-90.743975,38.773347],[-90.745636,38.780869],[-90.765482,38.777678],[-90.765487,38.77346],[-90.776349,38.770092],[-90.76973,38.76614],[-90.785395,38.762878],[-90.78254,38.74524],[-90.79917,38.74001],[-90.795704,38.743876],[-90.8144,38.74302],[-90.824758,38.754981],[-90.82315,38.76255],[-90.84338,38.76674],[-90.84293,38.772991],[-90.836771,38.772241],[-90.835327,38.788867],[-90.831049,38.788949],[-90.831248,38.802963],[-90.82532,38.79891],[-90.827445,38.788475],[-90.815859,38.792981],[-90.826,38.80041],[-90.818431,38.795951]]]}},{"type":"Feature","properties":{"z":"63011"},"geometry":{"type":"Polygon","coordinates":[[[-90.559287,38.621773],[-90.557206,38.610592],[-90.552384,38.610452],[-90.538571,38.61301],[-90.535196,38.620459],[-90.525192,38.622771],[-90.519842,38.617885],[-90.513218,38.625431],[-90.510625,38.621209],[-90.500977,38.623953],[-90.498874,38.620756],[-90.495547,38.622421],[-90.498102,38.626366],[-90.490482,38.626323],[-90.484954,38.612468],[-90.489723,38.59886],[-90.479524,38.598834],[-90.478279,38.592201],[-90.488046,38.596395],[-90.506814,38.589428],[-90.508789,38.592778],[-90.57215,38.592743],[-90.573391,38.589521],[-90.578167,38.592725],[-90.58131,38.588483],[-90.587402,38.592627],[-90.620167,38.582254],[-90.638625,38.583961],[-90.631977,38.586769],[-90.641414,38.587885],[-90.641087,38.600779],[-90.628706,38.602543],[-90.63615,38.604853],[-90.622864,38.61098],[-90.626469,38.615501],[-90.621637,38.619872],[-90.626522,38.619887],[-90.623039,38.63097],[-90.621523,38.621417],[-90.612379,38.619572],[-90.614013,38.613845],[-90.617378,38.61483],[-90.615449,38.610696],[-90.608896,38.612086],[-90.610842,38.60755],[-90.607516,38.607279],[-90.607637,38.612312],[-90.603602,38.611558],[-90.602677,38.604848],[-90.57594,38.607837],[-90.574068,38.61222],[-90.579089,38.612247],[-90.578434,38.616453],[-90.566923,38.615053],[-90.566839,38.624657],[-90.559287,38.621773]]]}},{"type":"Feature","properties":{"z":"63123"},"geometry":{"type":"Polygon","coordinates":[[[-90.315719,38.585044],[-90.313205,38.586816],[-90.307311,38.574271],[-90.294195,38.562378],[-90.270152,38.553049],[-90.302659,38.541124],[-90.333761,38.517424],[-90.341496,38.504352],[-90.343406,38.51974],[-90.361469,38.525204],[-90.361375,38.542595],[-90.366213,38.54407],[-90.360555,38.551701],[-90.369083,38.561993],[-90.339854,38.568121],[-90.315719,38.585044]]]}},{"type":"Feature","properties":{"z":"63141"},"geometry":{"type":"Polygon","coordinates":[[[-90.453119,38.638373],[-90.453041,38.631554],[-90.481077,38.634404],[-90.483103,38.62755],[-90.487903,38.631287],[-90.481069,38.635798],[-90.4842,38.644955],[-90.495041,38.639046],[-90.513914,38.643212],[-90.507621,38.649427],[-90.499242,38.679946],[-90.469764,38.682021],[-90.449061,38.672373],[-90.449081,38.675719],[-90.430688,38.671755],[-90.429094,38.675371],[-90.413551,38.673131],[-90.406319,38.676617],[-90.394761,38.672699],[-90.395286,38.658799],[-90.405305,38.657269],[-90.408499,38.647667],[-90.443412,38.647944],[-90.443501,38.63865],[-90.453119,38.638373]],[[-90.435409,38.671272],[-90.437216,38.675294],[-90.441982,38.673717],[-90.435409,38.671272]]]}},{"type":"Feature","properties":{"z":"63138"},"geometry":{"type":"Polygon","coordinates":[[[-90.228097,38.801011],[-90.231319,38.819995],[-90.229013,38.817533],[-90.225132,38.821856],[-90.228994,38.828189],[-90.218723,38.831972],[-90.234407,38.842003],[-90.188927,38.81851],[-90.174138,38.820021],[-90.15511,38.829722],[-90.141608,38.829448],[-90.12678,38.821326],[-90.117707,38.805748],[-90.123107,38.798048],[-90.166409,38.772649],[-90.184196,38.774431],[-90.184715,38.76716],[-90.238736,38.770634],[-90.228097,38.801011]]]}},{"type":"Feature","properties":{"z":"63126"},"geometry":{"type":"Polygon","coordinates":[[[-90.367975,38.526597],[-90.381601,38.529949],[-90.389372,38.536604],[-90.389195,38.54425],[-90.397917,38.544407],[-90.398408,38.559298],[-90.393676,38.567707],[-90.377238,38.573547],[-90.362162,38.557279],[-90.360588,38.549836],[-90.366213,38.54407],[-90.361375,38.542595],[-90.361469,38.525204],[-90.367975,38.526597]]]}},{"type":"Feature","properties":{"z":"63038"},"geometry":{"type":"Polygon","coordinates":[[[-90.669637,38.605985],[-90.675323,38.616712],[-90.66333,38.634782],[-90.655414,38.61845],[-90.650374,38.616979],[-90.638064,38.619007],[-90.631482,38.63235],[-90.623344,38.632533],[-90.626522,38.619887],[-90.621696,38.617423],[-90.626472,38.615438],[-90.622864,38.61098],[-90.63615,38.604853],[-90.628706,38.602543],[-90.641163,38.600635],[-90.641414,38.587885],[-90.632027,38.584618],[-90.655437,38.585732],[-90.654844,38.575331],[-90.669689,38.56837],[-90.643789,38.555427],[-90.636455,38.56557],[-90.617359,38.563123],[-90.603021,38.573997],[-90.610152,38.540724],[-90.622892,38.540181],[-90.629106,38.546257],[-90.644371,38.549044],[-90.672512,38.546611],[-90.675703,38.537827],[-90.670174,38.533599],[-90.676629,38.527598],[-90.684835,38.531262],[-90.680092,38.532831],[-90.678385,38.547458],[-90.683135,38.556922],[-90.706496,38.55669],[-90.72045,38.568478],[-90.724473,38.563635],[-90.733092,38.566784],[-90.732441,38.600684],[-90.721281,38.609144],[-90.714197,38.612468],[-90.695842,38.597079],[-90.687731,38.598011],[-90.686061,38.589202],[-90.663611,38.600431],[-90.669637,38.605985]]]}},{"type":"Feature","properties":{"z":"63040"},"geometry":{"type":"Polygon","coordinates":[[[-90.613922,38.584395],[-90.603857,38.588166],[-90.600434,38.57529],[-90.617359,38.563123],[-90.636455,38.56557],[-90.643789,38.555427],[-90.669689,38.56837],[-90.654844,38.575331],[-90.655437,38.585732],[-90.613922,38.584395]]]}},{"type":"Feature","properties":{"z":"63143"},"geometry":{"type":"Polygon","coordinates":[[[-90.329819,38.62211],[-90.31698,38.618678],[-90.308121,38.621887],[-90.302329,38.613515],[-90.321082,38.598836],[-90.334247,38.604191],[-90.331215,38.613712],[-90.334298,38.619251],[-90.329819,38.62211]]]}},{"type":"Feature","properties":{"z":"63110"},"geometry":{"type":"Polygon","coordinates":[[[-90.304411,38.632972],[-90.30059,38.647557],[-90.285966,38.646125],[-90.288947,38.637538],[-90.285472,38.633176],[-90.27462,38.645004],[-90.264798,38.644101],[-90.265539,38.639538],[-90.25608,38.63623],[-90.234264,38.633006],[-90.240926,38.625778],[-90.237721,38.623197],[-90.242641,38.615373],[-90.241854,38.604986],[-90.266221,38.605959],[-90.26872,38.6114],[-90.285164,38.6125],[-90.286427,38.621743],[-90.290116,38.621963],[-90.285216,38.629266],[-90.304411,38.632972]]]}},{"type":"Feature","properties":{"z":"63139"},"geometry":{"type":"Polygon","coordinates":[[[-90.28266,38.595212],[-90.315639,38.59802],[-90.302329,38.613515],[-90.308792,38.618078],[-90.306452,38.630073],[-90.286748,38.630894],[-90.290116,38.621963],[-90.286427,38.621743],[-90.285227,38.612553],[-90.267339,38.610903],[-90.269413,38.60373],[-90.265483,38.599066],[-90.270251,38.599558],[-90.270765,38.593885],[-90.28266,38.595212]]]}},{"type":"Feature","properties":{"z":"63104"},"geometry":{"type":"Polygon","coordinates":[[[-90.22127,38.604648],[-90.241175,38.608091],[-90.240472,38.626773],[-90.209247,38.620281],[-90.20904,38.616238],[-90.207627,38.619947],[-90.183799,38.614528],[-90.201607,38.589337],[-90.205999,38.595044],[-90.202926,38.59862],[-90.22127,38.604648]]]}},{"type":"Feature","properties":{"z":"63028"},"geometry":{"type":"Polygon","coordinates":[[[-90.388812,38.024523],[-90.416022,38.042315],[-90.397046,38.053702],[-90.407103,38.074398],[-90.41591,38.06984],[-90.42254,38.07304],[-90.42686,38.08761],[-90.41511,38.10368],[-90.425948,38.108822],[-90.42472,38.116207],[-90.43299,38.116238],[-90.431296,38.139224],[-90.447124,38.142369],[-90.448689,38.133582],[-90.465169,38.145424],[-90.47373,38.145586],[-90.473772,38.149628],[-90.483298,38.149676],[-90.483119,38.154184],[-90.509671,38.154413],[-90.509838,38.161219],[-90.5176,38.16145],[-90.518025,38.1824],[-90.53046,38.18246],[-90.51989,38.18356],[-90.52357,38.18918],[-90.51886,38.19229],[-90.51772,38.21181],[-90.523721,38.210949],[-90.52844,38.217833],[-90.51695,38.22226],[-90.515791,38.250592],[-90.503676,38.249043],[-90.490818,38.261175],[-90.485661,38.25808],[-90.48448,38.24819],[-90.462212,38.251679],[-90.455155,38.247335],[-90.46607,38.25798],[-90.462277,38.262111],[-90.455039,38.253166],[-90.434448,38.257826],[-90.414698,38.256192],[-90.412045,38.24684],[-90.406836,38.245971],[-90.4139,38.245658],[-90.413573,38.237833],[-90.40357,38.23461],[-90.402866,38.244077],[-90.395953,38.243402],[-90.3932,38.25484],[-90.37903,38.251654],[-90.368444,38.261634],[-90.366948,38.248344],[-90.382843,38.248395],[-90.38844,38.2467],[-90.3857,38.23994],[-90.39497,38.24101],[-90.38555,38.22692],[-90.38792,38.2156],[-90.384378,38.215696],[-90.392714,38.211106],[-90.39412,38.20364],[-90.373725,38.210821],[-90.369776,38.218706],[-90.35543,38.216306],[-90.327218,38.184311],[-90.290629,38.170363],[-90.276541,38.158981],[-90.279332,38.157122],[-90.265406,38.137215],[-90.27436,38.1353],[-90.28445,38.12277],[-90.30649,38.10968],[-90.29931,38.089316],[-90.32939,38.09436],[-90.349733,38.082277],[-90.337229,38.064346],[-90.341484,38.044483],[-90.337363,38.037162],[-90.342292,38.033336],[-90.318533,38.033339],[-90.314383,38.023466],[-90.314666,38.010503],[-90.328577,38.00717],[-90.329097,37.998328],[-90.316793,37.996415],[-90.301659,38.002328],[-90.277278,37.99679],[-90.298467,37.984025],[-90.301539,37.987798],[-90.307998,37.985992],[-90.312113,37.97808],[-90.323397,37.9906],[-90.340902,38.000614],[-90.353772,38.001848],[-90.388812,38.024523]],[[-90.503645,38.190386],[-90.486726,38.192453],[-90.475969,38.201369],[-90.503645,38.190386]]]}},{"type":"Feature","properties":{"z":"63048"},"geometry":{"type":"Polygon","coordinates":[[[-90.414698,38.256192],[-90.425517,38.25736],[-90.395477,38.268158],[-90.389712,38.264462],[-90.387892,38.276233],[-90.380377,38.276606],[-90.377518,38.28259],[-90.371754,38.280536],[-90.368444,38.261634],[-90.37903,38.251654],[-90.3932,38.25484],[-90.39471,38.24706],[-90.402866,38.244077],[-90.40357,38.23461],[-90.413573,38.237833],[-90.4139,38.245658],[-90.406836,38.245971],[-90.412045,38.24684],[-90.414698,38.256192]]]}},{"type":"Feature","properties":{"z":"63348"},"geometry":{"type":"Polygon","coordinates":[[[-90.922549,38.825343],[-90.933307,38.825515],[-90.933602,38.811418],[-90.905983,38.805035],[-90.920564,38.807522],[-90.9232,38.78983],[-90.91885,38.78887],[-90.919834,38.783688],[-90.914339,38.784152],[-90.917835,38.77507],[-90.90222,38.77371],[-90.896654,38.746935],[-90.924479,38.746338],[-90.92475,38.73784],[-90.914739,38.735071],[-90.912253,38.723386],[-90.9066,38.72362],[-90.90604,38.71802],[-90.89713,38.71642],[-90.89716,38.70845],[-90.89101,38.70813],[-90.91888,38.69929],[-90.922642,38.694053],[-90.912882,38.682236],[-90.91966,38.67502],[-90.91529,38.65872],[-90.93661,38.67888],[-90.95084,38.67867],[-90.95105,38.68598],[-90.96275,38.69542],[-90.963034,38.700735],[-90.97993,38.700799],[-90.985564,38.738948],[-90.962577,38.742262],[-90.9618,38.79145],[-90.98575,38.80163],[-90.985746,38.808101],[-90.976162,38.808012],[-90.97615,38.819293],[-91.000812,38.825933],[-90.997483,38.838766],[-91.007148,38.84309],[-90.999465,38.843713],[-91.00038,38.856151],[-90.989023,38.864078],[-90.983583,38.862084],[-90.975177,38.871043],[-90.992927,38.871679],[-90.99092,38.882569],[-90.958177,38.879033],[-90.957555,38.893285],[-90.950312,38.895083],[-90.933455,38.885049],[-90.903748,38.890319],[-90.900708,38.886053],[-90.892695,38.88676],[-90.89294,38.878078],[-90.878039,38.874759],[-90.878,38.870656],[-90.89662,38.870792],[-90.894995,38.867155],[-90.902805,38.864478],[-90.903002,38.856834],[-90.894392,38.846387],[-90.90741,38.83803],[-90.903817,38.831981],[-90.90592,38.82227],[-90.91433,38.82515],[-90.911996,38.819812],[-90.918978,38.81828],[-90.917905,38.825122],[-90.922549,38.825343]]]}},{"type":"Feature","properties":{"z":"63304"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-90.68533,38.72784],[-90.68533,38.72784]]],[[[-90.69409,38.71267],[-90.690373,38.714956],[-90.696139,38.71969],[-90.682521,38.728686],[-90.69504,38.740599],[-90.685387,38.7434],[-90.694377,38.750329],[-90.693914,38.753583],[-90.682895,38.751207],[-90.687603,38.760281],[-90.684464,38.762855],[-90.674946,38.753914],[-90.661696,38.758014],[-90.652473,38.751794],[-90.636493,38.756237],[-90.63465,38.7389],[-90.643316,38.740371],[-90.641049,38.73207],[-90.633967,38.73813],[-90.632846,38.748575],[-90.61558,38.74915],[-90.611661,38.756006],[-90.59763,38.76198],[-90.599525,38.756083],[-90.58659,38.75712],[-90.58813,38.75031],[-90.58421,38.74893],[-90.591939,38.749076],[-90.583759,38.748139],[-90.58636,38.74242],[-90.58101,38.74489],[-90.57545,38.73262],[-90.58022,38.71813],[-90.575704,38.715641],[-90.58142,38.71046],[-90.567835,38.681242],[-90.60415,38.681983],[-90.636197,38.690855],[-90.660509,38.688551],[-90.674531,38.682193],[-90.678559,38.666359],[-90.703831,38.656525],[-90.708809,38.645782],[-90.742412,38.634563],[-90.735905,38.643913],[-90.753743,38.65043],[-90.761301,38.658635],[-90.73195,38.66892],[-90.73351,38.69087],[-90.76257,38.690613],[-90.77763,38.70036],[-90.77746,38.70498],[-90.742,38.70568],[-90.73574,38.71126],[-90.74286,38.71814],[-90.74338,38.72878],[-90.737179,38.731721],[-90.71778,38.71879],[-90.69409,38.71267]]]]}},{"type":"Feature","properties":{"z":"63017"},"geometry":{"type":"Polygon","coordinates":[[[-90.585595,38.614858],[-90.57196,38.636253],[-90.572309,38.643716],[-90.578347,38.648946],[-90.572451,38.660789],[-90.582074,38.661129],[-90.572137,38.66429],[-90.571822,38.681052],[-90.522752,38.687625],[-90.517506,38.695381],[-90.506717,38.689671],[-90.49799,38.692686],[-90.498436,38.686556],[-90.487784,38.682721],[-90.499242,38.679946],[-90.507621,38.649427],[-90.513914,38.643212],[-90.495041,38.639046],[-90.4842,38.644955],[-90.481069,38.635798],[-90.489253,38.62631],[-90.498102,38.626366],[-90.495547,38.622421],[-90.498874,38.620756],[-90.500977,38.623953],[-90.510625,38.621209],[-90.513218,38.625431],[-90.519842,38.617885],[-90.525192,38.622771],[-90.535196,38.620459],[-90.538571,38.61301],[-90.552384,38.610452],[-90.557206,38.610592],[-90.56025,38.624438],[-90.566839,38.624657],[-90.566923,38.615053],[-90.578434,38.616453],[-90.579089,38.612247],[-90.574068,38.61222],[-90.57594,38.607837],[-90.585654,38.608557],[-90.585595,38.614858]]]}},{"type":"Feature","properties":{"z":"63125"},"geometry":{"type":"Polygon","coordinates":[[[-90.301914,38.494876],[-90.330496,38.502517],[-90.32595,38.505927],[-90.33598,38.511421],[-90.334733,38.51631],[-90.302659,38.541124],[-90.270506,38.553014],[-90.271043,38.538652],[-90.257413,38.531852],[-90.274711,38.486607],[-90.301914,38.494876]]]}},{"type":"Feature","properties":{"z":"63119"},"geometry":{"type":"Polygon","coordinates":[[[-90.371533,38.568488],[-90.385649,38.573475],[-90.377275,38.576125],[-90.374819,38.586236],[-90.372257,38.602146],[-90.380383,38.604536],[-90.378906,38.614059],[-90.363283,38.614002],[-90.350595,38.604786],[-90.342176,38.609559],[-90.318315,38.599452],[-90.320515,38.594152],[-90.313205,38.586816],[-90.339419,38.568342],[-90.368117,38.562372],[-90.371533,38.568488]]]}},{"type":"Feature","properties":{"z":"63031"},"geometry":{"type":"Polygon","coordinates":[[[-90.357858,38.793128],[-90.368467,38.797785],[-90.373302,38.792455],[-90.38748,38.800888],[-90.387758,38.797654],[-90.391315,38.811068],[-90.402858,38.806056],[-90.440617,38.82765],[-90.41932,38.829277],[-90.376153,38.822418],[-90.362163,38.82786],[-90.340883,38.849531],[-90.34185,38.844976],[-90.336375,38.849684],[-90.317352,38.840034],[-90.313996,38.842917],[-90.315992,38.83559],[-90.305976,38.823304],[-90.317744,38.812353],[-90.318502,38.797333],[-90.314854,38.79526],[-90.320578,38.787941],[-90.30517,38.769934],[-90.329182,38.769026],[-90.328266,38.774754],[-90.337728,38.77591],[-90.339583,38.7866],[-90.357858,38.793128]]]}},{"type":"Feature","properties":{"z":"63010"},"geometry":{"type":"Polygon","coordinates":[[[-90.41617,38.46275],[-90.410463,38.453469],[-90.39294,38.458093],[-90.391031,38.450561],[-90.353631,38.458217],[-90.336443,38.453978],[-90.335745,38.448195],[-90.347847,38.432835],[-90.347939,38.405357],[-90.341446,38.388298],[-90.347526,38.379704],[-90.35929,38.380143],[-90.358306,38.384566],[-90.36455,38.385459],[-90.37557,38.39919],[-90.382929,38.39389],[-90.395806,38.404757],[-90.402897,38.40348],[-90.405643,38.40978],[-90.415101,38.408956],[-90.41545,38.41652],[-90.420997,38.419988],[-90.45379,38.42225],[-90.464678,38.429755],[-90.45642,38.44245],[-90.46023,38.44513],[-90.465653,38.438589],[-90.467278,38.441629],[-90.452044,38.455273],[-90.455449,38.450574],[-90.446265,38.452916],[-90.445888,38.463025],[-90.41617,38.46275]]]}},{"type":"Feature","properties":{"z":"63368"},"geometry":{"type":"Polygon","coordinates":[[[-90.72818,38.72454],[-90.749285,38.744175],[-90.787017,38.740773],[-90.782143,38.738363],[-90.795936,38.737001],[-90.79589,38.732713],[-90.802504,38.735877],[-90.801318,38.740777],[-90.78254,38.74524],[-90.785395,38.762878],[-90.76973,38.76614],[-90.776349,38.770092],[-90.765487,38.77346],[-90.765482,38.777678],[-90.745636,38.780869],[-90.743975,38.773347],[-90.731146,38.772805],[-90.72093,38.77841],[-90.69984,38.78055],[-90.693938,38.776425],[-90.690412,38.780288],[-90.685903,38.768964],[-90.69258,38.76297],[-90.69772,38.76505],[-90.69413,38.75957],[-90.7002,38.75812],[-90.69425,38.754532],[-90.687603,38.760281],[-90.682895,38.751207],[-90.693914,38.753583],[-90.694414,38.747799],[-90.690114,38.750118],[-90.685136,38.744308],[-90.69504,38.740599],[-90.682432,38.729259],[-90.696139,38.71969],[-90.690373,38.714956],[-90.694165,38.712732],[-90.68969,38.71226],[-90.72818,38.72454]],[[-90.68647,38.72938],[-90.68349,38.72876],[-90.68647,38.72938]]]}},{"type":"Feature","properties":{"z":"63303"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-90.59828,38.79273],[-90.603162,38.794772],[-90.59828,38.79273]]],[[[-90.57695,38.72582],[-90.58101,38.74489],[-90.58629,38.74445],[-90.557397,38.752027],[-90.56044,38.75589],[-90.555221,38.758986],[-90.565208,38.771009],[-90.555796,38.779754],[-90.568658,38.778977],[-90.56503,38.79352],[-90.53268,38.78812],[-90.482455,38.764013],[-90.49579,38.748256],[-90.53134,38.731178],[-90.530363,38.69863],[-90.541612,38.685267],[-90.567835,38.681242],[-90.58142,38.71046],[-90.575704,38.715641],[-90.58021,38.71792],[-90.57695,38.72582]]]]}},{"type":"Feature","properties":{"z":"63385"},"geometry":{"type":"MultiPolygon","coordinates":[[[[-90.791589,38.807415],[-90.7926,38.811705],[-90.788827,38.808775],[-90.791589,38.807415]]],[[[-90.905996,38.804854],[-90.933602,38.811418],[-90.933307,38.825515],[-90.917905,38.825122],[-90.918681,38.818238],[-90.911996,38.819812],[-90.91433,38.82515],[-90.90592,38.82227],[-90.903817,38.831981],[-90.90741,38.83803],[-90.894392,38.846387],[-90.903002,38.856834],[-90.902805,38.864478],[-90.894995,38.867155],[-90.89662,38.870792],[-90.878,38.870656],[-90.878039,38.874759],[-90.89294,38.878078],[-90.892492,38.886495],[-90.870425,38.888675],[-90.859594,38.881718],[-90.844266,38.884063],[-90.838796,38.879369],[-90.834666,38.880561],[-90.836594,38.884118],[-90.83045,38.877949],[-90.814293,38.878508],[-90.79307,38.84872],[-90.767762,38.846607],[-90.769665,38.822221],[-90.77825,38.81926],[-90.774858,38.813932],[-90.78615,38.817625],[-90.808277,38.809792],[-90.77904,38.804449],[-90.816126,38.804943],[-90.818481,38.795877],[-90.82616,38.80025],[-90.815859,38.792981],[-90.821418,38.787739],[-90.827445,38.788475],[-90.82532,38.79891],[-90.831248,38.802963],[-90.836771,38.772241],[-90.84316,38.77259],[-90.84338,38.76674],[-90.82299,38.76239],[-90.824758,38.754981],[-90.816695,38.746685],[-90.81962,38.74566],[-90.795704,38.743876],[-90.802504,38.735877],[-90.79589,38.732713],[-90.79581,38.725239],[-90.8149,38.72251],[-90.816056,38.712758],[-90.821605,38.7079],[-90.83386,38.70609],[-90.833599,38.717015],[-90.82447,38.7239],[-90.839681,38.723546],[-90.849363,38.709634],[-90.86948,38.71406],[-90.88325,38.70908],[-90.886873,38.694318],[-90.917471,38.683518],[-90.922642,38.694053],[-90.91919,38.69911],[-90.89101,38.70813],[-90.89716,38.70845],[-90.89713,38.71642],[-90.90604,38.71802],[-90.9066,38.72362],[-90.912253,38.723386],[-90.914739,38.735071],[-90.92475,38.73784],[-90.924479,38.746338],[-90.896654,38.746935],[-90.90222,38.77371],[-90.917835,38.77507],[-90.914339,38.784152],[-90.919834,38.783688],[-90.91885,38.78887],[-90.9232,38.78983],[-90.920564,38.807522],[-90.905996,38.804854]]]]}},{"type":"Feature","properties":{"z":"63129"},"geometry":{"type":"Polygon","coordinates":[[[-90.350639,38.458082],[-90.376841,38.452861],[-90.372194,38.465127],[-90.33889,38.50267],[-90.33598,38.511421],[-90.32595,38.505927],[-90.330496,38.502517],[-90.274711,38.486607],[-90.291084,38.43089],[-90.341446,38.388298],[-90.347939,38.405357],[-90.348122,38.430592],[-90.335972,38.452564],[-90.350639,38.458082]]]}},{"type":"Feature","properties":{"z":"63033"},"geometry":{"type":"Polygon","coordinates":[[[-90.27945,38.771145],[-90.307628,38.772663],[-90.320578,38.787941],[-90.314868,38.795191],[-90.318656,38.805988],[-90.3118,38.821257],[-90.298193,38.820581],[-90.284535,38.808171],[-90.261345,38.810627],[-90.253428,38.8189],[-90.250439,38.813273],[-90.229581,38.814669],[-90.227924,38.801853],[-90.234299,38.785376],[-90.26684,38.779015],[-90.26518,38.775477],[-90.270839,38.774071],[-90.267064,38.770956],[-90.27945,38.771145]]]}},{"type":"Feature","properties":{"z":"63034"},"geometry":{"type":"Polygon","coordinates":[[[-90.313376,38.837065],[-90.313996,38.842917],[-90.317352,38.840034],[-90.336375,38.849684],[-90.350337,38.840253],[-90.336799,38.88203],[-90.326561,38.889458],[-90.31423,38.891146],[-90.293712,38.885548],[-90.265918,38.859033],[-90.218723,38.831972],[-90.228896,38.828365],[-90.225132,38.821856],[-90.229013,38.817533],[-90.231312,38.820041],[-90.23065,38.814097],[-90.250439,38.813273],[-90.253428,38.8189],[-90.261345,38.810627],[-90.284297,38.808154],[-90.296881,38.819927],[-90.30682,38.82144],[-90.313376,38.837065]]]}},{"type":"Feature","properties":{"z":"63132"},"geometry":{"type":"Polygon","coordinates":[[[-90.364418,38.682396],[-90.361011,38.677252],[-90.347838,38.68307],[-90.348716,38.673645],[-90.353454,38.673036],[-90.347856,38.668159],[-90.349783,38.661432],[-90.357151,38.662233],[-90.355696,38.657864],[-90.361837,38.662497],[-90.394252,38.66096],[-90.394761,38.672699],[-90.404711,38.675686],[-90.408716,38.696322],[-90.363204,38.687685],[-90.361085,38.684491],[-90.368074,38.683685],[-90.364418,38.682396]]]}},{"type":"Feature","properties":{"z":"63113"},"geometry":{"type":"Polygon","coordinates":[[[-90.23301,38.643971],[-90.253631,38.654163],[-90.272626,38.657125],[-90.271935,38.661035],[-90.262913,38.672568],[-90.246495,38.666816],[-90.222054,38.655459],[-90.229025,38.642861],[-90.23301,38.643971]]]}},{"type":"Feature","properties":{"z":"63118"},"geometry":{"type":"Polygon","coordinates":[[[-90.242115,38.603586],[-90.241175,38.608091],[-90.206577,38.600517],[-90.201607,38.589337],[-90.221103,38.576798],[-90.24452,38.580957],[-90.243093,38.597122],[-90.246948,38.597486],[-90.243064,38.597321],[-90.242115,38.603586]]]}}]};
+  const filtered = {
+    type:'FeatureCollection',
+    features: data.features
+  };
+
+    geoLayer = L.geoJSON(filtered, {
+      style: styleFeature,
+      onEachFeature(feature, layer){
+        const zip = feature.properties.z || '';
+        const d = ZIP_DATA[zip];
+
+        layer.on('mouseover', function(){
+          this.setStyle({weight:2.5,color:'#D4A017',fillOpacity:0.95});
+          this.bringToFront();
+        });
+        layer.on('mouseout', function(){
+          geoLayer.resetStyle(this);
+        });
+        layer.on('click', function(){
+          showDetail(zip);
+        });
+
+        const m = METRICS[currentMetric];
+        const tipContent = d
+          ? `<strong style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;">${zip} — ${d.city}</strong><br>${m.fmt(getVal(d,currentMetric))}<br><span style="font-size:11px;opacity:.7;">${d.n} sales · click for full detail</span>`
+          : `<strong>${zip}</strong><br><span style="opacity:.6;">No data</span>`;
+        layer.bindTooltip(tipContent,{direction:'top',sticky:true,opacity:0.95});
+      }
+    }).addTo(map);
+
+    // Fit map to our data bounds
+    const ourFeatures = filtered.features;
+    if(ourFeatures.length>0){
+      const ourLayer = L.geoJSON({type:'FeatureCollection',features:ourFeatures});
+      map.fitBounds(ourLayer.getBounds(), {padding:[20,20]});
+    }
+  })();
+})();
+
+updateLegend();
+
+// ── MOBILE INIT & AUTO-UPDATING HOOKS ─────────────────────────────────────
+function mobileInit(){
+  if(window.innerWidth > 900) return;
+  document.querySelector('.finance-panel').classList.add('expanded');
+  document.querySelector('.fp-btn').style.display = 'none'; // hide button on mobile
+  setTimeout(()=>{ if(map) map.invalidateSize(); }, 300);
+  updateAffordabilityLive(); // initial calc with defaults
+}
+
+if (window.innerWidth <= 900) {
+  const inputs = ['fp-payment','fp-down','fp-rate','fp-debts','fp-cond','fp-beds'];
+  inputs.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', () => {
+        clearTimeout(affordabilityTimer);
+        affordabilityTimer = setTimeout(updateAffordabilityLive, AFFORD_DEBOUNCE_MS);
+      });
+      el.addEventListener('change', updateAffordabilityLive);
+    }
+  });
+}
+
+window.addEventListener('load', mobileInit);
+window.addEventListener('resize', ()=>{ 
+  if(map) map.invalidateSize();
+});
+</script>
+</body>
+</html>
